@@ -9,7 +9,11 @@ class PeerManager {
             onOpen: () => { },
             onData: () => { },
             onClose: () => { },
-            onConnectionOpen: () => { }
+            onOpen: () => { },
+            onData: () => { },
+            onClose: () => { },
+            onConnectionOpen: () => { },
+            onError: () => { }
         };
     }
 
@@ -30,18 +34,20 @@ class PeerManager {
         });
 
         this.peer.on('connection', (conn) => {
-            if (this.isHost) {
-                // Host accepts connections
-                this.handleConnection(conn);
-            } else {
-                // Client usually initiates, but if host connects back (unlikely in this flow), handle it.
-                this.handleConnection(conn);
+            if (this.callbacks.onConnection) {
+                this.callbacks.onConnection(conn);
             }
+            // Always handle basic data updates
+            this.handleConnection(conn);
         });
 
         this.peer.on('error', (err) => {
             console.error(err);
-            alert('Connection Error: ' + err.type);
+            if (this.callbacks.onError) {
+                this.callbacks.onError(err);
+            } else {
+                alert('Connection Error: ' + err.type);
+            }
         });
     }
 
@@ -97,4 +103,7 @@ class PeerManager {
     onData(cb) { this.callbacks.onData = cb; }
     onClose(cb) { this.callbacks.onClose = cb; }
     onConnectionOpen(cb) { this.callbacks.onConnectionOpen = cb; }
+    onConnectionOpen(cb) { this.callbacks.onConnectionOpen = cb; }
+    onConnection(cb) { this.callbacks.onConnection = cb; }
+    onError(cb) { this.callbacks.onError = cb; }
 }

@@ -52,52 +52,77 @@ class MasterGame {
     }
 
     initNetwork() {
+        this.elRoomId.textContent = "Connecting...";
+
         this.peerManager.onOpen((id) => {
             this.elRoomId.textContent = id;
         });
 
-        // Override handleConnection to assign to teams
-        this.peerManager.peer.on('connection', (conn) => {
+        // Error handling
+        this.peerManager.onError((err) => {
+            console.error("PeerJS Error:", err);
+            this.elRoomId.innerHTML = `<span style="color:red; font-size:0.8em">Error: ${err.type}</span>`;
+        });
+
+        // Use the proper callback hook instead of accessing null peer
+        this.peerManager.onConnection((conn) => {
             this.handlePlayerJoin(conn);
         });
 
-        this.peerManager.onData((data) => {
-            this.handlePlayerInput(data); // We still need this for 'ANSWER' payloads
-        });
+        // We handle data in specific connection listeners now to intercept CLAIM_TEAM
+        // this.peerManager.onData((data) => {
+        //     this.handlePlayerInput(data); 
+        // });
 
-        this.peerManager.init();
+        this.peerManager.init('TOBIS-JGA');
     }
 
     handlePlayerJoin(conn) {
         conn.on('open', () => {
-            // Assign to first empty slot
-            const team = this.teams.find(t => !t.conn);
-            if (team) {
-                team.conn = conn;
-                console.log(`Assigned ${conn.peer} to ${team.name}`);
+            console.log(`New connection from ${conn.peer}`);
 
-                // UI Update
-                team.el.classList.add('joined');
-                team.el.querySelector('.join-status').textContent = "CONNECTED";
+            // Do NOT auto-assign. Wait for 'CLAIM_TEAM'
+            conn.on('data', (data) => {
+                if (data.type === 'CLAIM_TEAM') {
+                    this.handleTeamClaim(conn, data.payload);
+                } else {
+                    // Pass other messages to general handler
+                    this.handlePlayerInput(data);
+                }
+            });
 
-                // Setup specific data listener for this connection if needed, 
-                // but peerManager.onData is global for all conns currently. 
-                // In a robust app, we'd map conn.peer to team ID.
-
-                // Add listener to cleanup on close
-                conn.on('close', () => {
+            conn.on('close', () => {
+                // Find if this conn was assigned to a team
+                const team = this.teams.find(t => t.conn === conn);
+                if (team) {
+                    console.log(`${team.name} disconnected`);
                     team.conn = null;
                     team.el.classList.remove('joined');
                     team.el.querySelector('.join-status').textContent = "Waiting...";
-                });
-            } else {
-                console.log('Room full');
-                conn.close();
-            }
+                }
+            });
         });
+    }
 
-        // Pass to manager to ensure standard listeners are attached too
-        this.peerManager.handleConnection(conn);
+    handleTeamClaim(conn, teamId) {
+        const team = this.teams.find(t => t.id === teamId);
+        if (!team) return; // Invalid team ID
+
+        if (team.conn) {
+            // Team already taken
+            conn.send({ type: 'TEAM_TAKEN', payload: teamId });
+        } else {
+            // Assign team
+            team.conn = conn;
+            console.log(`Assigned ${conn.peer} to ${team.name}`);
+
+            // UI Update
+            team.el.classList.add('joined');
+            team.el.querySelector('.join-status').textContent = "CONNECTED";
+
+            // Confirm to player
+            conn.send({ type: 'TEAM_CONFIRMED', payload: teamId });
+        }
     }
 
     handlePlayerInput(data) {

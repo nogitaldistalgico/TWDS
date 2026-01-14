@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wer weiß denn sowas? - Master</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- PeerJS CDN -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="glass-panel">
+            <div class="logo">WWDS QUIZ</div>
+            <div class="room-info">
+                Room ID: <span class="room-id">...</span>
+                <a href="player.html" class="link-player-view"
+                    style="margin-left: 20px; font-size: 0.8rem; color: var(--color-primary); text-decoration: none; border: 1px solid var(--color-primary); padding: 5px 10px; border-radius: 4px;">Open
+                    Player Controller</a>
+            </div>
+        </header>
+
+        <!-- Category Wall -->
+        <main class="category-wall">
+            <!-- Categories injected by JS -->
+        </main>
+
+        <!-- Player Status -->
+        <div class="player-dock">
+            <div id="team-0" class="player-indicator glass-panel">
+                <div class="player-avatar" style="background-image: url('assets/tobi.png')"></div>
+                <div class="player-info">
+                    <div class="player-name">Team Tobi</div>
+                    <div class="join-status" style="font-size:0.8rem; color:#888;">Waiting...</div>
+                </div>
+                <div class="player-score">0 €</div>
+            </div>
+
+            <div id="team-1" class="player-indicator glass-panel">
+                <div class="player-avatar" style="background-image: url('assets/lurch.png')"></div>
+                <div class="player-info">
+                    <div class="player-name">Team Lurch</div>
+                    <div class="join-status" style="font-size:0.8rem; color:#888;">Waiting...</div>
+                </div>
+                <div class="player-score">0 €</div>
+            </div>
+        </div>
+
+        <!-- Question Overlay (Hidden by default) -->
+        <div class="question-overlay hidden">
+            <div class="question-container">
+                <div class="question-text text-gradient">Example Question?</div>
+
+                <div class="answers-grid">
+                    <div id="ans-A" class="answer-card glass-panel">
+                        <div class="answer-letter">A</div>
+                        <div class="text">Option A</div>
+                    </div>
+                    <div id="ans-B" class="answer-card glass-panel">
+                        <div class="answer-letter">B</div>
+                        <div class="text">Option B</div>
+                    </div>
+                    <div id="ans-C" class="answer-card glass-panel">
+                        <div class="answer-letter">C</div>
+                        <div class="text">Option C</div>
+                    </div>
+                </div>
+
+                <div class="explanation-box hidden">
+                    Explanation text goes here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/peer-logic.js"></script>
+    <script src="js/master.js"></script>
+</body>
+
+</html>

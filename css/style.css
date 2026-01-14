@@ -4,7 +4,8 @@
     --color-bg-card: rgba(255, 255, 255, 0.05);
     --color-primary: #00d2ff;
     --color-primary-glow: rgba(0, 210, 255, 0.4);
-    --color-secondary: #ffaa00; /* Gold */
+    --color-secondary: #ffaa00;
+    /* Gold */
     --color-secondary-glow: rgba(255, 170, 0, 0.4);
     --color-text-main: #ffffff;
     --color-text-muted: #8899ac;
@@ -12,11 +13,11 @@
     --color-wrong: #e74c3c;
 
     --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-    
+
     --glass-bg: rgba(20, 30, 50, 0.6);
     --glass-border: 1px solid rgba(255, 255, 255, 0.1);
     --glass-blur: blur(20px);
-    
+
     --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.3);
     --shadow-glow: 0 0 20px var(--color-primary-glow);
 }
@@ -25,19 +26,21 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    user-select: none; /* Prevent selection for app-feel */
+    user-select: none;
+    /* Prevent selection for app-feel */
 }
 
 body {
     background-color: var(--color-bg-deep);
     color: var(--color-text-main);
     font-family: var(--font-main);
-    overflow: hidden; /* App-like structure */
+    overflow: hidden;
+    /* App-like structure */
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: 
+    background-image:
         radial-gradient(circle at 10% 20%, rgba(0, 210, 255, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(255, 170, 0, 0.05) 0%, transparent 20%);
 }
@@ -53,7 +56,9 @@ body {
 }
 
 /* Typography */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     font-weight: 700;
     letter-spacing: -0.02em;
 }
@@ -70,19 +75,41 @@ h1, h2, h3 {
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes pulse-glow {
-    0% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(0, 210, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(0, 210, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
+    }
 }
 
 .animate-fade-in {

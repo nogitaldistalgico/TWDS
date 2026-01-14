@@ -14,12 +14,28 @@
 
 <body>
     <div id="player-app">
+        <!-- Team Selection Screen -->
+        <div id="team-select-screen" class="login-container glass-panel hidden">
+            <h2 class="text-gradient" style="text-align:center;">Select Your Team</h2>
+            <div class="team-selection-grid">
+                <div class="team-card" id="select-team-0">
+                    <div class="team-avatar" style="background-image: url('assets/tobi.png')"></div>
+                    <div class="team-name">Team Tobi</div>
+                </div>
+                <div class="team-card" id="select-team-1">
+                    <div class="team-avatar" style="background-image: url('assets/lurch.png')"></div>
+                    <div class="team-name">Team Lurch</div>
+                </div>
+            </div>
+            <div id="team-status-msg" style="margin-top: 15px; color: #ff6b6b; min-height: 20px; font-size: 0.9rem;">
+            </div>
+        </div>
+
         <!-- Login Screen -->
         <div id="login-screen" class="login-container glass-panel">
             <h2 class="text-gradient" style="text-align:center;">Join Game</h2>
-            <input type="text" id="room-id-input" placeholder="Enter Room ID" maxlength="4"
-                style="text-transform:uppercase;">
-            <button id="btn-join" class="btn-primary">CONNECT</button>
+            <!-- Room ID is now hardcoded to TOBIS-JGA -->
+            <button id="btn-join" class="btn-primary">SPIEL BEITRETEN</button>
         </div>
 
         <!-- Controls Screen (Hidden initially) -->

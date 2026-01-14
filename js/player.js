@@ -7,33 +7,26 @@ class PlayerController {
 
         // DOM Elements
         this.elLogin = document.getElementById('login-screen');
-        this.elControls = document.getElementById('controls-screen');
-        this.inputRoomId = document.getElementById('room-id-input');
-        this.btnJoin = document.getElementById('btn-join');
-        this.statusText = document.getElementById('status-text');
-
-        this.btns = {
-            A: document.getElementById('btn-A'),
-            B: document.getElementById('btn-B'),
-            C: document.getElementById('btn-C')
-        };
+        this.elTeamSelect = document.getElementById('team-select-screen');
+        this.statusMsg = document.getElementById('team-status-msg');
 
         this.initControls();
+        this.initTeamSelection();
     }
 
     initControls() {
         this.btnJoin.addEventListener('click', () => {
-            const roomId = this.inputRoomId.value.toUpperCase();
-            if (roomId.length >= 4) {
-                this.connect(roomId);
-            } else {
-                alert('Please enter a valid Room ID');
-            }
+            this.connect('TOBIS-JGA');
         });
 
         ['A', 'B', 'C'].forEach(key => {
             this.btns[key].addEventListener('click', () => this.sendAnswer(key));
         });
+    }
+
+    initTeamSelection() {
+        document.getElementById('select-team-0').addEventListener('click', () => this.selectTeam(0));
+        document.getElementById('select-team-1').addEventListener('click', () => this.selectTeam(1));
     }
 
     connect(roomId) {
@@ -47,7 +40,8 @@ class PlayerController {
         this.peerManager.onConnectionOpen(() => {
             console.log('Connection Established!');
             this.peerManager.send({ type: 'LOGIN' });
-            this.showControls();
+            // Show Team Selection instead of Controls immediately
+            this.showTeamSelection();
         });
 
         this.peerManager.onData((data) => {
@@ -55,23 +49,40 @@ class PlayerController {
         });
 
         this.peerManager.init();
-        // Actually PeerJS client needs to wait for its own ID before connecting to another.
-        // The onOpen above handles that.
+    }
 
-        // Wait for connection confirmation to host could be handled in 'onData' or 'conn.on(open)' in manager
-        // We'll simulate successful UI switch for now, but ideally we wait for handshake.
+    showTeamSelection() {
+        this.elLogin.classList.add('hidden');
+        this.elTeamSelect.classList.remove('hidden');
+        this.elTeamSelect.classList.add('animate-fade-in');
+    }
+
+    selectTeam(teamId) {
+        // Send request to master
+        this.peerManager.send({ type: 'CLAIM_TEAM', payload: teamId });
+        // Visual feedback
+        document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
+        document.getElementById(`select-team-${teamId}`).classList.add('selected');
+        this.statusMsg.textContent = "Requesting team...";
     }
 
     showControls() {
-        this.elLogin.classList.add('hidden');
+        this.elTeamSelect.classList.add('hidden');
         this.elControls.classList.remove('hidden');
         this.elControls.classList.add('animate-fade-in');
     }
 
     sendAnswer(choice) {
+        if (this.locked) return;
+
         // Highlight local button
-        Object.values(this.btns).forEach(b => b.classList.remove('selected'));
+        Object.values(this.btns).forEach(b => {
+            b.classList.remove('selected');
+            b.disabled = true; // Disable interaction
+            b.style.pointerEvents = 'none';
+        });
         this.btns[choice].classList.add('selected');
+        this.locked = true;
 
         this.peerManager.send({ type: 'ANSWER', payload: choice });
     }
@@ -86,11 +97,25 @@ class PlayerController {
             } else if (data.payload === 'REVEAL') {
                 this.statusText.textContent = "Check the screen!";
             }
+        } else if (data.type === 'TEAM_CONFIRMED') {
+            // Success! Move to controls
+            this.showControls();
+        } else if (data.type === 'TEAM_TAKEN') {
+            this.statusMsg.textContent = "Team already taken! Choose another.";
+            document.getElementById(`select-team-${data.payload}`).classList.add('taken');
+            setTimeout(() => {
+                document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
+            }, 500);
         }
     }
 
     resetButtons() {
-        Object.values(this.btns).forEach(b => b.classList.remove('selected'));
+        this.locked = false;
+        Object.values(this.btns).forEach(b => {
+            b.classList.remove('selected');
+            b.disabled = false;
+            b.style.pointerEvents = 'auto';
+        });
     }
 }
 
