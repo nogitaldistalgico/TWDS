@@ -467,6 +467,66 @@
             --r: 10deg;
         }
     </style>
+    <!-- Responsive Mobile Styles -->
+    <style>
+        @media (max-width: 768px) {
+            .jga-container {
+                overflow-y: auto;
+                /* Allow scroll if content is tall */
+            }
+
+            .content-wrapper {
+                padding: 2rem 1rem;
+                margin-top: 80px;
+                /* More space for top headline */
+                transform: scale(0.95);
+            }
+
+            .tobov-headline-wrapper {
+                position: relative;
+                /* No longer absolute to avoid cutoff */
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+
+            .tobov-title {
+                font-size: 2.5rem;
+                transform: rotate(-5deg);
+                /* Keep the tilt but contained */
+            }
+
+            .tobi-hero-image {
+                width: 140px;
+                height: 140px;
+                margin-top: 10px;
+            }
+
+            .hero-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .start-btn {
+                font-size: 1.2rem;
+                padding: 1rem 2rem;
+                width: 100%;
+            }
+
+            .gallery-grid {
+                margin-top: 1.5rem;
+                gap: 5px;
+            }
+
+            .photo-placeholder {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
 
     <script>
         let started = false;

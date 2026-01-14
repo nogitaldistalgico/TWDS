@@ -38,13 +38,32 @@ header.studio-header {
 }
 
 .studio-logo {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     font-weight: 900;
     text-transform: uppercase;
-    color: #fff;
-    text-shadow: 0 0 10px #00aaff, 0 0 20px #00aaff;
-    letter-spacing: 2px;
+    /* Metallic Silver/Blue Gradient */
+    background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 20%, #B0C4DE 50%, #4682B4 51%, #a0c4e8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    /* Fallback */
+
+    /* Deep 3D Shadow Effect */
+    filter: drop-shadow(0 2px 0 #0056b3) drop-shadow(0 4px 0 #004494) drop-shadow(0 0 20px rgba(0, 136, 255, 0.6));
+
+    letter-spacing: 3px;
     text-align: center;
+    position: relative;
+    z-index: 10;
+    font-family: 'Inter', sans-serif;
+    transform: perspective(500px) rotateX(5deg);
+    /* Slight 3D tilt */
+}
+
+.studio-logo::after {
+    /* Optional content for reflection or shine, but keeping it simple for now to avoid complexity */
+    content: '';
 }
 
 /* Category Grid */
