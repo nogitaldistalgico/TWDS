@@ -124,12 +124,12 @@ class PlayerController {
         // Store locally
         this.myTeamId = teamId;
 
-        // Send request to master
+        // Send request to master (fire and forget)
         this.peerManager.send({ type: 'CLAIM_TEAM', payload: teamId });
-        // Visual feedback
-        document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
-        document.getElementById(`select-team-${teamId}`).classList.add('selected');
-        this.statusMsg.textContent = "Requesting team...";
+
+        // Optimistic UI: Go straight to game
+        console.log("Optimistic join for team " + teamId);
+        this.showControls();
     }
 
     showControls() {
