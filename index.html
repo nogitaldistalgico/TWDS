@@ -218,13 +218,15 @@
             width: 150px;
             height: 150px;
             background-size: contain;
-            /* Changed from cover */
             background-repeat: no-repeat;
             background-position: center;
-            /* Removed border-radius: 50% and border: 5px solid #fff */
+            /* REVERT to user request: Circle and Blue Background */
+            background-color: #007bff;
+            /* Blue */
+            border-radius: 50%;
+            border: 5px solid white;
             position: absolute;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
-            /* Use filter instead of box-shadow */
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
             z-index: 1001;
             bottom: -200px;
             /* Start at bottom */

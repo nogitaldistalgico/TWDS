@@ -112,11 +112,6 @@ class MasterGame {
             this.handlePlayerJoin(conn);
         });
 
-        // We handle data in specific connection listeners now to intercept CLAIM_TEAM
-        // this.peerManager.onData((data) => {
-        //     this.handlePlayerInput(data); 
-        // });
-
         this.peerManager.init('TOBIS-JGA');
     }
 
@@ -291,20 +286,6 @@ class MasterGame {
         this.updateHostButton();
     }
 
-    async loadQuestions() {
-        try {
-            const response = await fetch('questions.json');
-            this.questions = await response.json();
-            this.renderWall();
-            this.applyLoadedState();
-        } catch (e) {
-            console.error("Failed to load questions", e);
-        }
-    }
-
-    // ... (rest of methods)
-
-    // NEW PERSISTENCE METHODS
     saveGame() {
         const state = {
             scores: this.teams.map(t => t.score),
@@ -382,14 +363,17 @@ class MasterGame {
         card.classList.add('played');
 
         // APPLY WIN/LOSS STATE
-        // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
             // Team Won -> Show Face
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png')`;
-            card.style.backgroundSize = '70%';
+            card.style.backgroundSize = '50%'; /* Small face */
             card.style.backgroundRepeat = 'no-repeat';
             card.style.backgroundPosition = 'center';
-            card.style.backgroundColor = this.currentTurn === 0 ? 'rgba(0,0,255,0.2)' : 'rgba(255,0,0,0.2)';
+            /* Blue-Purple Gradient for both */
+            card.style.background = 'linear-gradient(135deg, #4b6cb7 0%, #182848 100%), ' + card.style.backgroundImage;
+            card.style.backgroundBlendMode = 'normal'; /* Ensure image shows on top of gradient? Actually standard CSS handles this */
+            /* Better approach: use background-image for both URL and gradient */
+            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), linear-gradient(135deg, #4b6cb7 0%, #182848 100%)`;
 
             card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
             card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
