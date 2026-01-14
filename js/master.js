@@ -366,11 +366,11 @@ class MasterGame {
         if (this.lastAnswerCorrect) {
             // Team Won -> Show Face
             // Layer 1: Face Image (Top), Layer 2: Gradient (Bottom)
-            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), linear-gradient(135deg, #4b6cb7 0%, #182848 100%)`;
+            // Vivid Blue-Purple Gradient
+            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), linear-gradient(135deg, #667eea 0%, #764ba2 100%)`;
 
-            // Size: Tobi (0) needs to be MUCH smaller, Lurch (1) a bit smaller
-            // Tobi: 22%, Lurch: 27%
-            const faceSize = this.currentTurn === 0 ? '22%' : '27%';
+            // Size: Tobi (0) needs to be TINY (15%), Lurch (1) (18%)
+            const faceSize = this.currentTurn === 0 ? '15%' : '18%';
             card.style.backgroundSize = `${faceSize}, cover`;
 
             card.style.backgroundRepeat = 'no-repeat, no-repeat';
