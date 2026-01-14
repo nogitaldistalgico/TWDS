@@ -1,0 +1,234 @@
+/* Master View Specifics */
+#app {
+    width: 100vw;
+    height: 100vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Header / Status Bar */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 2rem;
+    height: 80px;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.room-info {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+}
+
+.room-id {
+    color: var(--color-secondary);
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 1.5rem;
+    margin-left: 0.5rem;
+}
+
+/* Category Grid */
+.category-wall {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1.5rem;
+    flex: 1;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.category-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: translateX(-100%);
+    transition: 0.5s;
+}
+
+.category-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--color-primary);
+}
+
+.category-card:hover::before {
+    transform: translateX(100%);
+}
+
+.category-card.played {
+    opacity: 0.3;
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+/* Question Overlay */
+.question-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 10, 20, 0.85);
+    /* Darker backdrop */
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+}
+
+.question-container {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+.question-text {
+    font-size: 2.5rem;
+    line-height: 1.3;
+    margin-bottom: 3rem;
+    font-weight: 600;
+}
+
+.answers-grid {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.answer-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.answer-letter {
+    background: var(--color-primary);
+    color: #000;
+    font-weight: bold;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px var(--color-primary-glow);
+}
+
+/* States for answers */
+.answer-card.selected {
+    border-color: var(--color-secondary);
+    background: rgba(255, 170, 0, 0.1);
+}
+
+.answer-card.correct {
+    background: var(--color-correct);
+    border-color: var(--color-correct);
+    box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+}
+
+.answer-card.wrong {
+    opacity: 0.5;
+}
+
+/* Result Reveal Animation */
+.reveal-highlight {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Explanation */
+.explanation-box {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    max-width: 800px;
+}
+
+/* Player Status (Bottom Bar) */
+.player-dock {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1rem;
+}
+
+.player-indicator {
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.player-indicator.active {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #555;
+}
+
+.player-indicator.active .status-dot {
+    background: var(--color-primary);
+    box-shadow: 0 0 5px var(--color-primary);
+}
+
+.player-indicator.answered .status-dot {
+    background: var(--color-secondary);
+}

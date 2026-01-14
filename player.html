@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WWDS Controller</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/player.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+    <div id="player-app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="login-container glass-panel">
+            <h2 class="text-gradient" style="text-align:center;">Join Game</h2>
+            <input type="text" id="room-id-input" placeholder="Enter Room ID" maxlength="4"
+                style="text-transform:uppercase;">
+            <button id="btn-join" class="btn-primary">CONNECT</button>
+        </div>
+
+        <!-- Controls Screen (Hidden initially) -->
+        <div id="controls-screen" class="controller-layout hidden">
+            <div class="status-header" id="status-text">Connected to Host</div>
+
+            <div class="controls-grid">
+                <button id="btn-A" class="btn-answer">A</button>
+                <button id="btn-B" class="btn-answer">B</button>
+                <button id="btn-C" class="btn-answer">C</button>
+            </div>
+
+            <!-- Optional Buzzer for future use -->
+            <!-- <div class="buzzer-btn">BUZZER</div> -->
+        </div>
+    </div>
+
+    <script src="js/peer-logic.js"></script>
+    <script src="js/player.js"></script>
+</body>
+
+</html>

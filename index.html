@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wer weiß denn sowas? - Master</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/master.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- PeerJS CDN -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="glass-panel">
+            <div class="logo">WWDS QUIZ</div>
+            <div class="room-info">
+                Room ID: <span class="room-id">...</span>
+            </div>
+        </header>
+
+        <!-- Category Wall -->
+        <main class="category-wall">
+            <!-- Categories injected by JS -->
+        </main>
+
+        <!-- Player Status -->
+        <div class="player-dock">
+            <div class="player-indicator glass-panel">
+                <div class="status-dot"></div>
+                <span>Waiting for Player 1...</span>
+            </div>
+        </div>
+
+        <!-- Question Overlay (Hidden by default) -->
+        <div class="question-overlay hidden">
+            <div class="question-container">
+                <div class="question-text text-gradient">Example Question?</div>
+                
+                <div class="answers-grid">
+                    <div id="ans-A" class="answer-card glass-panel">
+                        <div class="answer-letter">A</div>
+                        <div class="text">Option A</div>
+                    </div>
+                    <div id="ans-B" class="answer-card glass-panel">
+                        <div class="answer-letter">B</div>
+                        <div class="text">Option B</div>
+                    </div>
+                    <div id="ans-C" class="answer-card glass-panel">
+                        <div class="answer-letter">C</div>
+                        <div class="text">Option C</div>
+                    </div>
+                </div>
+
+                <div class="explanation-box hidden">
+                    Explanation text goes here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/peer-logic.js"></script>
+    <script src="js/master.js"></script>
+</body>
+</html>
