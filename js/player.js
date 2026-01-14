@@ -1,4 +1,27 @@
 /* Player Logic */
+// Mobile Debug Logger
+const debugEl = document.getElementById('debug-console');
+if (location.search.includes('debug=true')) {
+    debugEl.style.display = 'block';
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    console.log = (...args) => {
+        debugEl.innerHTML += `[LOG] ${args.join(' ')}<br>`;
+        debugEl.scrollTop = debugEl.scrollHeight;
+        originalLog.apply(console, args);
+    };
+
+    console.error = (...args) => {
+        debugEl.innerHTML += `<span style="color:red">[ERR] ${args.join(' ')}</span><br>`;
+        debugEl.scrollTop = debugEl.scrollHeight;
+        originalError.apply(console, args);
+    };
+
+    window.onerror = (msg, url, line) => {
+        console.error(`Global: ${msg} @ ${line}`);
+    };
+}
 
 class PlayerController {
     constructor() {
