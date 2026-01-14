@@ -121,6 +121,9 @@ class PlayerController {
     }
 
     selectTeam(teamId) {
+        // Store locally
+        this.myTeamId = teamId;
+
         // Send request to master
         this.peerManager.send({ type: 'CLAIM_TEAM', payload: teamId });
         // Visual feedback
@@ -182,6 +185,9 @@ class PlayerController {
             setTimeout(() => {
                 document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
             }, 500);
+        } else if (data.type === 'ERROR') {
+            alert(data.message);
+            this.resetButtons();
         }
     }
 
