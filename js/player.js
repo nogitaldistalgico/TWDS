@@ -37,25 +37,29 @@ class PlayerController {
     }
 
     connect(roomId) {
+        this.statusText.textContent = "Connecting to " + roomId + "...";
+
         this.peerManager.onOpen((id) => {
             console.log('Player ID:', id);
             this.peerManager.connect(roomId);
+        });
+
+        this.peerManager.onConnectionOpen(() => {
+            console.log('Connection Established!');
+            this.peerManager.send({ type: 'LOGIN' });
+            this.showControls();
         });
 
         this.peerManager.onData((data) => {
             this.handleGameData(data);
         });
 
-        this.peerManager.init(); // Just init peer, then connect via callback or immediately after?
+        this.peerManager.init();
         // Actually PeerJS client needs to wait for its own ID before connecting to another.
         // The onOpen above handles that.
 
         // Wait for connection confirmation to host could be handled in 'onData' or 'conn.on(open)' in manager
         // We'll simulate successful UI switch for now, but ideally we wait for handshake.
-        setTimeout(() => {
-            this.peerManager.send({ type: 'LOGIN' });
-            this.showControls();
-        }, 1500); // Give it a sec to establish
     }
 
     showControls() {
