@@ -33,6 +33,17 @@ class PlayerController {
         this.elTeamSelect = document.getElementById('team-select-screen');
         this.statusMsg = document.getElementById('team-status-msg');
 
+        // Restore missing elements
+        this.elControls = document.getElementById('controls-screen');
+        this.btnJoin = document.getElementById('btn-join');
+        this.statusText = document.getElementById('status-text');
+
+        this.btns = {
+            A: document.getElementById('btn-A'),
+            B: document.getElementById('btn-B'),
+            C: document.getElementById('btn-C')
+        };
+
         this.initControls();
         this.initTeamSelection();
     }
