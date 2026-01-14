@@ -200,12 +200,12 @@ header {
 }
 
 /* States for answers */
-.answer-card.selected {
-    border-color: var(--color-secondary) !important;
-    border-width: 2px;
-    background: rgba(255, 170, 0, 0.3) !important;
-    box-shadow: 0 0 20px rgba(255, 170, 0, 0.4);
-    transform: scale(1.02);
+div.answer-card.selected {
+    border: 3px solid #ffcc00 !important;
+    background-color: rgba(255, 204, 0, 0.5) !important;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.6) !important;
+    transform: scale(1.05);
+    z-index: 10;
 }
 
 .answer-card.correct {
