@@ -232,7 +232,32 @@ class MasterGame {
 
 
     selectCategory(index) {
-        // ... (lines 227-243)
+        if (this.state !== STATE.WALL) return;
+        // Verify if category is already played
+        const card = document.getElementById(`cat-${index}`);
+        if (card.classList.contains('played')) return;
+
+        this.selectedCategory = index;
+        this.currentQuestion = this.questions[index];
+        this.state = STATE.QUESTION;
+
+        // POPULATE UI
+        this.elQuestionText.textContent = this.currentQuestion.question;
+        this.elAnswers.A.querySelector('.text').textContent = this.currentQuestion.options.A;
+        this.elAnswers.B.querySelector('.text').textContent = this.currentQuestion.options.B;
+        this.elAnswers.C.querySelector('.text').textContent = this.currentQuestion.options.C;
+
+        // RESET STYLES
+        Object.values(this.elAnswers).forEach(el => {
+            el.className = 'answer-card glass-panel';
+        });
+        document.querySelector('.explanation-box').classList.add('hidden');
+        this.teams.forEach(t => t.el.classList.remove('answered'));
+
+        // SHOW
+        this.elQuestionOverlay.classList.remove('hidden');
+        this.elQuestionOverlay.classList.add('animate-fade-in');
+
         // NOTIFY ALL
         this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
         this.updateHostButton();
@@ -241,14 +266,50 @@ class MasterGame {
     revealAnswer() {
         if (this.state !== STATE.QUESTION) return;
         this.state = STATE.REVEAL;
-        // ... (lines 261-278)
+
+        const correct = this.currentQuestion.correct;
+        const correctEl = this.elAnswers[correct];
+
+        // HIGHLIGHT CORRECT
+        correctEl.classList.add('correct', 'reveal-highlight');
+
+        // HIGHLIGHT PLAYER SELECTION (if wrong)
+        if (!this.lastAnswerCorrect && this.lastPlayerAnswer) {
+            this.elAnswers[this.lastPlayerAnswer].classList.add('wrong');
+        }
+
+        // SHOW EXPLANATION
+        const explBox = document.querySelector('.explanation-box');
+        explBox.textContent = this.currentQuestion.explanation;
+        explBox.classList.remove('hidden');
+        explBox.classList.add('animate-scale-in');
+
         // NOTIFY
         this.broadcast({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: correct });
         this.updateHostButton();
     }
 
     closeQuestion() {
-        // ... (lines 283-309)
+        // UPDATE WALL
+        const card = document.getElementById(`cat-${this.selectedCategory}`);
+        card.classList.add('played');
+
+        // APPLY WIN/LOSS STATE
+        if (this.lastAnswerCorrect) {
+            // Team Won -> Show Face
+            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png')`;
+            card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
+            card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
+            card.textContent = ''; // Hide text
+
+            // Add Score (e.g. 500)
+            this.teams[this.currentTurn].score += 500;
+            this.teams[this.currentTurn].el.querySelector('.player-score').textContent = this.teams[this.currentTurn].score + ' €';
+        } else {
+            // Team Lost -> Show X (Grey)
+            card.classList.add('lost');
+        }
+
         // SWITCH TURN
         this.currentTurn = (this.currentTurn + 1) % 2;
         this.updateTurnUI();
