@@ -217,12 +217,14 @@
         .flying-head {
             width: 150px;
             height: 150px;
-            background-size: cover;
+            background-size: contain;
+            /* Changed from cover */
+            background-repeat: no-repeat;
             background-position: center;
-            border-radius: 50%;
+            /* Removed border-radius: 50% and border: 5px solid #fff */
             position: absolute;
-            border: 5px solid #fff;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+            /* Use filter instead of box-shadow */
             z-index: 1001;
             bottom: -200px;
             /* Start at bottom */

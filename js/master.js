@@ -382,8 +382,15 @@ class MasterGame {
         card.classList.add('played');
 
         // APPLY WIN/LOSS STATE
+        // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
+            // Team Won -> Show Face
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png')`;
+            card.style.backgroundSize = '70%';
+            card.style.backgroundRepeat = 'no-repeat';
+            card.style.backgroundPosition = 'center';
+            card.style.backgroundColor = this.currentTurn === 0 ? 'rgba(0,0,255,0.2)' : 'rgba(255,0,0,0.2)';
+
             card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
             card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
             card.textContent = '';
