@@ -88,14 +88,16 @@ class MasterGame {
     handlePlayerJoin(conn) {
         conn.on('open', () => {
             console.log(`New connection from ${conn.peer}`);
+            conn.send({ type: 'DEBUG', message: 'Welcome to Master' });
 
             // Do NOT auto-assign. Wait for 'CLAIM_TEAM'
             conn.on('data', (data) => {
+                console.log('Received data:', data);
                 if (data.type === 'CLAIM_TEAM') {
                     this.handleTeamClaim(conn, data.payload);
                 } else {
-                    // Pass other messages to general handler
-                    this.handlePlayerInput(data);
+                    // Pass other messages to general handler with CONN context
+                    this.handlePlayerInput(data, conn);
                 }
             });
 
@@ -133,24 +135,34 @@ class MasterGame {
         }
     }
 
-    handlePlayerInput(data) {
+    handlePlayerInput(data, conn) {
         if (data.type === 'LOGIN') {
             // Handled during connection assignment mainly
         } else if (data.type === 'ANSWER') {
             if (this.state === STATE.QUESTION) {
-                // Ideally check if it's the right player's turn (data.peer vs this.teams[this.currentTurn].conn.peer)
-                // For simplicity, we accept the input and attribute it to the current turn team
+                // Verify if it is the correct team's turn
+                const currentTeam = this.teams[this.currentTurn];
 
-                console.log(`Team ${this.currentTurn} answered: ${data.payload}`);
-                this.lastPlayerAnswer = data.payload;
+                // Strict check: Only accept input from the assigned connection
+                if (conn === currentTeam.conn) {
+                    console.log(`Team ${this.currentTurn} answered: ${data.payload}`);
+                    this.lastPlayerAnswer = data.payload;
 
-                const currentTeamEl = this.teams[this.currentTurn].el;
-                currentTeamEl.classList.add('answered'); // Visual feedback
+                    const currentTeamEl = this.teams[this.currentTurn].el;
+                    currentTeamEl.classList.add('answered'); // Visual feedback
 
-                // Check correctness immediately (but don't show yet)
-                this.lastAnswerCorrect = (data.payload === this.currentQuestion.correct);
+                    // Check correctness immediately (but don't show yet)
+                    this.lastAnswerCorrect = (data.payload === this.currentQuestion.correct);
 
-                this.playAudio('lock-in');
+                    this.playAudio('lock-in');
+                } else {
+                    console.warn(`Ignored answer from wrong team/connection. Current Turn: ${currentTeam.name}`);
+                    if (conn) {
+                        conn.send({ type: 'ERROR', message: 'Not your turn!' });
+                    }
+                }
+            } else {
+                console.warn('Received answer but not in QUESTION state.');
             }
         }
     }
