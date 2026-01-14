@@ -1,126 +1,50 @@
 /* Master View Specifics */
 :root {
-    --studio-bg-top: #0b1a3a;
-    --studio-bg-bottom: #050a15;
-    --studio-accent: #0088ff;
-    --card-glow: 0 0 20px rgba(0, 136, 255, 0.3);
+    --studio-bg: radial-gradient(circle at center, #0b1026 0%, #000000 100%);
+    --card-blue-top: #0076bf;
+    --card-blue-bottom: #003666;
+    --card-purple-top: #9b287b;
+    /* For won cards */
+    --card-purple-bottom: #5c1248;
+    --border-gold: #fcc201;
+    /* The show's signature gold */
+    --card-gloss: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 48%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0) 100%);
 }
 
 #app {
     width: 100vw;
     height: 100vh;
     padding: 0;
-    /* Remove padding for immersive feel */
     display: flex;
     flex-direction: column;
     position: relative;
-    /* Immersive Studio Background */
-    background: radial-gradient(circle at 50% 30%, var(--studio-bg-top), var(--studio-bg-bottom));
+    background: url('../assets/studio_bg.jpg'), var(--studio-bg);
+    /* Fallback */
+    background-size: cover;
     color: #fff;
     overflow: hidden;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Header / Status Bar */
+/* Header */
 header.studio-header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    /* Left, Center, Right */
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 1rem 3rem;
     height: 100px;
     z-index: 50;
-    position: relative;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
 }
 
-.header-corner {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.header-corner.left {
-    justify-content: flex-start;
-}
-
-.header-corner.right {
-    justify-content: flex-end;
-}
-
-.room-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-}
-
-.room-id {
-    color: var(--color-secondary);
-    font-weight: bold;
-    font-family: monospace;
-    font-size: 1rem;
-}
-
-/* Big Studio Logo */
 .studio-logo {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 900;
     text-transform: uppercase;
     color: #fff;
-    text-shadow:
-        0 0 10px rgba(0, 136, 255, 0.8),
-        0 0 20px rgba(0, 136, 255, 0.5),
-        0 5px 15px #000;
+    text-shadow: 0 0 10px #00aaff, 0 0 20px #00aaff;
     letter-spacing: 2px;
     text-align: center;
-    background: -webkit-linear-gradient(#fff, #ccc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.5));
-}
-
-/* Reset Button - Tiny & Subtle */
-#btn-reset {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.5);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-}
-
-#btn-reset:hover {
-    color: #f00;
-    border-color: #f00;
-    transform: rotate(180deg);
-}
-
-.host-action-btn {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    background: var(--color-primary);
-    color: #000;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow: 0 0 10px var(--color-primary-glow);
-    text-transform: uppercase;
-}
-
-/* Turn Indicator */
-.turn-display {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Category Grid */
@@ -128,107 +52,98 @@ header.studio-header {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 1.5rem;
+    gap: 10px;
+    /* Tighter gap like the show */
     flex: 1;
     width: 100%;
-    max-width: 1200px;
-    /* Constrain width for better look */
-    margin: 0 auto 100px auto;
-    /* Bottom margin for dock */
+    max-width: 1300px;
+    margin: 0 auto 120px auto;
     padding: 0 2rem;
 }
 
+/* TV SHOW CARD STYLE */
 .category-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    /* Slightly sharper edges like TV wall */
+    /* Glossy Blue Gradient */
+    background: linear-gradient(to bottom, var(--card-blue-top) 0%, var(--card-blue-bottom) 100%);
+    border: 2px solid #5899d4;
+    /* Lighter blue border initially */
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1rem;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #e0e0e0;
+    padding: 0.5rem;
+    font-size: 1.8rem;
+    /* Big Text */
+    font-weight: 800;
+    color: #fff;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+/* Gloss Overlay */
+.category-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 50%;
+    /* Top half only */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 6px 6px 40% 40% / 6px 6px 10px 10px;
+    /* Curved shine */
+    pointer-events: none;
 }
 
 .category-card:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.5);
     transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(0, 136, 255, 0.3);
-    z-index: 5;
+    border-color: #fff;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
-/* SELECTION ANIMATION STATE */
-.category-card.selecting {
-    background: #fff !important;
-    color: #000 !important;
-    transform: scale(1.1) !important;
-    box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 100px rgba(0, 136, 255, 0.6) !important;
-    border-color: #fff !important;
-    z-index: 100 !important;
-    animation: flash-select 0.6s infinite alternate;
-}
-
-@keyframes flash-select {
-    from {
-        background: #fff;
-        box-shadow: 0 0 30px #fff;
-    }
-
-    to {
-        background: #ffcc00;
-        box-shadow: 0 0 60px #ffcc00;
-    }
-}
-
+/* Played / Won Card Style (The "Reference" Look) */
 .category-card.played {
-    opacity: 0.6;
-    /* Dim played cards more */
-    background: rgba(0, 0, 0, 0.3);
     pointer-events: none;
-    border-color: rgba(255, 255, 255, 0.05);
+    border: 3px solid var(--border-gold);
+    /* GOLD BORDER */
+    box-shadow: 0 0 15px var(--border-gold), inset 0 0 20px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%);
 }
 
-/* Team wins - show avatar */
-.category-card.team-0 {
-    /* Background set inline by JS now (Image + Gradient) */
-    opacity: 1 !important;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 15px var(--color-primary-glow);
+/* Faces are injected via JS inline styles, but base logic here */
+.category-card.played.team-0,
+.category-card.played.team-1 {
+    /* Background handled by JS for gradients + image */
 }
 
-.category-card.team-1 {
-    opacity: 1 !important;
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 15px var(--color-secondary-glow);
-}
-
-/* Wrong answer - show X */
+/* Lost Card */
 .category-card.lost {
-    background-color: #111;
-    opacity: 0.4;
-    border-color: #333;
+    background: #222;
+    opacity: 0.8;
+    border-color: #444;
 }
 
 .category-card.lost::after {
-    content: "✕";
-    color: var(--color-wrong);
-    font-size: 4rem;
-    font-weight: bold;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.5;
+    content: none;
+    /* No gloss */
 }
+
+/* X for lost */
+.category-card.lost::before {
+    content: '?';
+    /* Or X? Show uses ? sometimes or empty. User used X in my generic version. */
+    content: '✕';
+    font-size: 4rem;
+    color: rgba(255, 0, 0, 0.6);
+    position: absolute;
+    z-index: 0;
+}
+
 
 /* Question Overlay */
 .question-overlay {
@@ -237,88 +152,74 @@ header.studio-header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(4, 9, 29, 0.95);
-    /* Deep dark blue overlay */
-    backdrop-filter: blur(15px);
+    background: rgba(5, 10, 25, 0.95);
+    backdrop-filter: blur(20px);
     z-index: 200;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-}
-
-.question-container {
-    width: 100%;
-    max-width: 1200px;
-    text-align: center;
 }
 
 .question-text {
-    font-size: 2.8rem;
-    line-height: 1.2;
-    margin-bottom: 4rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    color: #fff;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 3rem;
+    text-align: center;
+    max-width: 80%;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
 }
 
 .answers-grid {
     display: grid;
-    gap: 1.5rem;
-    width: 100%;
+    gap: 20px;
+    width: 80%;
+    max-width: 1000px;
 }
 
 .answer-card {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 1.5rem 2rem;
+    background: linear-gradient(90deg, #0b1a3a, #162447);
+    border: 2px solid #2e4a85;
     border-radius: 50px;
-    /* Pill shape like typical quiz shows */
-    font-size: 1.6rem;
+    padding: 1.5rem 2rem;
     display: flex;
     align-items: center;
-    transition: all 0.3s;
-    position: relative;
+    font-size: 1.5rem;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.answer-card:hover {
+    border-color: #fff;
+    background: #1f3a6e;
 }
 
 .answer-letter {
-    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    width: 50px;
+    height: 50px;
+    background: var(--border-gold);
     color: #000;
-    font-weight: 900;
-    width: 60px;
-    height: 60px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 2rem;
-    font-size: 1.4rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    border: 2px solid #fff;
+    font-weight: 900;
+    margin-right: 1.5rem;
+    box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
 }
 
-/* States for answers */
 div.answer-card.selected {
-    border: 3px solid #ffcc00 !important;
-    background: rgba(255, 204, 0, 0.2) !important;
-    box-shadow: 0 0 30px rgba(255, 204, 0, 0.4) !important;
-    transform: scale(1.02);
-    z-index: 10;
+    background: #ffae00 !important;
+    color: #000;
+    border-color: #fff !important;
+    box-shadow: 0 0 30px #ffae00;
 }
 
 div.answer-card.correct {
-    background: linear-gradient(90deg, rgba(46, 204, 113, 0.8), rgba(39, 174, 96, 0.8)) !important;
+    background: #2ecc71 !important;
     border-color: #fff !important;
-    box-shadow: 0 0 50px rgba(46, 204, 113, 0.6) !important;
-    transform: scale(1.05) !important;
-    z-index: 20 !important;
-}
-
-.answer-card.wrong {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    box-shadow: 0 0 30px #2ecc71;
 }
 
 /* Player Dock */
@@ -328,57 +229,52 @@ div.answer-card.correct {
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 2rem;
-    z-index: 50;
+    gap: 3rem;
+    z-index: 100;
 }
 
 .player-indicator {
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
     background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    opacity: 0.6;
-    transform: scale(0.9);
-    backdrop-filter: blur(10px);
+    gap: 10px;
+    opacity: 0.5;
+    transition: all 0.5s;
 }
 
 .player-indicator.active-turn {
     opacity: 1;
+    background: rgba(0, 118, 191, 0.4);
+    border-color: var(--border-gold);
+    box-shadow: 0 0 20px rgba(0, 118, 191, 0.6);
     transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-.player-score {
-    background: transparent;
-    color: #fff;
-    padding: 0;
-    font-size: 1.5rem;
-    font-weight: 900;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+.player-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-size: cover;
+    border: 2px solid #fff;
 }
 
-/* Responsive adjustments */
-@media (max-height: 800px) {
-    header.studio-header {
-        height: 70px;
+/* Selection Animation */
+@keyframes flash {
+    0% {
+        background-color: #fff;
     }
 
-    .studio-logo {
-        font-size: 2rem;
+    100% {
+        background-color: var(--border-gold);
     }
+}
 
-    .category-card {
-        font-size: 1.2rem;
-        padding: 0.5rem;
-    }
-
-    .question-text {
-        font-size: 2rem;
-    }
+.category-card.selecting {
+    animation: flash 0.2s infinite alternate;
+    z-index: 100;
+    color: #000;
+    border-color: #fff;
 }

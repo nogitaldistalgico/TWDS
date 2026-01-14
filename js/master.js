@@ -375,19 +375,28 @@ class MasterGame {
         // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
             // Team Won -> Show Face
-            // Layer 1: Face Image (Top), Layer 2: Gradient (Bottom)
-            // Vivid Blue-Purple Gradient
-            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), linear-gradient(135deg, #667eea 0%, #764ba2 100%)`;
+            // Layer 1: Face Image (Top), Layer 2: Gradient (Top), Layer 3: Gradient (Bottom)
+            // Show Style: Purple/Pink Gradient for Winner
+            const gradient = `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 100%), linear-gradient(to bottom, #9b287b 0%, #5c1248 100%)`;
 
-            // Size: Tobi (0) needs to be TINY (15%), Lurch (1) (18%)
-            const faceSize = this.currentTurn === 0 ? '15%' : '18%';
-            card.style.backgroundSize = `${faceSize}, cover`;
+            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
+
+            // Reference Size: Face is LARGE (~70% of card height)
+            card.style.backgroundSize = '70%, cover, cover';
+
+            // Position: Center Bottom usually looks best for heads
+            card.style.backgroundPosition = 'center bottom -10px, center, center';
+
+            // Add Gold Border via class, but ensure JS doesn't override it poorly
+            card.classList.add('border-gold'); // master.css handles border-gold styling
 
             card.style.backgroundRepeat = 'no-repeat, no-repeat';
-            card.style.backgroundPosition = 'center, center';
+            // The previous line for backgroundPosition was 'center, center', which is redundant with the more specific one above.
+            // Keeping the more specific one and removing the generic one.
+            // card.style.backgroundPosition = 'center, center'; // This line is removed as it's redundant/overwritten by the more specific one above.
 
             card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
-            card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
+            // The boxShadow was removed as per the instruction's implied change (it was not in the new snippet).
             card.textContent = '';
 
             this.teams[this.currentTurn].score += 500;

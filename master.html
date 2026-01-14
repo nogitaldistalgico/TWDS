@@ -5,104 +5,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wer weiß denn sowas? - Master</title>
+    <!-- Use standard CSS first, then master override -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/master.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-    <!-- PeerJS CDN -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <!-- Debug Console -->
-        <div id="debug-console"
-            style="position:fixed; top:0; left:0; width:100%; height:150px; background:rgba(0,0,0,0.8); color:#0f0; font-family:monospace; font-size:12px; overflow-y:scroll; z-index:9999; pointer-events:none; display:none;">
-        </div>
-
-        <!-- Header -->
         <header class="studio-header">
-            <!-- Room Info (Top Left, Subtle) -->
             <div class="header-corner left">
-                <span class="room-label">Room:</span> <span class="room-id">...</span>
+                <!-- Tiny Room ID -->
+                <span style="font-size:0.7rem; opacity:0.3" class="room-id">...</span>
             </div>
 
-            <!-- Main Title (Center, Big) -->
-            <div class="studio-logo">
-                TOBOVS JGA QUIZ
-            </div>
+            <div class="studio-logo">TOBOVS JGA QUIZ</div>
 
-            <!-- Reset (Top Right, Tiny) -->
             <div class="header-corner right">
-                <!-- Host Action Button (Hidden until needed) -->
-                <button id="btn-host-action" class="host-action-btn">
-                    START
-                </button>
-
-                <button id="btn-reset" onclick="game.resetGame()" title="Spiel zurücksetzen">
-                    ↻
-                </button>
+                <button id="btn-host-action" class="host-action-btn" style="display:none;">Action</button>
+                <button id="btn-reset" onclick="game.resetGame()" title="Reset">↻</button>
             </div>
         </header>
 
-        <!-- Turn Indicator (Floating or Integrated) -->
-        <div id="turn-indicator" class="turn-display">
-            Loading...
-        </div>
-
-        <!-- Category Wall -->
         <main class="category-wall">
-            <!-- Categories injected by JS -->
+            <!-- JS Injects Cards Here -->
         </main>
 
-        <!-- Player Status -->
         <div class="player-dock">
-            <div id="team-0" class="player-indicator glass-panel">
+            <div id="team-0" class="player-indicator">
                 <div class="player-avatar" style="background-image: url('assets/tobi.png')"></div>
                 <div class="player-info">
-                    <div class="player-name">Team Tobi</div>
-                    <div class="join-status" style="font-size:0.8rem; color:#888;">Waiting...</div>
+                    <div class="player-name">Tobi</div>
                 </div>
-                <div class="player-score">0 €</div>
+                <!-- Score inline? -->
+                <div class="player-score" style="font-weight:900; font-size:1.5rem">0 €</div>
             </div>
-
-            <div id="team-1" class="player-indicator glass-panel">
+            <div id="team-1" class="player-indicator">
                 <div class="player-avatar" style="background-image: url('assets/lurch.png')"></div>
                 <div class="player-info">
-                    <div class="player-name">Team Lurch</div>
-                    <div class="join-status" style="font-size:0.8rem; color:#888;">Waiting...</div>
+                    <div class="player-name">Lurch</div>
                 </div>
-                <div class="player-score">0 €</div>
+                <div class="player-score" style="font-weight:900; font-size:1.5rem">0 €</div>
             </div>
         </div>
 
-        <!-- Question Overlay (Hidden by default) -->
+        <!-- Question -->
         <div class="question-overlay hidden">
-            <div class="question-container">
-                <div class="question-text text-gradient">Example Question?</div>
-
-                <div class="answers-grid">
-                    <div id="ans-A" class="answer-card glass-panel">
-                        <div class="answer-letter">A</div>
-                        <div class="text">Option A</div>
-                    </div>
-                    <div id="ans-B" class="answer-card glass-panel">
-                        <div class="answer-letter">B</div>
-                        <div class="text">Option B</div>
-                    </div>
-                    <div id="ans-C" class="answer-card glass-panel">
-                        <div class="answer-letter">C</div>
-                        <div class="text">Option C</div>
-                    </div>
+            <div class="question-text">Frage Text...</div>
+            <div class="answers-grid">
+                <div id="ans-A" class="answer-card">
+                    <div class="answer-letter">A</div>
+                    <div class="text">Option A</div>
                 </div>
-
-                <div class="explanation-box hidden">
-                    Explanation text goes here...
+                <div id="ans-B" class="answer-card">
+                    <div class="answer-letter">B</div>
+                    <div class="text">Option B</div>
+                </div>
+                <div id="ans-C" class="answer-card">
+                    <div class="answer-letter">C</div>
+                    <div class="text">Option C</div>
                 </div>
             </div>
+            <div class="explanation-box hidden"></div>
         </div>
     </div>
+
+    <!-- Turn Indicator (Hidden/Integrated in Dock) -->
 
     <script src="js/peer-logic.js"></script>
     <script src="js/master.js"></script>
