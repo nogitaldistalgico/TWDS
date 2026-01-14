@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     <!-- PeerJS CDN -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
+
 <body>
     <div id="app">
         <!-- Header -->
@@ -19,6 +21,9 @@
             <div class="logo">WWDS QUIZ</div>
             <div class="room-info">
                 Room ID: <span class="room-id">...</span>
+                <a href="player.html" class="link-player-view"
+                    style="margin-left: 20px; font-size: 0.8rem; color: var(--color-primary); text-decoration: none; border: 1px solid var(--color-primary); padding: 5px 10px; border-radius: 4px;">Open
+                    Player Controller</a>
             </div>
         </header>
 
@@ -39,7 +44,7 @@
         <div class="question-overlay hidden">
             <div class="question-container">
                 <div class="question-text text-gradient">Example Question?</div>
-                
+
                 <div class="answers-grid">
                     <div id="ans-A" class="answer-card glass-panel">
                         <div class="answer-letter">A</div>
@@ -65,4 +70,5 @@
     <script src="js/peer-logic.js"></script>
     <script src="js/master.js"></script>
 </body>
+
 </html>
