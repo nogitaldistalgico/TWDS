@@ -365,15 +365,14 @@ class MasterGame {
         // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
             // Team Won -> Show Face
-            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png')`;
-            card.style.backgroundSize = '50%'; /* Small face */
-            card.style.backgroundRepeat = 'no-repeat';
-            card.style.backgroundPosition = 'center';
-            /* Blue-Purple Gradient for both */
-            card.style.background = 'linear-gradient(135deg, #4b6cb7 0%, #182848 100%), ' + card.style.backgroundImage;
-            card.style.backgroundBlendMode = 'normal'; /* Ensure image shows on top of gradient? Actually standard CSS handles this */
-            /* Better approach: use background-image for both URL and gradient */
+            // Layer 1: Face Image (Top), Layer 2: Gradient (Bottom)
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), linear-gradient(135deg, #4b6cb7 0%, #182848 100%)`;
+
+            // Size: Face = 40% (smaller), Gradient = Cover (Full)
+            card.style.backgroundSize = '40%, cover';
+
+            card.style.backgroundRepeat = 'no-repeat, no-repeat';
+            card.style.backgroundPosition = 'center, center';
 
             card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
             card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;

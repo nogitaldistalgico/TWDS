@@ -217,14 +217,16 @@
         .flying-head {
             width: 150px;
             height: 150px;
-            background-size: contain;
+            /* Make sure background is contained and centered */
+            background-size: 80%;
             background-repeat: no-repeat;
-            background-position: center;
-            /* REVERT to user request: Circle and Blue Background */
+            background-position: center bottom;
+
+            /* Explicit Blue Background */
             background-color: #007bff;
-            /* Blue */
             border-radius: 50%;
             border: 5px solid white;
+
             position: absolute;
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
             z-index: 1001;
