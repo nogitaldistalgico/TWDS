@@ -234,30 +234,40 @@ class MasterGame {
         const card = document.getElementById(`cat-${index}`);
         if (card.classList.contains('played')) return;
 
-        this.selectedCategory = index;
-        this.currentQuestion = this.questions[index];
-        this.state = STATE.QUESTION;
+        // ANIMATION STEP
+        card.classList.add('selecting');
+        // Optional: Play "Selection" sound here if we had one
+        // this.playAudio('select'); 
 
-        // POPULATE UI
-        this.elQuestionText.textContent = this.currentQuestion.question;
-        this.elAnswers.A.querySelector('.text').textContent = this.currentQuestion.options.A;
-        this.elAnswers.B.querySelector('.text').textContent = this.currentQuestion.options.B;
-        this.elAnswers.C.querySelector('.text').textContent = this.currentQuestion.options.C;
+        // Delay for Effect (Display the flash/pulse for 1.2s)
+        setTimeout(() => {
+            card.classList.remove('selecting');
 
-        // RESET STYLES
-        Object.values(this.elAnswers).forEach(el => {
-            el.className = 'answer-card glass-panel';
-        });
-        document.querySelector('.explanation-box').classList.add('hidden');
-        this.teams.forEach(t => t.el.classList.remove('answered'));
+            this.selectedCategory = index;
+            this.currentQuestion = this.questions[index];
+            this.state = STATE.QUESTION;
 
-        // SHOW
-        this.elQuestionOverlay.classList.remove('hidden');
-        this.elQuestionOverlay.classList.add('animate-fade-in');
+            // POPULATE UI
+            this.elQuestionText.textContent = this.currentQuestion.question;
+            this.elAnswers.A.querySelector('.text').textContent = this.currentQuestion.options.A;
+            this.elAnswers.B.querySelector('.text').textContent = this.currentQuestion.options.B;
+            this.elAnswers.C.querySelector('.text').textContent = this.currentQuestion.options.C;
 
-        // NOTIFY ALL
-        this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
-        this.updateHostButton();
+            // RESET STYLES
+            Object.values(this.elAnswers).forEach(el => {
+                el.className = 'answer-card glass-panel';
+            });
+            document.querySelector('.explanation-box').classList.add('hidden');
+            this.teams.forEach(t => t.el.classList.remove('answered'));
+
+            // SHOW
+            this.elQuestionOverlay.classList.remove('hidden');
+            this.elQuestionOverlay.classList.add('animate-fade-in');
+
+            // NOTIFY ALL
+            this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
+            this.updateHostButton();
+        }, 1200); // 1.2s delay
     }
 
     revealAnswer() {

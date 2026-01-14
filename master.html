@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/master.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <!-- PeerJS CDN -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -22,27 +22,34 @@
         </div>
 
         <!-- Header -->
-        <header class="glass-panel">
-            <div class="logo">WWDS QUIZ</div>
-            <div class="room-info">
-                Room ID: <span class="room-id">...</span>
+        <header class="studio-header">
+            <!-- Room Info (Top Left, Subtle) -->
+            <div class="header-corner left">
+                <span class="room-label">Room:</span> <span class="room-id">...</span>
             </div>
-            <div id="turn-indicator"
-                style="font-size: 1.5rem; font-weight: bold; color: #fff; text-transform: uppercase; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 8px;">
-                Loading...
+
+            <!-- Main Title (Center, Big) -->
+            <div class="studio-logo">
+                TOBOVS JGA QUIZ
             </div>
-            <!-- Host Controls -->
-            <div style="display:flex; gap:10px;">
-                <button id="btn-host-action"
-                    style="padding: 10px 20px; font-size: 1.2rem; font-weight:bold; background: var(--color-primary); color:#000; border:none; border-radius:8px; cursor:pointer; box-shadow: 0 0 15px var(--color-primary-glow);">
+
+            <!-- Reset (Top Right, Tiny) -->
+            <div class="header-corner right">
+                <!-- Host Action Button (Hidden until needed) -->
+                <button id="btn-host-action" class="host-action-btn">
                     START
                 </button>
-                <button id="btn-reset" onclick="game.resetGame()"
-                    style="padding: 5px 10px; font-size: 0.8rem; background: rgba(255,0,0,0.2); color:#fff; border:1px solid rgba(255,0,0,0.5); border-radius:6px; cursor:pointer;">
-                    RESET
+
+                <button id="btn-reset" onclick="game.resetGame()" title="Spiel zurücksetzen">
+                    ↻
                 </button>
             </div>
         </header>
+
+        <!-- Turn Indicator (Floating or Integrated) -->
+        <div id="turn-indicator" class="turn-display">
+            Loading...
+        </div>
 
         <!-- Category Wall -->
         <main class="category-wall">

@@ -1,41 +1,126 @@
 /* Master View Specifics */
+:root {
+    --studio-bg-top: #0b1a3a;
+    --studio-bg-bottom: #050a15;
+    --studio-accent: #0088ff;
+    --card-glow: 0 0 20px rgba(0, 136, 255, 0.3);
+}
+
 #app {
     width: 100vw;
     height: 100vh;
-    padding: 2rem;
+    padding: 0;
+    /* Remove padding for immersive feel */
     display: flex;
     flex-direction: column;
     position: relative;
+    /* Immersive Studio Background */
+    background: radial-gradient(circle at 50% 30%, var(--studio-bg-top), var(--studio-bg-bottom));
+    color: #fff;
+    overflow: hidden;
 }
 
 /* Header / Status Bar */
-header {
-    display: flex;
-    justify-content: space-between;
+header.studio-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    /* Left, Center, Right */
     align-items: center;
-    margin-bottom: 2rem;
     padding: 1rem 2rem;
-    height: 80px;
+    height: 100px;
+    z-index: 50;
+    position: relative;
 }
 
-.logo {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: var(--color-primary);
-    text-shadow: 0 0 10px var(--color-primary-glow);
+.header-corner {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.room-info {
-    font-size: 1.2rem;
-    color: var(--color-text-muted);
+.header-corner.left {
+    justify-content: flex-start;
+}
+
+.header-corner.right {
+    justify-content: flex-end;
+}
+
+.room-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
 }
 
 .room-id {
     color: var(--color-secondary);
     font-weight: bold;
     font-family: monospace;
-    font-size: 1.5rem;
-    margin-left: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Big Studio Logo */
+.studio-logo {
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow:
+        0 0 10px rgba(0, 136, 255, 0.8),
+        0 0 20px rgba(0, 136, 255, 0.5),
+        0 5px 15px #000;
+    letter-spacing: 2px;
+    text-align: center;
+    background: -webkit-linear-gradient(#fff, #ccc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.5));
+}
+
+/* Reset Button - Tiny & Subtle */
+#btn-reset {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+#btn-reset:hover {
+    color: #f00;
+    border-color: #f00;
+    transform: rotate(180deg);
+}
+
+.host-action-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background: var(--color-primary);
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--color-primary-glow);
+    text-transform: uppercase;
+}
+
+/* Turn Indicator */
+.turn-display {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Category Grid */
@@ -46,83 +131,93 @@ header {
     gap: 1.5rem;
     flex: 1;
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: 1200px;
+    /* Constrain width for better look */
+    margin: 0 auto 100px auto;
+    /* Bottom margin for dock */
+    padding: 0 2rem;
 }
 
 .category-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    /* Slightly sharper edges like TV wall */
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 1rem;
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e0e0e0;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
-    overflow: hidden;
-}
-
-.category-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-    transform: translateX(-100%);
-    transition: 0.5s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .category-card:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    border-color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0, 136, 255, 0.3);
+    z-index: 5;
 }
 
-.category-card:hover::before {
-    transform: translateX(100%);
+/* SELECTION ANIMATION STATE */
+.category-card.selecting {
+    background: #fff !important;
+    color: #000 !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 100px rgba(0, 136, 255, 0.6) !important;
+    border-color: #fff !important;
+    z-index: 100 !important;
+    animation: flash-select 0.6s infinite alternate;
+}
+
+@keyframes flash-select {
+    from {
+        background: #fff;
+        box-shadow: 0 0 30px #fff;
+    }
+
+    to {
+        background: #ffcc00;
+        box-shadow: 0 0 60px #ffcc00;
+    }
 }
 
 .category-card.played {
-    opacity: 1;
-    /* Keep visible for image */
+    opacity: 0.6;
+    /* Dim played cards more */
+    background: rgba(0, 0, 0, 0.3);
     pointer-events: none;
-    background-size: cover;
-    background-position: center;
-    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Team wins - show avatar */
 .category-card.team-0 {
-    background-image: url('../assets/tobi.png');
+    /* Background set inline by JS now (Image + Gradient) */
+    opacity: 1 !important;
     border-color: var(--color-primary);
     box-shadow: 0 0 15px var(--color-primary-glow);
 }
 
 .category-card.team-1 {
-    background-image: url('../assets/lurch.png');
+    opacity: 1 !important;
     border-color: var(--color-secondary);
     box-shadow: 0 0 15px var(--color-secondary-glow);
 }
 
 /* Wrong answer - show X */
 .category-card.lost {
-    background-color: #222;
-    opacity: 0.5;
-    position: relative;
-    border-color: #555;
-    display: flex;
-    /* Ensure center alignment for ::after */
+    background-color: #111;
+    opacity: 0.4;
+    border-color: #333;
 }
 
-/* CSS-based "X" */
 .category-card.lost::after {
     content: "✕";
     color: var(--color-wrong);
@@ -132,7 +227,7 @@ header {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    opacity: 0.5;
 }
 
 /* Question Overlay */
@@ -142,15 +237,15 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(5, 10, 20, 0.85);
-    /* Darker backdrop */
-    backdrop-filter: blur(10px);
-    z-index: 100;
+    background: rgba(4, 9, 29, 0.95);
+    /* Deep dark blue overlay */
+    backdrop-filter: blur(15px);
+    z-index: 200;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4rem;
+    padding: 2rem;
 }
 
 .question-container {
@@ -160,10 +255,12 @@ header {
 }
 
 .question-text {
-    font-size: 2.5rem;
-    line-height: 1.3;
-    margin-bottom: 3rem;
-    font-weight: 600;
+    font-size: 2.8rem;
+    line-height: 1.2;
+    margin-bottom: 4rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .answers-grid {
@@ -173,126 +270,115 @@ header {
 }
 
 .answer-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 2rem;
-    border-radius: 12px;
-    font-size: 1.8rem;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 1.5rem 2rem;
+    border-radius: 50px;
+    /* Pill shape like typical quiz shows */
+    font-size: 1.6rem;
     display: flex;
     align-items: center;
     transition: all 0.3s;
     position: relative;
+    cursor: pointer;
 }
 
 .answer-letter {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
     color: #000;
-    font-weight: bold;
-    width: 50px;
-    height: 50px;
+    font-weight: 900;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1.5rem;
-    font-size: 1.2rem;
-    box-shadow: 0 0 15px var(--color-primary-glow);
+    margin-right: 2rem;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 2px solid #fff;
 }
 
 /* States for answers */
 div.answer-card.selected {
     border: 3px solid #ffcc00 !important;
-    background-color: rgba(255, 204, 0, 0.5) !important;
-    box-shadow: 0 0 30px rgba(255, 204, 0, 0.6) !important;
-    transform: scale(1.05);
+    background: rgba(255, 204, 0, 0.2) !important;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.4) !important;
+    transform: scale(1.02);
     z-index: 10;
 }
 
 div.answer-card.correct {
-    background-color: var(--color-correct) !important;
-    border-color: var(--color-correct) !important;
-    box-shadow: 0 0 50px rgba(46, 204, 113, 0.8) !important;
-    transform: scale(1.1) !important;
+    background: linear-gradient(90deg, rgba(46, 204, 113, 0.8), rgba(39, 174, 96, 0.8)) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 50px rgba(46, 204, 113, 0.6) !important;
+    transform: scale(1.05) !important;
     z-index: 20 !important;
-    /* Higher than selected */
 }
 
 .answer-card.wrong {
-    opacity: 0.5;
+    opacity: 0.3;
+    filter: grayscale(100%);
 }
 
-/* Result Reveal Animation */
-.reveal-highlight {
-    animation: pulse-glow 2s infinite;
-}
-
-/* Explanation */
-.explanation-box {
-    margin-top: 2rem;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    font-size: 1.2rem;
-    line-height: 1.5;
-    max-width: 800px;
-}
-
-/* Player Status (Bottom Bar) */
+/* Player Dock */
 .player-dock {
     position: fixed;
-    bottom: 2rem;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
+    z-index: 50;
 }
 
 .player-indicator {
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-    /* Less rounded for card look */
-    background: rgba(0, 0, 0, 0.5);
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
-    gap: 1rem;
-    transition: all 0.3s;
-    opacity: 0.5;
-    /* Dim inactive team */
+    gap: 1.5rem;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0.6;
     transform: scale(0.9);
+    backdrop-filter: blur(10px);
 }
 
 .player-indicator.active-turn {
     opacity: 1;
-    transform: scale(1.05);
-    /* Pop active team */
+    transform: scale(1.1);
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.player-indicator.joined {
-    border-color: var(--color-correct);
-}
-
-.player-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.player-name {
-    font-weight: bold;
-    font-size: 1.1rem;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .player-score {
-    background: var(--color-primary);
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-family: monospace;
+    background: transparent;
+    color: #fff;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-height: 800px) {
+    header.studio-header {
+        height: 70px;
+    }
+
+    .studio-logo {
+        font-size: 2rem;
+    }
+
+    .category-card {
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .question-text {
+        font-size: 2rem;
+    }
 }
