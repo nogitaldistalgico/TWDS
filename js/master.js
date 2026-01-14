@@ -368,8 +368,8 @@ class MasterGame {
             // Layer 1: Face Image (Top), Layer 2: Gradient (Bottom)
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), linear-gradient(135deg, #4b6cb7 0%, #182848 100%)`;
 
-            // Size: Face = 40% (smaller), Gradient = Cover (Full)
-            card.style.backgroundSize = '40%, cover';
+            // Size: Face = 30% (even smaller), Gradient = Cover (Full)
+            card.style.backgroundSize = '30%, cover';
 
             card.style.backgroundRepeat = 'no-repeat, no-repeat';
             card.style.backgroundPosition = 'center, center';
