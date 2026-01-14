@@ -148,21 +148,21 @@ class MasterGame {
         const team = this.teams.find(t => t.id === teamId);
         if (!team) return; // Invalid team ID
 
+        // Always allow claiming/reclaiming (overwrites previous connection)
         if (team.conn) {
-            // Team already taken
-            conn.send({ type: 'TEAM_TAKEN', payload: teamId });
-        } else {
-            // Assign team
-            team.conn = conn;
-            console.log(`Assigned ${conn.peer} to ${team.name}`);
-
-            // UI Update
-            team.el.classList.add('joined');
-            team.el.querySelector('.join-status').textContent = "CONNECTED";
-
-            // Confirm to player
-            conn.send({ type: 'TEAM_CONFIRMED', payload: teamId });
+            console.log(`Overwriting existing connection for ${team.name}`);
         }
+
+        // Assign team
+        team.conn = conn;
+        console.log(`Assigned ${conn.peer} to ${team.name}`);
+
+        // UI Update
+        team.el.classList.add('joined');
+        team.el.querySelector('.join-status').textContent = "CONNECTED";
+
+        // Confirm to player
+        conn.send({ type: 'TEAM_CONFIRMED', payload: teamId });
     }
 
     handlePlayerInput(data, conn) {
