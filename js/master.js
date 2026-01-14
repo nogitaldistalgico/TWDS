@@ -190,7 +190,13 @@ class MasterGame {
                     currentTeamEl.classList.add('answered'); // Visual feedback
 
                     // Highlight the chosen answer card
-                    this.elAnswers[data.payload].classList.add('selected');
+                    const ansEl = this.elAnswers[data.payload];
+                    if (ansEl) {
+                        console.log("Adding .selected class to:", ansEl);
+                        ansEl.classList.add('selected');
+                    } else {
+                        console.error("Critical: Could not find answer element for payload:", data.payload);
+                    }
 
                     // Check correctness immediately (but don't show yet)
                     this.lastAnswerCorrect = (data.payload === this.currentQuestion.correct);
