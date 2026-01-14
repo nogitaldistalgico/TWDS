@@ -42,7 +42,7 @@
             <div class="particle">🎤</div>
             <div class="particle">🎸</div>
             <div class="particle">🎼</div>
-            <div class="particle">�</div>
+            <div class="particle">🎲</div>
         </div>
 
         <!-- Flying Heads Intro (Hidden by default) -->
@@ -224,61 +224,104 @@
             border: 5px solid #fff;
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
             z-index: 1001;
+            bottom: -200px;
+            /* Start at bottom */
         }
 
         .head-left {
-            left: -200px;
-            top: 50%;
+            left: 20%;
         }
 
         .head-right {
-            right: -200px;
-            top: 50%;
+            right: 20%;
         }
 
         /* Active Animation Class */
         .intro-active .head-left {
-            animation: flyInLeft 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: balloonPopLeft 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .intro-active .head-right {
-            animation: flyInRight 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: balloonPopRight 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes flyInLeft {
+        /* Balloon Rise & Wobble & Pop */
+        @keyframes balloonPopLeft {
             0% {
-                left: -200px;
-                transform: scale(0.5) rotate(0deg);
+                bottom: -200px;
+                left: 20%;
+                transform: scale(0.5) rotate(-10deg);
             }
 
-            50% {
+            40% {
+                bottom: 40%;
+                left: 35%;
+                transform: scale(1.2) rotate(10deg);
+            }
+
+            60% {
+                bottom: 50%;
                 left: 40%;
-                transform: scale(1.5) rotate(360deg);
+                transform: scale(2) rotate(-5deg);
+            }
+
+            85% {
+                transform: scale(4) rotate(5deg);
+                opacity: 1;
+            }
+
+            95% {
+                transform: scale(6) rotate(0deg);
+                opacity: 1;
             }
 
             100% {
-                left: 50%;
-                transform: translate(-50%, -50%) scale(5);
+                bottom: 50%;
+                left: 45%;
+                transform: scale(8);
                 opacity: 0;
             }
+
+            /* POP */
         }
 
-        @keyframes flyInRight {
+        @keyframes balloonPopRight {
             0% {
-                right: -200px;
-                transform: scale(0.5) rotate(0deg);
+                bottom: -200px;
+                right: 20%;
+                transform: scale(0.5) rotate(10deg);
             }
 
-            50% {
+            40% {
+                bottom: 40%;
+                right: 35%;
+                transform: scale(1.2) rotate(-10deg);
+            }
+
+            60% {
+                bottom: 50%;
                 right: 40%;
-                transform: scale(1.5) rotate(-360deg);
+                transform: scale(2) rotate(5deg);
+            }
+
+            85% {
+                transform: scale(4) rotate(-5deg);
+                opacity: 1;
+            }
+
+            95% {
+                transform: scale(6) rotate(0deg);
+                opacity: 1;
             }
 
             100% {
-                right: 50%;
-                transform: translate(50%, -50%) scale(5);
+                bottom: 50%;
+                right: 45%;
+                transform: scale(8);
                 opacity: 0;
             }
+
+            /* POP */
         }
 
         @keyframes pulse-btn {
