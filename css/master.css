@@ -201,8 +201,11 @@ header {
 
 /* States for answers */
 .answer-card.selected {
-    border-color: var(--color-secondary);
-    background: rgba(255, 170, 0, 0.1);
+    border-color: var(--color-secondary) !important;
+    border-width: 2px;
+    background: rgba(255, 170, 0, 0.3) !important;
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.4);
+    transform: scale(1.02);
 }
 
 .answer-card.correct {
