@@ -87,12 +87,255 @@
 </head>
 
 <body>
-    <div class="landing-card glass-panel">
-        <h1 class="jga-title">TOBIS JGA</h1>
-        <div class="subtitle">Wer weiß denn sowas? Edition</div>
+    <div class="jga-container">
+        <!-- Floating Particles Background -->
+        <div class="particles">
+            <div class="particle">🍺</div>
+            <div class="particle">🎉</div>
+            <div class="particle">🕺</div>
+            <div class="particle">🍻</div>
+            <div class="particle">💍</div>
+        </div>
 
-        <button id="start-btn" class="start-btn">SPIEL STARTEN</button>
+        <div class="content-wrapper glass-panel">
+            <div class="hero-section">
+                <h1 class="jga-title">TOBIS <span class="highlight">JGA</span></h1>
+                <h2 class="subtitle">DIE LETZTE RUNDE</h2>
+
+                <!-- Main Tobi Image Placeholder -->
+                <div class="tobi-hero-image">
+                    <div class="placeholder-text">HIER BILD VON TOBI REIN<br>(assets/tobi_hero.jpg)</div>
+                </div>
+            </div>
+
+            <div class="game-info">
+                <h3>WER WEISS DENN SOWAS?</h3>
+                <p>Das legendäre Quiz für den Bräutigam & die Crew</p>
+
+                <button id="start-btn" class="start-btn pulsate">SPIEL STARTEN 🚀</button>
+            </div>
+
+            <!-- Mini Gallery Placeholders -->
+            <div class="gallery-grid">
+                <div class="photo-placeholder">FOTO 1</div>
+                <div class="photo-placeholder">FOTO 2</div>
+                <div class="photo-placeholder">FOTO 3</div>
+            </div>
+        </div>
     </div>
+
+    <style>
+        /* Embedded specific styles for the landing page makeover */
+        body {
+            background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d);
+            /* Party Gradient */
+            overflow: hidden;
+            /* For particles */
+        }
+
+        .jga-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            animation: bounceIn 1s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .jga-title {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            margin: 0;
+            color: #fff;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: -2px;
+        }
+
+        .jga-title .highlight {
+            color: #ffcc00;
+            display: inline-block;
+            transform: skew(-10deg);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-top: 0.5rem;
+        }
+
+        .tobi-hero-image {
+            width: 200px;
+            height: 200px;
+            background: #333;
+            border-radius: 50%;
+            margin: 0 auto;
+            border: 5px solid #fff;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            background-color: #eee;
+        }
+
+        .placeholder-text {
+            font-size: 0.8rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .start-btn.pulsate {
+            animation: pulse-btn 2s infinite;
+            font-size: 1.8rem;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(45deg, #ffcc00, #ff9900);
+            border: none;
+            color: #000;
+            text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(255, 153, 0, 0.4);
+        }
+
+        .gallery-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            opacity: 0.7;
+        }
+
+        .photo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #aaa;
+            transform: rotate(-5deg);
+        }
+
+        .photo-placeholder:nth-child(2) {
+            transform: rotate(5deg) translateY(-10px);
+        }
+
+        .photo-placeholder:nth-child(3) {
+            transform: rotate(-2deg);
+        }
+
+        /* Animations */
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse-btn {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 15px rgba(255, 204, 0, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 204, 0, 0);
+            }
+        }
+
+        /* Floaties */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatUp 15s linear infinite;
+            opacity: 0.6;
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-duration: 12s;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 30%;
+            animation-duration: 18s;
+            animation-delay: 2s;
+            font-size: 3rem;
+        }
+
+        .particle:nth-child(3) {
+            left: 70%;
+            animation-duration: 10s;
+            animation-delay: 5s;
+        }
+
+        .particle:nth-child(4) {
+            left: 90%;
+            animation-duration: 14s;
+            animation-delay: 1s;
+            font-size: 2.5rem;
+        }
+
+        .particle:nth-child(5) {
+            left: 50%;
+            animation-duration: 20s;
+            animation-delay: 7s;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(110vh) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+            }
+        }
+    </style>
 
     <script>
         document.getElementById('start-btn').addEventListener('click', () => {
