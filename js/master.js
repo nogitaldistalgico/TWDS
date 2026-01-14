@@ -69,6 +69,7 @@ class MasterGame {
         };
 
         this.loadQuestions();
+        this.loadGame(); // Restore state from storage
         this.initNetwork();
         this.initControls();
         this.updateTurnUI();
@@ -79,6 +80,7 @@ class MasterGame {
             const response = await fetch('questions.json');
             this.questions = await response.json();
             this.renderWall();
+            this.applyLoadedState(); // Restore wall visuals
         } catch (e) {
             console.error("Failed to load questions", e);
         }
@@ -289,6 +291,91 @@ class MasterGame {
         this.updateHostButton();
     }
 
+    async loadQuestions() {
+        try {
+            const response = await fetch('questions.json');
+            this.questions = await response.json();
+            this.renderWall();
+            this.applyLoadedState();
+        } catch (e) {
+            console.error("Failed to load questions", e);
+        }
+    }
+
+    // ... (rest of methods)
+
+    // NEW PERSISTENCE METHODS
+    saveGame() {
+        const state = {
+            scores: this.teams.map(t => t.score),
+            currentTurn: this.currentTurn,
+            playedCategories: []
+        };
+
+        const cards = document.querySelectorAll('.category-card.played');
+        cards.forEach(card => {
+            const index = parseInt(card.id.replace('cat-', ''));
+            let result = 'lost';
+            if (card.style.backgroundImage.includes('tobi')) result = 'tobi';
+            if (card.style.backgroundImage.includes('lurch')) result = 'lurch';
+
+            state.playedCategories.push({ index, result });
+        });
+
+        localStorage.setItem('wwds_gamestate', JSON.stringify(state));
+    }
+
+    loadGame() {
+        const saved = localStorage.getItem('wwds_gamestate');
+        if (!saved) return;
+
+        try {
+            const state = JSON.parse(saved);
+            // Restore Scores
+            this.teams[0].score = state.scores[0];
+            this.teams[1].score = state.scores[1];
+            this.teams[0].el.querySelector('.player-score').textContent = state.scores[0] + ' €';
+            this.teams[1].el.querySelector('.player-score').textContent = state.scores[1] + ' €';
+
+            // Restore Turn
+            this.currentTurn = state.currentTurn;
+            this.updateTurnUI();
+
+            this.pendingLoadState = state;
+        } catch (e) {
+            console.error("Error loading state:", e);
+        }
+    }
+
+    applyLoadedState() {
+        if (!this.pendingLoadState) return;
+        const state = this.pendingLoadState;
+
+        state.playedCategories.forEach(item => {
+            const card = document.getElementById(`cat-${item.index}`);
+            if (card) {
+                card.classList.add('played');
+                card.textContent = '';
+
+                if (item.result === 'lost') {
+                    card.classList.add('lost');
+                } else {
+                    card.style.backgroundImage = `url('assets/${item.result}.png')`;
+                    card.style.borderColor = (item.result === 'tobi') ? 'var(--color-primary)' : 'var(--color-secondary)';
+                    card.style.boxShadow = `0 0 15px ${(item.result === 'tobi') ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
+                }
+            }
+        });
+        this.pendingLoadState = null;
+    }
+
+    resetGame() {
+        if (confirm("Spiel wirklich zurücksetzen? Alle Punkte gehen verloren!")) {
+            localStorage.removeItem('wwds_gamestate');
+            location.reload();
+        }
+    }
+
     closeQuestion() {
         // UPDATE WALL
         const card = document.getElementById(`cat-${this.selectedCategory}`);
@@ -296,17 +383,14 @@ class MasterGame {
 
         // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
-            // Team Won -> Show Face
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png')`;
             card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
             card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
-            card.textContent = ''; // Hide text
+            card.textContent = '';
 
-            // Add Score (e.g. 500)
             this.teams[this.currentTurn].score += 500;
             this.teams[this.currentTurn].el.querySelector('.player-score').textContent = this.teams[this.currentTurn].score + ' €';
         } else {
-            // Team Lost -> Show X (Grey)
             card.classList.add('lost');
         }
 
@@ -325,6 +409,9 @@ class MasterGame {
         // NOTIFY
         this.broadcast({ type: 'STATE_CHANGE', payload: 'WALL' });
         this.updateHostButton();
+
+        // SAVE STATE
+        this.saveGame();
     }
 
     updateTurnUI() {

@@ -208,10 +208,13 @@ div.answer-card.selected {
     z-index: 10;
 }
 
-.answer-card.correct {
-    background: var(--color-correct);
-    border-color: var(--color-correct);
-    box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+div.answer-card.correct {
+    background-color: var(--color-correct) !important;
+    border-color: var(--color-correct) !important;
+    box-shadow: 0 0 50px rgba(46, 204, 113, 0.8) !important;
+    transform: scale(1.1) !important;
+    z-index: 20 !important;
+    /* Higher than selected */
 }
 
 .answer-card.wrong {
