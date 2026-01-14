@@ -8,129 +8,83 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Inline styles for critical rendering of intro -->
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background: var(--color-background);
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .landing-card {
-            padding: 3rem;
-            max-width: 500px;
-            width: 90%;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .jga-title {
-            font-size: 3rem;
-            font-weight: 800;
-            margin: 0;
-            line-height: 1.2;
-            background: linear-gradient(135deg, #fff 0%, var(--color-primary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(66, 133, 244, 0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: -1rem;
-        }
-
-        .start-btn {
-            font-size: 1.5rem;
-            padding: 1.2rem 2.5rem;
-            background: var(--color-primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-top: 1rem;
-            box-shadow: 0 10px 20px -5px rgba(66, 133, 244, 0.4);
-        }
-
-        .start-btn:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 15px 30px -5px rgba(66, 133, 244, 0.5);
-            filter: brightness(1.1);
-        }
-
-        .start-btn:active {
-            transform: scale(0.98);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            background: #000;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
 
 <body>
     <div class="jga-container">
-        <!-- Floating Particles Background -->
+        <!-- Expanded Particles (More per User Request) -->
         <div class="particles">
             <div class="particle">🍺</div>
             <div class="particle">🎉</div>
             <div class="particle">🕺</div>
             <div class="particle">🍻</div>
             <div class="particle">💍</div>
+            <div class="particle">🥃</div>
+            <div class="particle">🎊</div>
+            <div class="particle">🎈</div>
+            <div class="particle">🍾</div>
+            <div class="particle">🤠</div>
+            <div class="particle">🍺</div>
+            <div class="particle">🎉</div>
+            <div class="particle">💃</div>
+            <div class="particle">🍻</div>
+            <div class="particle">🎩</div>
+            <div class="particle">🍕</div>
+            <div class="particle">🎤</div>
+            <div class="particle">🎸</div>
+            <div class="particle">🎼</div>
+            <div class="particle">�</div>
+        </div>
+
+        <!-- Flying Heads Intro (Hidden by default) -->
+        <div id="intro-animation" class="intro-overlay hidden">
+            <div class="flying-head head-left" style="background-image: url('assets/tobi.png');"></div>
+            <div class="flying-head head-right" style="background-image: url('assets/lurch.png');"></div>
         </div>
 
         <div class="content-wrapper glass-panel">
-            <div class="hero-section">
-                <h1 class="jga-title">TOBIS <span class="highlight">JGA</span></h1>
-                <h2 class="subtitle">DIE LETZTE RUNDE</h2>
+            <!-- New "Geschwungene" Headline breaking out of box -->
+            <div class="tobov-headline-wrapper">
+                <h1 class="tobov-title">Wer weiß denn sowas?<br><span class="highlight">Tobov JGA Edition</span></h1>
+            </div>
 
+            <div class="hero-section">
                 <!-- Main Tobi Image Placeholder -->
                 <div class="tobi-hero-image">
-                    <div class="placeholder-text">HIER BILD VON TOBI REIN<br>(assets/tobi_hero.jpg)</div>
+                    <div class="placeholder-text">TOBI PHOTO</div>
                 </div>
             </div>
 
             <div class="game-info">
-                <h3>WER WEISS DENN SOWAS?</h3>
-                <p>Das legendäre Quiz für den Bräutigam & die Crew</p>
+                <p style="margin-top: 2rem; color: rgba(255,255,255,0.8);">Das legendäre Quiz für den Bräutigam & die
+                    Crew</p>
 
-                <button id="start-btn" class="start-btn pulsate">SPIEL STARTEN 🚀</button>
+                <button id="start-btn" class="start-btn pulsate">SPIEL STARTEN 🚀<br><span style="font-size:0.6em">(oder
+                        Leertaste)</span></button>
             </div>
 
             <!-- Mini Gallery Placeholders -->
             <div class="gallery-grid">
-                <div class="photo-placeholder">FOTO 1</div>
-                <div class="photo-placeholder">FOTO 2</div>
-                <div class="photo-placeholder">FOTO 3</div>
+                <div class="photo-placeholder">ABSTURZ</div>
+                <div class="photo-placeholder">PARTY</div>
+                <div class="photo-placeholder">LEGENDS</div>
             </div>
         </div>
     </div>
 
     <style>
-        /* Embedded specific styles for the landing page makeover */
         body {
-            background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d);
-            /* Party Gradient */
+            background: radial-gradient(circle at center, #240b36, #c31432);
             overflow: hidden;
-            /* For particles */
         }
 
         .jga-container {
@@ -150,42 +104,60 @@
             width: 90%;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1rem;
             animation: bounceIn 1s ease;
             border: 2px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            position: relative;
+            /* For absolute headline */
+            margin-top: 50px;
+            /* Space for headline */
         }
 
-        .jga-title {
-            font-size: 4rem;
+        /* Crazy Headline */
+        .tobov-headline-wrapper {
+            position: absolute;
+            top: -110px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-5deg);
+            width: 140%;
+            text-align: center;
+            z-index: 20;
+        }
+
+        .tobov-title {
+            font-size: 3.5rem;
             font-weight: 900;
-            line-height: 1;
-            margin: 0;
             color: #fff;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            letter-spacing: -2px;
+            text-shadow: 0 5px 0 #000, 0 10px 20px rgba(0, 0, 0, 0.5);
+            font-style: italic;
+            line-height: 1.1;
+            margin: 0;
         }
 
-        .jga-title .highlight {
+        .tobov-title .highlight {
             color: #ffcc00;
-            display: inline-block;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ffcc00 0%, #ff8800 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+            margin-top: 10px;
+            filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.5));
             transform: skew(-10deg);
         }
 
-        .subtitle {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.9);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            margin-top: 0.5rem;
-        }
-
         .tobi-hero-image {
-            width: 200px;
-            height: 200px;
-            background: #333;
+            width: 180px;
+            height: 180px;
+            background: #eee;
             border-radius: 50%;
-            margin: 0 auto;
+            margin: 40px auto 0 auto;
             border: 5px solid #fff;
             box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
             display: flex;
@@ -193,7 +165,6 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
-            background-color: #eee;
         }
 
         .placeholder-text {
@@ -202,47 +173,131 @@
             font-weight: bold;
         }
 
-        .start-btn.pulsate {
-            animation: pulse-btn 2s infinite;
-            font-size: 1.8rem;
-            padding: 1.5rem 3rem;
-            background: linear-gradient(45deg, #ffcc00, #ff9900);
+        .start-btn {
+            font-size: 1.5rem;
+            padding: 1.2rem 3rem;
+            background: linear-gradient(45deg, #ff0055, #ff0000);
             border: none;
-            color: #000;
+            color: #fff;
             text-transform: uppercase;
-            box-shadow: 0 10px 20px rgba(255, 153, 0, 0.4);
+            border-radius: 50px;
+            font-weight: 900;
+            box-shadow: 0 10px 30px rgba(255, 0, 85, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 1rem;
         }
 
-        .gallery-grid {
+        .start-btn:hover {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .start-btn.pulsate {
+            animation: pulse-btn 1.5s infinite;
+        }
+
+        /* Intro Animation Overlay */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1000;
             display: flex;
-            gap: 10px;
             justify-content: center;
-            opacity: 0.7;
-        }
-
-        .photo-placeholder {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px dashed rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            color: #aaa;
-            transform: rotate(-5deg);
         }
 
-        .photo-placeholder:nth-child(2) {
-            transform: rotate(5deg) translateY(-10px);
+        .intro-overlay.hidden {
+            display: none;
         }
 
-        .photo-placeholder:nth-child(3) {
-            transform: rotate(-2deg);
+        .flying-head {
+            width: 150px;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            position: absolute;
+            border: 5px solid #fff;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+            z-index: 1001;
         }
 
-        /* Animations */
+        .head-left {
+            left: -200px;
+            top: 50%;
+        }
+
+        .head-right {
+            right: -200px;
+            top: 50%;
+        }
+
+        /* Active Animation Class */
+        .intro-active .head-left {
+            animation: flyInLeft 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .intro-active .head-right {
+            animation: flyInRight 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes flyInLeft {
+            0% {
+                left: -200px;
+                transform: scale(0.5) rotate(0deg);
+            }
+
+            50% {
+                left: 40%;
+                transform: scale(1.5) rotate(360deg);
+            }
+
+            100% {
+                left: 50%;
+                transform: translate(-50%, -50%) scale(5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes flyInRight {
+            0% {
+                right: -200px;
+                transform: scale(0.5) rotate(0deg);
+            }
+
+            50% {
+                right: 40%;
+                transform: scale(1.5) rotate(-360deg);
+            }
+
+            100% {
+                right: 50%;
+                transform: translate(50%, -50%) scale(5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse-btn {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.7);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 20px rgba(255, 0, 85, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 0, 85, 0);
+            }
+        }
+
         @keyframes bounceIn {
             0% {
                 transform: scale(0.8);
@@ -259,96 +314,141 @@
             }
         }
 
-        @keyframes pulse-btn {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7);
-            }
-
-            70% {
-                transform: scale(1.05);
-                box-shadow: 0 0 0 15px rgba(255, 204, 0, 0);
-            }
-
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 204, 0, 0);
-            }
-        }
-
-        /* Floaties */
+        /* Particles - More and Faster */
         .particles {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .particle {
             position: absolute;
             font-size: 2rem;
-            animation: floatUp 15s linear infinite;
-            opacity: 0.6;
+            animation: floatUp linear infinite;
+            bottom: -50px;
+            opacity: 0.7;
         }
 
-        .particle:nth-child(1) {
-            left: 10%;
-            animation-duration: 12s;
-            animation-delay: 0s;
-        }
-
-        .particle:nth-child(2) {
-            left: 30%;
-            animation-duration: 18s;
-            animation-delay: 2s;
+        /* Randomize particles slightly via CSS nth-child would be huge, simplified here JS will randomize */
+        .particle:nth-child(2n) {
             font-size: 3rem;
+            animation-duration: 8s;
+            left: 10%;
         }
 
-        .particle:nth-child(3) {
-            left: 70%;
-            animation-duration: 10s;
-            animation-delay: 5s;
-        }
-
-        .particle:nth-child(4) {
-            left: 90%;
-            animation-duration: 14s;
+        .particle:nth-child(2n+1) {
+            font-size: 2rem;
+            animation-duration: 12s;
+            left: 20%;
             animation-delay: 1s;
-            font-size: 2.5rem;
         }
 
-        .particle:nth-child(5) {
+        .particle:nth-child(3n) {
             left: 50%;
-            animation-duration: 20s;
-            animation-delay: 7s;
+            animation-duration: 6s;
+        }
+
+        .particle:nth-child(4n) {
+            left: 80%;
+            animation-duration: 10s;
+        }
+
+        .particle:nth-child(5n) {
+            left: 30%;
+            animation-duration: 15s;
+        }
+
+        .particle:nth-child(odd) {
+            animation-name: floatUpRotate;
         }
 
         @keyframes floatUp {
-            0% {
-                transform: translateY(110vh) rotate(0deg);
+            to {
+                transform: translateY(-110vh);
             }
+        }
 
-            100% {
-                transform: translateY(-10vh) rotate(360deg);
+        @keyframes floatUpRotate {
+            to {
+                transform: translateY(-110vh) rotate(720deg);
             }
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            opacity: 0.8;
+            margin-top: 2rem;
+        }
+
+        .photo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #fff;
+            border: 2px solid white;
+            transform: rotate(var(--r));
+        }
+
+        .photo-placeholder:nth-child(1) {
+            --r: -10deg;
+        }
+
+        .photo-placeholder:nth-child(2) {
+            --r: 5deg;
+            transform: translateY(-10px) rotate(5deg);
+        }
+
+        .photo-placeholder:nth-child(3) {
+            --r: 10deg;
         }
     </style>
 
     <script>
-        document.getElementById('start-btn').addEventListener('click', () => {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024);
+        let started = false;
 
-            // Add a small delay for the button animation
+        function startGame() {
+            if (started) return;
+            started = true;
+
+            // Trigger Animation
+            const overlay = document.getElementById('intro-animation');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('intro-active');
+
+            // Delay Navigation
             setTimeout(() => {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024);
                 if (isMobile) {
                     window.location.href = 'player.html';
                 } else {
                     window.location.href = 'master.html';
                 }
-            }, 200);
+            }, 2000); // 2s delay 
+        }
+
+        document.getElementById('start-btn').addEventListener('click', startGame);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                startGame();
+            }
+        });
+
+        // Randomize particles positions on load
+        document.querySelectorAll('.particle').forEach(p => {
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = (5 + Math.random() * 10) + 's';
+            p.style.animationDelay = (Math.random() * 5) + 's';
         });
     </script>
 </body>
