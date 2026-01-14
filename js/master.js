@@ -1,5 +1,38 @@
 /* Master/Host Logic */
 
+// Debug Logger
+const debugEl = document.getElementById('debug-console');
+if (location.search.includes('debug=true')) {
+    if (debugEl) {
+        debugEl.style.display = 'block';
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = (...args) => {
+            debugEl.innerHTML += `[LOG] ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}<br>`;
+            debugEl.scrollTop = debugEl.scrollHeight;
+            originalLog.apply(console, args);
+        };
+
+        console.error = (...args) => {
+            debugEl.innerHTML += `<span style="color:red">[ERR] ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}</span><br>`;
+            debugEl.scrollTop = debugEl.scrollHeight;
+            originalError.apply(console, args);
+        };
+
+        console.warn = (...args) => {
+            debugEl.innerHTML += `<span style="color:orange">[WRN] ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')}</span><br>`;
+            debugEl.scrollTop = debugEl.scrollHeight;
+            originalWarn.apply(console, args);
+        };
+
+        window.onerror = (msg, url, line) => {
+            console.error(`Global: ${msg} @ ${line}`);
+        };
+    }
+}
+
 /* State Machine */
 const STATE = {
     WALL: 'WALL',
