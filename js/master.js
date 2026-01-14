@@ -176,8 +176,13 @@ class MasterGame {
                 // Verify if it is the correct team's turn
                 const currentTeam = this.teams[this.currentTurn];
 
-                // Strict check: Only accept input from the assigned connection
-                if (conn === currentTeam.conn) {
+                // LOGGING FOR DEBUGGING
+                console.log(`[Input Check] Turn: Team ${this.currentTurn} (${currentTeam.name})`);
+                console.log(`[Input Check] Sender: ${conn.peer}`);
+                console.log(`[Input Check] Expected: ${currentTeam.conn ? currentTeam.conn.peer : 'NULL'}`);
+
+                // ID Checking (Reset-proof)
+                if (currentTeam.conn && conn.peer === currentTeam.conn.peer) {
                     console.log(`Team ${this.currentTurn} answered: ${data.payload}`);
                     this.lastPlayerAnswer = data.payload;
 
@@ -189,9 +194,12 @@ class MasterGame {
 
                     this.playAudio('lock-in');
                 } else {
-                    console.warn(`Ignored answer from wrong team/connection. Current Turn: ${currentTeam.name}`);
+                    console.warn(`Ignored answer from wrong team/connection.`);
                     if (conn) {
-                        conn.send({ type: 'ERROR', message: 'Not your turn!' });
+                        conn.send({
+                            type: 'ERROR',
+                            message: `Moment! Team ${currentTeam.name} ist dran!`
+                        });
                     }
                 }
             } else {
