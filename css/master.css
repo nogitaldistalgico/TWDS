@@ -91,9 +91,48 @@ header {
 }
 
 .category-card.played {
-    opacity: 0.3;
+    opacity: 1;
+    /* Keep visible for image */
     pointer-events: none;
-    filter: grayscale(1);
+    background-size: cover;
+    background-position: center;
+    border-width: 2px;
+}
+
+/* Team wins - show avatar */
+.category-card.team-0 {
+    background-image: url('../assets/tobi.png');
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px var(--color-primary-glow);
+}
+
+.category-card.team-1 {
+    background-image: url('../assets/lurch.png');
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 15px var(--color-secondary-glow);
+}
+
+/* Wrong answer - show X */
+.category-card.lost {
+    background-color: #222;
+    opacity: 0.5;
+    position: relative;
+    border-color: #555;
+    display: flex;
+    /* Ensure center alignment for ::after */
+}
+
+/* CSS-based "X" */
+.category-card.lost::after {
+    content: "✕";
+    color: var(--color-wrong);
+    font-size: 4rem;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
 /* Question Overlay */
@@ -204,31 +243,50 @@ header {
 
 .player-indicator {
     padding: 0.8rem 1.5rem;
-    border-radius: 50px;
+    border-radius: 12px;
+    /* Less rounded for card look */
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
+    transition: all 0.3s;
+    opacity: 0.5;
+    /* Dim inactive team */
+    transform: scale(0.9);
 }
 
-.player-indicator.active {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 10px var(--color-primary-glow);
+.player-indicator.active-turn {
+    opacity: 1;
+    transform: scale(1.05);
+    /* Pop active team */
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-.status-dot {
-    width: 10px;
-    height: 10px;
+.player-indicator.joined {
+    border-color: var(--color-correct);
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #555;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.player-indicator.active .status-dot {
+.player-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.player-score {
     background: var(--color-primary);
-    box-shadow: 0 0 5px var(--color-primary);
-}
-
-.player-indicator.answered .status-dot {
-    background: var(--color-secondary);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-family: monospace;
 }
