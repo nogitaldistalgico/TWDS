@@ -16,6 +16,12 @@ class PlayerController {
 
     initControls() {
         this.btnJoin.addEventListener('click', () => {
+            // Visual feedback immediately
+            this.btnJoin.textContent = "VERBINDE...";
+            this.btnJoin.disabled = true;
+            this.btnJoin.style.opacity = "0.7";
+
+            // Connect
             this.connect('TOBIS-JGA');
         });
 
@@ -30,7 +36,15 @@ class PlayerController {
     }
 
     connect(roomId) {
-        this.statusText.textContent = "Connecting to " + roomId + "...";
+        this.statusText.textContent = "Suche Host...";
+
+        // Timeout check if connection takes too long
+        const connectionTimeout = setTimeout(() => {
+            if (!this.isConnected) {
+                alert("Verbindung dauert langsam... Prüfe Internet.");
+                this.resetJoinButton();
+            }
+        }, 10000);
 
         this.peerManager.onOpen((id) => {
             console.log('Player ID:', id);
@@ -38,10 +52,19 @@ class PlayerController {
         });
 
         this.peerManager.onConnectionOpen(() => {
+            clearTimeout(connectionTimeout);
+            this.isConnected = true;
             console.log('Connection Established!');
             this.peerManager.send({ type: 'LOGIN' });
             // Show Team Selection instead of Controls immediately
             this.showTeamSelection();
+        });
+
+        this.peerManager.onError((err) => {
+            clearTimeout(connectionTimeout);
+            console.error("Player Error:", err);
+            alert("Fehler: " + err.type);
+            this.resetJoinButton();
         });
 
         this.peerManager.onData((data) => {
@@ -49,6 +72,12 @@ class PlayerController {
         });
 
         this.peerManager.init();
+    }
+
+    resetJoinButton() {
+        this.btnJoin.textContent = "SPIEL BEITRETEN";
+        this.btnJoin.disabled = false;
+        this.btnJoin.style.opacity = "1";
     }
 
     showTeamSelection() {
@@ -83,6 +112,7 @@ class PlayerController {
         });
         this.btns[choice].classList.add('selected');
         this.locked = true;
+        this.lastChoice = choice; // Store choice for feedback
 
         this.peerManager.send({ type: 'ANSWER', payload: choice });
     }
@@ -96,6 +126,18 @@ class PlayerController {
                 this.statusText.textContent = "Make your choice!";
             } else if (data.payload === 'REVEAL') {
                 this.statusText.textContent = "Check the screen!";
+
+                // Show feedback
+                const correct = data.correct;
+                if (this.lastChoice === correct) {
+                    // Correct!
+                    this.btns[this.lastChoice].classList.add('correct');
+                    this.statusText.textContent = "RICHTIG! 🎉";
+                } else if (this.lastChoice) {
+                    // Wrong
+                    this.btns[this.lastChoice].classList.add('wrong');
+                    this.statusText.textContent = "LEIDER FALSCH ❌";
+                }
             }
         } else if (data.type === 'TEAM_CONFIRMED') {
             // Success! Move to controls
@@ -111,8 +153,9 @@ class PlayerController {
 
     resetButtons() {
         this.locked = false;
+        this.lastChoice = null;
         Object.values(this.btns).forEach(b => {
-            b.classList.remove('selected');
+            b.classList.remove('selected', 'correct', 'wrong');
             b.disabled = false;
             b.style.pointerEvents = 'auto';
         });

@@ -61,7 +61,15 @@ class MasterGame {
         // Error handling
         this.peerManager.onError((err) => {
             console.error("PeerJS Error:", err);
-            this.elRoomId.innerHTML = `<span style="color:red; font-size:0.8em">Error: ${err.type}</span>`;
+
+            // Handle ID Taken (e.g. previous session didn't close properly)
+            if (err.type === 'unavailable-id') {
+                this.elRoomId.innerHTML = `<span style="color:orange; font-size:0.6em">ID belegt. <br>Warte kurz...</span>`;
+                // Optional: Retry after 2 seconds? Or just tell user to refresh
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                this.elRoomId.innerHTML = `<span style="color:red; font-size:0.8em">Error: ${err.type}</span>`;
+            }
         });
 
         // Use the proper callback hook instead of accessing null peer
@@ -212,7 +220,7 @@ class MasterGame {
         explBox.classList.add('animate-scale-in');
 
         // NOTIFY
-        this.broadcast({ type: 'STATE_CHANGE', payload: 'REVEAL' });
+        this.broadcast({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: correct });
     }
 
     closeQuestion() {
@@ -223,12 +231,22 @@ class MasterGame {
         // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
             // Team Won -> Show Face
-            card.classList.add(`team-${this.teams[this.currentTurn].id}`);
+            // card.classList.add(`team-${this.teams[this.currentTurn].id}`);  <-- OLD
+
+            // NEW LOGIC: Show Face of the team that just played
+            // BUT: Requirements say "Replace logo on the question field" which usually implies the wall card.
+            // AND: "if answered correctly... team logo is set".
+
+            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png')`;
+            card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
+            card.style.boxShadow = `0 0 15px ${this.currentTurn === 0 ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
+            card.textContent = ''; // Hide text
+
             // Add Score (e.g. 500)
             this.teams[this.currentTurn].score += 500;
             this.teams[this.currentTurn].el.querySelector('.player-score').textContent = this.teams[this.currentTurn].score + ' €';
         } else {
-            // Team Lost -> Show X
+            // Team Lost -> Show X (Grey)
             card.classList.add('lost');
         }
 
@@ -251,6 +269,13 @@ class MasterGame {
     updateTurnUI() {
         this.teams.forEach(t => t.el.classList.remove('active-turn'));
         this.teams[this.currentTurn].el.classList.add('active-turn');
+
+        // Update Indicator
+        const indicator = document.getElementById('turn-indicator');
+        if (indicator) {
+            indicator.textContent = (this.currentTurn === 0) ? "TOBIS RUNDE" : "LURCHS RUNDE";
+            indicator.style.color = (this.currentTurn === 0) ? "var(--color-primary)" : "var(--color-secondary)";
+        }
     }
 
     broadcast(msg) {
