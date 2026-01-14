@@ -189,6 +189,9 @@ class MasterGame {
                     const currentTeamEl = this.teams[this.currentTurn].el;
                     currentTeamEl.classList.add('answered'); // Visual feedback
 
+                    // Highlight the chosen answer card
+                    this.elAnswers[data.payload].classList.add('selected');
+
                     // Check correctness immediately (but don't show yet)
                     this.lastAnswerCorrect = (data.payload === this.currentQuestion.correct);
 
