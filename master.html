@@ -32,10 +32,16 @@
                 Loading...
             </div>
             <!-- Host Controls -->
-            <button id="btn-host-action"
-                style="padding: 10px 20px; font-size: 1.2rem; font-weight:bold; background: var(--color-primary); color:#000; border:none; border-radius:8px; cursor:pointer; box-shadow: 0 0 15px var(--color-primary-glow);">
-                START
-            </button>
+            <div style="display:flex; gap:10px;">
+                <button id="btn-host-action"
+                    style="padding: 10px 20px; font-size: 1.2rem; font-weight:bold; background: var(--color-primary); color:#000; border:none; border-radius:8px; cursor:pointer; box-shadow: 0 0 15px var(--color-primary-glow);">
+                    START
+                </button>
+                <button id="btn-reset" onclick="game.resetGame()"
+                    style="padding: 5px 10px; font-size: 0.8rem; background: rgba(255,0,0,0.2); color:#fff; border:1px solid rgba(255,0,0,0.5); border-radius:6px; cursor:pointer;">
+                    RESET
+                </button>
+            </div>
         </header>
 
         <!-- Category Wall -->
