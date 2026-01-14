@@ -264,17 +264,22 @@ div.answer-card.correct {
 /* Selection Animation */
 @keyframes flash {
     0% {
-        background-color: #fff;
+        background: #fff;
+        box-shadow: 0 0 20px #fff;
+        border-color: #fff;
+        color: #000;
     }
 
     100% {
-        background-color: var(--border-gold);
+        background: var(--border-gold);
+        box-shadow: 0 0 50px var(--border-gold);
+        border-color: #fff;
+        color: #000;
     }
 }
 
 .category-card.selecting {
-    animation: flash 0.2s infinite alternate;
+    animation: flash 0.3s infinite alternate;
     z-index: 100;
-    color: #000;
-    border-color: #fff;
+    transform: scale(1.1);
 }
