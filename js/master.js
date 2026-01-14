@@ -324,45 +324,104 @@ class MasterGame {
         this.lastPlayerAnswer = null;
         this.lastAnswerCorrect = false;
 
-        // NOTIFY
-        this.broadcast({ type: 'STATE_CHANGE', payload: 'WALL' });
-    }
-
-    updateTurnUI() {
-        this.teams.forEach(t => t.el.classList.remove('active-turn'));
-        this.teams[this.currentTurn].el.classList.add('active-turn');
-
-        // Update Indicator
-        const indicator = document.getElementById('turn-indicator');
-        if (indicator) {
-            indicator.textContent = (this.currentTurn === 0) ? "TOBIS RUNDE" : "LURCHS RUNDE";
-            indicator.style.color = (this.currentTurn === 0) ? "var(--color-primary)" : "var(--color-secondary)";
+        selectCategory(index) {
+            // ... (lines 227-243)
+            // NOTIFY ALL
+            this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
+            this.updateHostButton();
         }
-    }
 
-    broadcast(msg) {
-        // Send to all connected teams
-        this.teams.forEach(t => {
-            if (t.conn && t.conn.open) {
-                t.conn.send(msg);
+        revealAnswer() {
+            if (this.state !== STATE.QUESTION) return;
+            this.state = STATE.REVEAL;
+            // ... (lines 261-278)
+            // NOTIFY
+            this.broadcast({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: correct });
+            this.updateHostButton();
+        }
+
+        closeQuestion() {
+            // ... (lines 283-309)
+            // SWITCH TURN
+            this.currentTurn = (this.currentTurn + 1) % 2;
+            this.updateTurnUI();
+
+            // HIDE OVERLAY
+            this.elQuestionOverlay.classList.add('hidden');
+            this.state = STATE.WALL;
+
+            // RESET STATE
+            this.lastPlayerAnswer = null;
+            this.lastAnswerCorrect = false;
+
+            // NOTIFY
+            this.broadcast({ type: 'STATE_CHANGE', payload: 'WALL' });
+            this.updateHostButton();
+        }
+
+        updateTurnUI() {
+            this.teams.forEach(t => t.el.classList.remove('active-turn'));
+            this.teams[this.currentTurn].el.classList.add('active-turn');
+
+            // Update Indicator
+            const indicator = document.getElementById('turn-indicator');
+            if (indicator) {
+                indicator.textContent = (this.currentTurn === 0) ? "TOBIS RUNDE" : "LURCHS RUNDE";
+                indicator.style.color = (this.currentTurn === 0) ? "var(--color-primary)" : "var(--color-secondary)";
             }
-        });
-    }
+        }
 
-    initControls() {
-        document.addEventListener('keydown', (e) => {
-            if (e.key === ' ') {
-                if (this.state === STATE.QUESTION) {
-                    this.revealAnswer();
-                } else if (this.state === STATE.REVEAL) {
-                    this.closeQuestion();
+        broadcast(msg) {
+            // Send to all connected teams
+            this.teams.forEach(t => {
+                if (t.conn && t.conn.open) {
+                    t.conn.send(msg);
                 }
-            }
-        });
-    }
+            });
+        }
 
-    playAudio(name) { }
-}
+        initControls() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === ' ') {
+                    if (this.state === STATE.QUESTION) {
+                        this.revealAnswer();
+                    } else if (this.state === STATE.REVEAL) {
+                        this.closeQuestion();
+                    }
+                }
+            });
+
+            // Mouse/Touch Control
+            this.btnHostAction = document.getElementById('btn-host-action');
+            if (this.btnHostAction) {
+                this.btnHostAction.addEventListener('click', () => {
+                    if (this.state === STATE.QUESTION) {
+                        this.revealAnswer();
+                    } else if (this.state === STATE.REVEAL) {
+                        this.closeQuestion();
+                    }
+                });
+            }
+        }
+
+        updateHostButton() {
+            if (!this.btnHostAction) return;
+
+            if (this.state === STATE.WALL) {
+                this.btnHostAction.style.display = 'none'; // Select category to start
+            } else if (this.state === STATE.QUESTION) {
+                this.btnHostAction.style.display = 'block';
+                this.btnHostAction.textContent = "AUFLÖSEN (Space)";
+                this.btnHostAction.style.background = "var(--color-primary)";
+            } else if (this.state === STATE.REVEAL) {
+                this.btnHostAction.style.display = 'block';
+                this.btnHostAction.textContent = "WEITER (Space)";
+                this.btnHostAction.style.background = "var(--color-secondary)";
+            }
+        }
+
+        playAudio(name) { }
+    }
 
 // Start Game
 document.addEventListener('DOMContentLoaded', () => {
