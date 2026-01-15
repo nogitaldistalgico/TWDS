@@ -385,7 +385,8 @@ header.studio-header {
 .question-overlay {
     position: fixed;
     top: auto;
-    bottom: 3vh;
+    bottom: 2vh;
+    /* Slightly lower */
     left: 0;
     width: 100vw;
     display: flex;
