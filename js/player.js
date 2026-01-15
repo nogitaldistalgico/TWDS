@@ -168,6 +168,11 @@ class PlayerController {
     sendAnswer(choice) {
         if (this.locked) return;
 
+        // Haptic Feedback (Vibrate) - Subtle tick (50ms)
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+
         // Highlight local button
         Object.values(this.btns).forEach(b => {
             b.classList.remove('selected');
