@@ -133,7 +133,23 @@ class PeerManager {
         }
     }
 
-    // ... (rest of class)
+    generateRoomId() {
+        // Generate a simple 4 letter code
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 1, 0 to avoid confusion
+        let result = '';
+        for (let i = 0; i < 4; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    // Setters for callbacks
+    onOpen(cb) { this.callbacks.onOpen = cb; }
+    onData(cb) { this.callbacks.onData = cb; }
+    onClose(cb) { this.callbacks.onClose = cb; }
+    onConnectionOpen(cb) { this.callbacks.onConnectionOpen = cb; }
+    onConnection(cb) { this.callbacks.onConnection = cb; }
+    onError(cb) { this.callbacks.onError = cb; }
 
     connect(hostId) {
         if (this.isHost) return;
