@@ -47,18 +47,19 @@ class PlayerController {
         this.initControls();
         this.initTeamSelection();
         this.initUtilities();
+        this.initPersistence();
+    }
+
+    initPersistence() {
+        const savedTeam = localStorage.getItem('wwds_player_team');
+        if (savedTeam) {
+            console.log("Found saved session for team: " + savedTeam);
+            // Auto Connect
+            this.startJoinProcess();
+        }
     }
 
     initUtilities() {
-        // Fullscreen Toggle
-        const btnFs = document.getElementById('btn-fullscreen');
-        if (btnFs) {
-            btnFs.addEventListener('click', () => {
-                this.toggleFullscreen();
-                this.requestWakeLock(); // Also trigger wake lock on interaction
-            });
-        }
-
         // Wake Lock
         this.wakeLock = null;
         document.addEventListener('visibilitychange', async () => {
@@ -66,18 +67,6 @@ class PlayerController {
                 this.requestWakeLock();
             }
         });
-    }
-
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.warn(`Error attempting to enable fullscreen: ${err.message}`);
-            });
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
     }
 
     async requestWakeLock() {
@@ -96,20 +85,23 @@ class PlayerController {
 
     initControls() {
         this.btnJoin.addEventListener('click', () => {
-            // Visual feedback immediately
-            this.btnJoin.textContent = "VERBINDE...";
-            this.btnJoin.disabled = true;
-            this.btnJoin.style.opacity = "0.7";
-
-            // Connect
-            // Connect
-            this.connect('TOBIS-JGA');
-            this.requestWakeLock();
+            this.startJoinProcess();
         });
 
         ['A', 'B', 'C'].forEach(key => {
             this.btns[key].addEventListener('click', () => this.sendAnswer(key));
         });
+    }
+
+    startJoinProcess() {
+        // Visual feedback immediately
+        this.btnJoin.textContent = "VERBINDE...";
+        this.btnJoin.disabled = true;
+        this.btnJoin.style.opacity = "0.7";
+
+        // Connect
+        this.connect('TOBIS-JGA');
+        this.requestWakeLock();
     }
 
     initTeamSelection() {
@@ -148,8 +140,15 @@ class PlayerController {
             console.log('Connection Established!');
             this.peerManager.send({ type: 'LOGIN' });
 
-            // UI Transition
-            this.showTeamSelection();
+            // AUTO-LOGIN Logic
+            const savedTeam = localStorage.getItem('wwds_player_team');
+            if (savedTeam) {
+                console.log("Auto-claiming team: " + savedTeam);
+                this.selectTeam(parseInt(savedTeam));
+            } else {
+                // UI Transition
+                this.showTeamSelection();
+            }
         });
 
         this.peerManager.onError((err) => {
@@ -198,6 +197,7 @@ class PlayerController {
     selectTeam(teamId) {
         // Store locally
         this.myTeamId = teamId;
+        localStorage.setItem('wwds_player_team', teamId);
 
         // Send request to master (fire and forget)
         this.peerManager.send({ type: 'CLAIM_TEAM', payload: teamId });
