@@ -396,25 +396,122 @@ header.studio-header {
     /* Let clicks pass through, but enable for children */
 }
 
+/* TV SHOW ANSWER STYLE (Red Gloss + Neon) */
+/* Wall Fading */
+.category-wall.dimmed {
+    opacity: 0.1;
+    filter: blur(5px);
+    pointer-events: none;
+    transition: all 0.5s;
+}
+
+/* Lost Card Style */
+.category-card.lost {
+    background: #2a2a2a;
+    border-color: #555;
+    color: #555;
+    box-shadow: none;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card.lost::before {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 4px;
+    background: #555;
+    transform: rotate(45deg);
+}
+
+.category-card.lost::after {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 4px;
+    background: #555;
+    transform: rotate(-45deg);
+}
+
 .answer-card {
     pointer-events: auto;
-    width: 80%;
-    max-width: 800px;
-    background: linear-gradient(90deg, #0b1a3a, #162447);
-    border: 2px solid #2e4a85;
-    border-radius: 50px;
-    padding: 1rem 2rem;
-    margin-bottom: 1rem;
+    width: 90%;
+    max-width: 1100px;
+
+    /* Red/Purple Gloss Gradient */
+    background: linear-gradient(180deg,
+            rgba(100, 0, 40, 0.9) 0%,
+            rgba(60, 0, 20, 0.95) 50%,
+            rgba(40, 0, 10, 0.95) 100%);
+
+    border: 2px solid #00d2ff;
+    /* Cyan Neon Border */
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4), inset 0 10px 20px rgba(255, 255, 255, 0.1);
+
+    border-radius: 12px;
+    /* Slightly more squared */
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 0.8rem;
+
     display: flex;
     align-items: center;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 600;
+    color: #fff;
     cursor: pointer;
-    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
 
-    /* Fail-safe centering */
-    margin-left: auto;
-    margin-right: auto;
+    /* Animation defaults */
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+/* Gloss Overlay top half */
+.answer-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.02) 100%);
+    pointer-events: none;
+}
+
+.answer-card.animate-in {
+    animation: slideInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Stagger delays */
+#ans-A.animate-in {
+    animation-delay: 0.1s;
+}
+
+#ans-B.animate-in {
+    animation-delay: 0.3s;
+}
+
+#ans-C.animate-in {
+    animation-delay: 0.5s;
+}
+
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.answer-card:hover {
+    background: linear-gradient(180deg, rgba(130, 0, 50, 0.9) 0%, rgba(80, 0, 30, 0.95) 100%);
+    box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
 }
 
 /* Wall Fading */
@@ -455,36 +552,42 @@ header.studio-header {
 }
 
 
-.answer-card:hover {
-    border-color: #fff;
-    background: #1f3a6e;
-}
-
 .answer-letter {
-    width: 50px;
-    height: 50px;
-    background: var(--border-gold);
-    color: #000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
     font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 2px #ffae00;
+    /* Neon Yellow Outline */
+    text-shadow: 0 0 10px rgba(255, 174, 0, 0.5);
     margin-right: 1.5rem;
-    box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
+
+    /* Remove old box style */
+    width: auto;
+    height: auto;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 div.answer-card.selected {
     background: #ffae00 !important;
-    color: #000;
     border-color: #fff !important;
-    box-shadow: 0 0 30px #ffae00;
+    color: #000;
+    box-shadow: 0 0 40px #ffae00;
+}
+
+div.answer-card.selected .answer-letter {
+    -webkit-text-stroke: 2px #000;
+    color: #000;
+    text-shadow: none;
 }
 
 div.answer-card.correct {
     background: #2ecc71 !important;
     border-color: #fff !important;
-    box-shadow: 0 0 30px #2ecc71;
+    box-shadow: 0 0 40px #2ecc71;
 }
 
 /* Question Overlay (Now just holding answers at bottom) */

@@ -333,7 +333,14 @@ class MasterGame {
 
                     // SHOW OVERLAY (Answers)
                     this.elQuestionOverlay.classList.remove('hidden');
-                    this.elQuestionOverlay.classList.add('animate-fade-in');
+                    // this.elQuestionOverlay.classList.add('animate-fade-in'); // Removed fade-in of container
+
+                    // Trigger Slide Animation
+                    Object.values(this.elAnswers).forEach(el => {
+                        el.classList.remove('animate-in'); // Reset
+                        void el.offsetWidth; // Trigger reflow
+                        el.classList.add('animate-in');
+                    });
 
                     // BROADCAST
                     this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
