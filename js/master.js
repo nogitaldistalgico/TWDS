@@ -289,6 +289,9 @@ class MasterGame {
             // 3. HIDE ORIGINAL (Invisible but takes space)
             card.style.opacity = '0';
 
+            // DIM WALL
+            this.elWall.classList.add('dimmed');
+
             // 4. ANIMATE (Next Frame)
             requestAnimationFrame(() => {
                 // Target: Top half of screen, avoiding overlap
@@ -525,6 +528,9 @@ class MasterGame {
 
         // SAVE STATE
         this.saveGame();
+
+        // REMOVE DIM
+        this.elWall.classList.remove('dimmed');
 
         // RETURN ANIMATION
         if (this.elFlyingCard && this.activeCardOriginalRect) {
