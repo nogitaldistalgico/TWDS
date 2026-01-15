@@ -17,15 +17,28 @@
     <div id="app">
         <header class="studio-header">
             <div class="header-corner left">
-                <!-- Tiny Room ID -->
-                <span style="font-size:0.7rem; opacity:0.3" class="room-id">...</span>
+                <span class="room-id">ID: TOBIS-JGA</span>
             </div>
 
-            <div class="studio-logo">TOBOVS JGA QUIZ</div>
+            <!-- Complex Neon Logo Structure -->
+            <div class="logo-wrapper">
+                <div class="neon-border">
+                    <div class="logo-row top">
+                        <span class="pink-neon">TOBOVS</span>
+                    </div>
+                    <div class="logo-row middle">
+                        <div class="blue-neon">JGA</div>
+                    </div>
+                    <div class="logo-row bottom">
+                        <span class="blue-neon">QUIZ</span>
+                    </div>
+                    <!-- ARD Logo Style Circle -->
+                    <div class="channel-logo">1</div>
+                </div>
+            </div>
 
             <div class="header-corner right">
                 <button id="btn-host-action" class="host-action-btn" style="display:none;">Action</button>
-                <button id="btn-reset" onclick="game.resetGame()" title="Reset">↻</button>
             </div>
         </header>
 

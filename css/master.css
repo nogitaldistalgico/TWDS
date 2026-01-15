@@ -1,14 +1,19 @@
 /* Master View Specifics */
 :root {
-    --studio-bg: radial-gradient(circle at center, #0b1026 0%, #000000 100%);
+    /* Studio Background: Deep Blue Nebula */
+    --studio-bg: radial-gradient(circle at 50% 30%, #1e3c72 0%, #0b1026 60%, #000000 100%);
+
+    /* Neon Colors */
+    --neon-pink: #ff00de;
+    --neon-blue: #00ffff;
+    --neon-border: #ffaa00;
+    /* Gold/Orange */
+
     --card-blue-top: #0076bf;
     --card-blue-bottom: #003666;
     --card-purple-top: #9b287b;
-    /* For won cards */
     --card-purple-bottom: #5c1248;
     --border-gold: #fcc201;
-    /* The show's signature gold */
-    --card-gloss: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 48%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0) 100%);
 }
 
 #app {
@@ -18,52 +23,154 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    background: url('../assets/studio_bg.jpg'), var(--studio-bg);
-    /* Fallback */
-    background-size: cover;
+    /* Deep Space / Studio Atmosphere */
+    background: var(--studio-bg);
     color: #fff;
     overflow: hidden;
     font-family: 'Inter', sans-serif;
 }
 
+/* Optional Stars / Lens Flare Effect via pseudo-elements later if needed */
+
 /* Header */
 header.studio-header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    padding: 1rem 3rem;
-    height: 100px;
+    display: flex;
+    /* Changed to flex for better centering */
+    justify-content: center;
+    align-items: flex-start;
+    /* Align to top */
+    padding-top: 2rem;
+    height: 250px;
+    /* Taller header for big logo */
     z-index: 50;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
-}
-
-.studio-logo {
-    font-size: 3.5rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    /* Metallic Silver/Blue Gradient */
-    background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 20%, #B0C4DE 50%, #4682B4 51%, #a0c4e8 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    /* Fallback */
-
-    /* Deep 3D Shadow Effect */
-    filter: drop-shadow(0 2px 0 #0056b3) drop-shadow(0 4px 0 #004494) drop-shadow(0 0 20px rgba(0, 136, 255, 0.6));
-
-    letter-spacing: 3px;
-    text-align: center;
     position: relative;
-    z-index: 10;
-    font-family: 'Inter', sans-serif;
-    transform: perspective(500px) rotateX(5deg);
-    /* Slight 3D tilt */
 }
 
-.studio-logo::after {
-    /* Optional content for reflection or shine, but keeping it simple for now to avoid complexity */
+.header-corner {
+    position: absolute;
+    top: 20px;
+    z-index: 60;
+}
+
+.header-corner.left {
+    left: 30px;
+}
+
+.header-corner.right {
+    right: 30px;
+}
+
+/* LOGO CONTAINER */
+.logo-wrapper {
+    position: relative;
+    transform: scale(0.8);
+    /* Adjust size */
+}
+
+/* Rounded Neon Border Container */
+.neon-border {
+    position: relative;
+    border: 4px solid var(--neon-border);
+    border-radius: 40px;
+    padding: 10px 40px;
+    box-shadow:
+        0 0 10px var(--neon-border),
+        0 0 20px var(--neon-border),
+        inset 0 0 10px var(--neon-border);
+    background: rgba(0, 0, 0, 0.3);
+    /* Slight tint inside */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 500px;
+}
+
+/* Gloss Shine on Logo Glass */
+.neon-border::after {
     content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 35px 35px 100% 100% / 35px 35px 10px 10px;
+    pointer-events: none;
+}
+
+/* Logo Text Structure */
+.logo-row {
+    line-height: 0.9;
+    text-align: center;
+    z-index: 2;
+}
+
+.logo-row.top {
+    font-size: 2.5rem;
+    align-self: flex-start;
+    /* Align text to left/start */
+    margin-bottom: 0px;
+    transform: translateX(-40px) translateY(-5px);
+    /* Offset like reference "WER" */
+}
+
+.logo-row.middle {
+    font-size: 5rem;
+    margin: -10px 0;
+}
+
+.logo-row.bottom {
+    font-size: 5rem;
+    transform: translateY(-5px);
+}
+
+/* Neon Text Styles */
+.pink-neon {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    color: #fff;
+    -webkit-text-stroke: 2px var(--neon-pink);
+    text-shadow:
+        0 0 5px #fff,
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 40px var(--neon-pink);
+}
+
+.blue-neon {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    color: #e0f7fa;
+    /* Slightly cyan white */
+    -webkit-text-stroke: 2px #0088ff;
+    text-shadow:
+        0 0 5px #fff,
+        0 0 10px var(--neon-blue),
+        0 0 20px var(--neon-blue),
+        0 0 40px var(--neon-blue),
+        0 0 80px var(--neon-blue);
+    letter-spacing: 2px;
+}
+
+/* Channel Logo Circle (Top Right) */
+.channel-logo {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 40px;
+    height: 40px;
+    background: #000;
+    border: 2px solid var(--neon-border);
+    border-radius: 50%;
+    color: var(--neon-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 0 10px var(--neon-border);
+    z-index: 10;
 }
 
 /* Category Grid */
