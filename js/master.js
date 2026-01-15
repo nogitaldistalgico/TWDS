@@ -620,80 +620,71 @@ class MasterGame {
         // For now, updateTurnUI handles static updates. 
         // If we want smooth counting, we'd need to target 'score-0' and 'score-1' specifically.
     }
-            element.textContent = current + " €";
 
-    if(progress < 1) {
-        requestAnimationFrame(update);
-    } else {
-    element.textContent = end + " €";
-}
-        };
-requestAnimationFrame(update);
-    }
 
-broadcast(msg) {
-    // Send to all connected teams
-    this.teams.forEach(t => {
-        if (t.conn && t.conn.open) {
-            t.conn.send(msg);
-        }
-    });
-}
-
-initControls() {
-    document.addEventListener('keydown', (e) => {
-        const key = e.key.toLowerCase();
-
-        // GAME LOOP CONTROLS
-        if (e.key === ' ' || e.code === 'Space') {
-            if (this.state === STATE.QUESTION) {
-                this.revealAnswer();
-            } else if (this.state === STATE.REVEAL) {
-                this.closeQuestion();
-            }
-        }
-
-        // EMERGENCY KEYBOARD INPUTS (Fallback for unstable connections)
-        // T -> A
-        // Z -> B (QWERTZ layout adjacent)
-        // U -> C
-        if (this.state === STATE.QUESTION) {
-            if (key === 't') this.processAnswer('A');
-            else if (key === 'z' || key === 'y') this.processAnswer('B'); // Support Z (QWERTZ) and Y (QWERTY) just in case
-            else if (key === 'u') this.processAnswer('C');
-        }
-    });
-
-    // Mouse/Touch Control
-    this.btnHostAction = document.getElementById('btn-host-action');
-    if (this.btnHostAction) {
-        this.btnHostAction.addEventListener('click', () => {
-            if (this.state === STATE.QUESTION) {
-                this.revealAnswer();
-            } else if (this.state === STATE.REVEAL) {
-                this.closeQuestion();
+    broadcast(msg) {
+        // Send to all connected teams
+        this.teams.forEach(t => {
+            if (t.conn && t.conn.open) {
+                t.conn.send(msg);
             }
         });
     }
-}
 
-updateHostButton() {
-    if (!this.btnHostAction) return;
+    initControls() {
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
 
-    if (this.state === STATE.WALL) {
-        this.btnHostAction.style.display = 'none'; // Select category to start
-    } else if (this.state === STATE.QUESTION) {
-        this.btnHostAction.style.display = 'block';
-        this.btnHostAction.textContent = "AUFLÖSEN (Space)";
-        this.btnHostAction.style.background = "var(--color-primary)";
-    } else if (this.state === STATE.REVEAL) {
-        this.btnHostAction.style.display = 'block';
-        this.btnHostAction.textContent = "WEITER (Space)";
-        this.btnHostAction.style.background = "var(--color-secondary)";
+            // GAME LOOP CONTROLS
+            if (e.key === ' ' || e.code === 'Space') {
+                if (this.state === STATE.QUESTION) {
+                    this.revealAnswer();
+                } else if (this.state === STATE.REVEAL) {
+                    this.closeQuestion();
+                }
+            }
+
+            // EMERGENCY KEYBOARD INPUTS (Fallback for unstable connections)
+            // T -> A
+            // Z -> B (QWERTZ layout adjacent)
+            // U -> C
+            if (this.state === STATE.QUESTION) {
+                if (key === 't') this.processAnswer('A');
+                else if (key === 'z' || key === 'y') this.processAnswer('B'); // Support Z (QWERTZ) and Y (QWERTY) just in case
+                else if (key === 'u') this.processAnswer('C');
+            }
+        });
+
+        // Mouse/Touch Control
+        this.btnHostAction = document.getElementById('btn-host-action');
+        if (this.btnHostAction) {
+            this.btnHostAction.addEventListener('click', () => {
+                if (this.state === STATE.QUESTION) {
+                    this.revealAnswer();
+                } else if (this.state === STATE.REVEAL) {
+                    this.closeQuestion();
+                }
+            });
+        }
     }
-}
 
-playAudio(name) { }
+    updateHostButton() {
+        if (!this.btnHostAction) return;
+
+        if (this.state === STATE.WALL) {
+            this.btnHostAction.style.display = 'none'; // Select category to start
+        } else if (this.state === STATE.QUESTION) {
+            this.btnHostAction.style.display = 'block';
+            this.btnHostAction.textContent = "AUFLÖSEN (Space)";
+            this.btnHostAction.style.background = "var(--color-primary)";
+        } else if (this.state === STATE.REVEAL) {
+            this.btnHostAction.style.display = 'block';
+            this.btnHostAction.textContent = "WEITER (Space)";
+            this.btnHostAction.style.background = "var(--color-secondary)";
+        }
+    }
+
+    playAudio(name) { }
 }
 
 // Start Game
