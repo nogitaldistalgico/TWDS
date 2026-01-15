@@ -71,37 +71,57 @@ class PlayerController {
 
     connect(roomId) {
         this.statusText.textContent = "Suche Host...";
+        this.statusText.style.color = "var(--color-text-muted)";
 
-        // Timeout check if connection takes too long
-        const connectionTimeout = setTimeout(() => {
-            if (!this.isConnected) {
-                alert("Verbindung dauert langsam... Prüfe Internet.");
-                this.resetJoinButton();
+        // Retry logic
+        const maxRetries = 5;
+        let attempt = 0;
+
+        const tryConnect = () => {
+            // If peer is not ready, wait
+            if (!this.peerManager.peer || !this.peerManager.peer.open) {
+                console.log("Peer not ready, waiting...");
+                setTimeout(tryConnect, 500);
+                return;
             }
-        }, 10000);
+
+            console.log(`Attempting to connect to ${roomId} (Attempt ${attempt + 1})`);
+            this.peerManager.connect(roomId);
+        };
 
         this.peerManager.onOpen((id) => {
             console.log('Player ID:', id);
-            this.peerManager.connect(roomId);
+            tryConnect();
         });
 
         this.peerManager.onConnectionOpen(() => {
-            clearTimeout(connectionTimeout);
+            attempt = 0; // Reset retries on success
             this.isConnected = true;
             console.log('Connection Established!');
             this.peerManager.send({ type: 'LOGIN' });
-            // Show Team Selection instead of Controls immediately
+
+            // UI Transition
             this.showTeamSelection();
         });
 
         this.peerManager.onError((err) => {
-            clearTimeout(connectionTimeout);
             console.error("Player Error:", err);
 
-            if (err.type === 'disconnected') {
-                this.statusText.textContent = "Verbindung weg... Reconnect...";
+            if (err.type === 'peer-unavailable') {
+                // Host ID not found yet? Retry.
+                if (attempt < maxRetries) {
+                    attempt++;
+                    this.statusMsg.textContent = `Host nicht gefunden. Suche... (${attempt})`;
+                    setTimeout(tryConnect, 2000); // Retry after 2s
+                } else {
+                    alert("Host 'TOBIS-JGA' nicht gefunden. Ist der Master-Tab offen?");
+                    this.resetJoinButton();
+                }
+            } else if (err.type === 'disconnected') {
+                this.statusText.textContent = "Verbindung weg... Suche...";
                 this.statusText.style.color = "red";
-                // Optional: lock buttons?
+                // Auto-retry indefinitely for disconnects
+                setTimeout(tryConnect, 2000);
             } else {
                 alert("Fehler: " + err.type);
                 this.resetJoinButton();
