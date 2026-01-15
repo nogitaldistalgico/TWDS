@@ -462,8 +462,8 @@ class MasterGame {
                     const gradient = (item.result === 'tobi') ? 'var(--card-purple-top), var(--card-purple-bottom)' : 'var(--card-purple-top), var(--card-purple-bottom)';
                     // Re-construct full background property to match live logic
                     card.style.background = `url('assets/${item.result}.png'), linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%)`;
-                    card.style.backgroundSize = 'auto 90%, cover';
-                    card.style.backgroundPosition = 'center bottom, center';
+                    card.style.backgroundSize = 'contain, cover';
+                    card.style.backgroundPosition = 'center center, center';
                     card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
                     card.style.borderColor = (item.result === 'tobi') ? 'var(--color-primary)' : 'var(--color-secondary)';
@@ -494,9 +494,9 @@ class MasterGame {
             const gradient = `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 100%), linear-gradient(to bottom, #9b287b 0%, #5c1248 100%)`;
 
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
-            // Face: scaled to 90% height to avoid top cropping, anchored at bottom
-            card.style.backgroundSize = 'auto 90%, cover, cover';
-            card.style.backgroundPosition = 'center bottom, center, center';
+            // Face: centered and fit to container
+            card.style.backgroundSize = 'contain, cover, cover';
+            card.style.backgroundPosition = 'center center, center, center';
             card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
             // Add Gold Border via class, but ensure JS doesn't override it poorly
