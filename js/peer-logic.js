@@ -51,32 +51,73 @@ class PeerManager {
         });
     }
 
-    connect(hostId) {
-        if (this.isHost) return;
-
-        console.log('Connecting to ' + hostId);
-        this.conn = this.peer.connect(hostId);
-        this.handleConnection(this.conn);
-    }
-
     handleConnection(conn) {
-        this.conn = conn; // Simple 1:1 for now, or Host stores array of conns
+        this.conn = conn;
 
         conn.on('open', () => {
             console.log('Connected!');
+            this.startHeartbeat();
             if (this.callbacks.onConnectionOpen) this.callbacks.onConnectionOpen();
-            // Send initial ping or handshake if needed
         });
 
         conn.on('data', (data) => {
+            // Heartbeat check
+            if (data.type === 'PING') {
+                // Respond with PONG
+                this.send({ type: 'PONG' });
+                return;
+            }
+            if (data.type === 'PONG') {
+                // Connection is alive
+                return;
+            }
+
             console.log('Received:', data);
             this.callbacks.onData(data);
         });
 
         conn.on('close', () => {
             console.log('Connection closed');
+            this.stopHeartbeat();
             this.callbacks.onClose();
+
+            // Auto Reconnect implementation for Client (not host)
+            if (!this.isHost && !this.intentionalClose) {
+                console.log("Unexpected disconnect. Attempting reconnect...");
+                setTimeout(() => {
+                    this.reconnect();
+                }, 2000);
+            }
         });
+
+        conn.on('error', (err) => {
+            console.error("Connection Error:", err);
+            this.stopHeartbeat();
+        });
+    }
+
+    startHeartbeat() {
+        this.stopHeartbeat();
+        // Send a PING every 3 seconds to keep connection alive
+        this.heartbeatInterval = setInterval(() => {
+            if (this.conn && this.conn.open) {
+                this.conn.send({ type: 'PING' });
+            }
+        }, 3000);
+    }
+
+    stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+    }
+
+    reconnect() {
+        if (this.lastHostId) {
+            console.log("Reconnecting to " + this.lastHostId);
+            this.connect(this.lastHostId);
+        }
     }
 
     send(data) {
@@ -84,26 +125,26 @@ class PeerManager {
             this.conn.send(data);
         } else {
             console.warn('Connection not open, cannot send data');
-            alert('Not connected to Host!');
+            // Don't alert on heartbeat fail, just warn
+            if (data.type !== 'PING' && data.type !== 'PONG') {
+                // Trigger callback so UI can show "Offline"
+                if (this.callbacks.onError) this.callbacks.onError({ type: 'disconnected' });
+            }
         }
     }
 
-    generateRoomId() {
-        // Generate a simple 4 letter code
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 1, 0 to avoid confusion
-        let result = '';
-        for (let i = 0; i < 4; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    }
+    // ... (rest of class)
 
-    // Setters for callbacks
-    onOpen(cb) { this.callbacks.onOpen = cb; }
-    onData(cb) { this.callbacks.onData = cb; }
-    onClose(cb) { this.callbacks.onClose = cb; }
-    onConnectionOpen(cb) { this.callbacks.onConnectionOpen = cb; }
-    onConnectionOpen(cb) { this.callbacks.onConnectionOpen = cb; }
-    onConnection(cb) { this.callbacks.onConnection = cb; }
-    onError(cb) { this.callbacks.onError = cb; }
-}
+    connect(hostId) {
+        if (this.isHost) return;
+        this.lastHostId = hostId; // Save for reconnect
+        this.intentionalClose = false;
+
+        console.log('Connecting to ' + hostId);
+        // connection options for reliability
+        this.conn = this.peer.connect(hostId, {
+            reliable: true,
+            serialization: 'json'
+        });
+        this.handleConnection(this.conn);
+    }
