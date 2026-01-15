@@ -214,7 +214,7 @@ class PlayerController {
     }
 
     sendAnswer(choice) {
-        if (this.locked) return;
+        if (!this.canAnswer) return;
 
         // Haptic Feedback (Vibrate) - Subtle tick (50ms)
         if (navigator.vibrate) {
@@ -227,59 +227,94 @@ class PlayerController {
             b.disabled = true; // Disable interaction
             b.style.pointerEvents = 'none';
         });
+    });
         this.btns[choice].classList.add('selected');
-        this.locked = true;
-        this.lastChoice = choice; // Store choice for feedback
 
-        this.peerManager.send({ type: 'ANSWER', payload: choice });
+// Lock immediately to prevent spamming
+this.setInteraction(false);
+// But keep selected one fully opaque/visible
+this.btns[choice].style.opacity = '1';
+this.btns[choice].style.filter = 'none';
+
+this.lastChoice = choice; // Store choice for feedback
+
+this.peerManager.send({ type: 'ANSWER', payload: choice });
     }
 
-    handleGameData(data) {
-        if (data.type === 'STATE_CHANGE') {
-            if (data.payload === 'WALL') {
-                this.statusText.textContent = "Waiting for Host...";
-                this.resetButtons();
-            } else if (data.payload === 'QUESTION') {
-                this.statusText.textContent = "Make your choice!";
-            } else if (data.payload === 'REVEAL') {
-                this.statusText.textContent = "Check the screen!";
+handleGameData(data) {
+    if (data.type === 'STATE_CHANGE') {
+        if (data.payload === 'WALL') {
+            this.statusText.textContent = "Waiting for Host...";
+            // RESET & LOCK
+            this.resetVisuals();
+            this.setInteraction(false);
+            this.lastChoice = null;
 
-                // Show feedback
-                const correct = data.correct;
-                if (this.lastChoice === correct) {
-                    // Correct!
-                    this.btns[this.lastChoice].classList.add('correct');
-                    this.statusText.textContent = "RICHTIG! 🎉";
-                } else if (this.lastChoice) {
-                    // Wrong
-                    this.btns[this.lastChoice].classList.add('wrong');
-                    this.statusText.textContent = "LEIDER FALSCH ❌";
-                }
+        } else if (data.payload === 'QUESTION') {
+            this.statusText.textContent = "Make your choice!";
+            // UNLOCK
+            this.resetVisuals();
+            this.setInteraction(true);
+
+        } else if (data.payload === 'REVEAL') {
+            this.statusText.textContent = "Check the screen!";
+            // LOCK
+            this.setInteraction(false);
+
+            // Show feedback (Visuals only, no interaction)
+            const correct = data.correct;
+            // Re-enable opacity for clarity, but keep disabled
+            Object.values(this.btns).forEach(b => b.style.opacity = '1');
+
+            if (this.lastChoice === correct) {
+                // Correct!
+                this.btns[this.lastChoice].classList.add('correct');
+                this.statusText.textContent = "RICHTIG! 🎉";
+            } else if (this.lastChoice) {
+                // Wrong
+                this.btns[this.lastChoice].classList.add('wrong');
+                this.statusText.textContent = "LEIDER FALSCH ❌";
             }
-        } else if (data.type === 'TEAM_CONFIRMED') {
-            // Success! Move to controls
-            this.showControls();
-        } else if (data.type === 'TEAM_TAKEN') {
-            this.statusMsg.textContent = "Team already taken! Choose another.";
-            document.getElementById(`select-team-${data.payload}`).classList.add('taken');
-            setTimeout(() => {
-                document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
-            }, 500);
-        } else if (data.type === 'ERROR') {
-            alert(data.message);
-            this.resetButtons();
         }
+    } else if (data.type === 'TEAM_CONFIRMED') {
+        // Success! Move to controls
+        this.showControls();
+        // Start locked until question comes
+        this.setInteraction(false);
+    } else if (data.type === 'TEAM_TAKEN') {
+        this.statusMsg.textContent = "Team already taken! Choose another.";
+        document.getElementById(`select-team-${data.payload}`).classList.add('taken');
+        setTimeout(() => {
+            document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
+        }, 500);
+    } else if (data.type === 'ERROR') {
+        alert(data.message);
+        this.resetButtons();
     }
+}
 
-    resetButtons() {
-        this.locked = false;
-        this.lastChoice = null;
-        Object.values(this.btns).forEach(b => {
-            b.classList.remove('selected', 'correct', 'wrong');
+resetVisuals() {
+    Object.values(this.btns).forEach(b => {
+        b.classList.remove('selected', 'correct', 'wrong');
+    });
+}
+
+setInteraction(active) {
+    this.canAnswer = active;
+    Object.values(this.btns).forEach(b => {
+        if (active) {
             b.disabled = false;
             b.style.pointerEvents = 'auto';
-        });
-    }
+            b.style.opacity = '1';
+            b.style.filter = 'none';
+        } else {
+            b.disabled = true;
+            b.style.pointerEvents = 'none';
+            b.style.opacity = '0.5';
+            b.style.filter = 'grayscale(1)';
+        }
+    });
+}
 }
 
 // Start Player
