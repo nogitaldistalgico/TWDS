@@ -112,8 +112,8 @@ class MasterGame {
             // Handle ID Taken (e.g. previous session didn't close properly)
             if (err.type === 'unavailable-id') {
                 this.elRoomId.innerHTML = `<span style="color:orange; font-size:0.6em">ID belegt. <br>Warte kurz...</span>`;
-                // Optional: Retry after 2 seconds? Or just tell user to refresh
-                // setTimeout(() => location.reload(), 2000);
+                // Retry automatically to clear zombie connections
+                setTimeout(() => location.reload(), 2000);
             } else {
                 this.elRoomId.innerHTML = `<span style="color:red; font-size:0.8em">Error: ${err.type}</span>`;
             }
@@ -394,10 +394,10 @@ class MasterGame {
         }
 
         // SHOW EXPLANATION
-        const explBox = document.querySelector('.explanation-box');
-        explBox.textContent = this.currentQuestion.explanation;
-        explBox.classList.remove('hidden');
-        explBox.classList.add('animate-scale-in');
+        // const explBox = document.querySelector('.explanation-box');
+        // explBox.textContent = this.currentQuestion.explanation;
+        // explBox.classList.remove('hidden');
+        // explBox.classList.add('animate-scale-in');
 
         // NOTIFY
         this.broadcast({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: correct });
@@ -461,8 +461,10 @@ class MasterGame {
                 } else {
                     const gradient = (item.result === 'tobi') ? 'var(--card-purple-top), var(--card-purple-bottom)' : 'var(--card-purple-top), var(--card-purple-bottom)';
                     // Re-construct full background property to match live logic
+                    const bgSize = (item.result === 'lurch') ? '110%, cover' : 'contain, cover';
+
                     card.style.background = `url('assets/${item.result}.png'), linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%)`;
-                    card.style.backgroundSize = 'contain, cover';
+                    card.style.backgroundSize = bgSize;
                     card.style.backgroundPosition = 'center center, center';
                     card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
@@ -495,8 +497,10 @@ class MasterGame {
 
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
 
-            // Standardize sizing: Both strictly contained
-            card.style.backgroundSize = 'contain, cover, cover';
+            // Standardize sizing: Tobi contain, Lurch zoomed 110%
+            const bgSize = (this.currentTurn === 1) ? '110%, cover, cover' : 'contain, cover, cover';
+
+            card.style.backgroundSize = bgSize;
             card.style.backgroundPosition = 'center center, center, center';
             card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
