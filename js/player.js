@@ -45,7 +45,54 @@ class PlayerController {
         };
 
         this.initControls();
+        this.initControls();
         this.initTeamSelection();
+        this.initUtilities();
+    }
+
+    initUtilities() {
+        // Fullscreen Toggle
+        const btnFs = document.getElementById('btn-fullscreen');
+        if (btnFs) {
+            btnFs.addEventListener('click', () => {
+                this.toggleFullscreen();
+                this.requestWakeLock(); // Also trigger wake lock on interaction
+            });
+        }
+
+        // Wake Lock
+        this.wakeLock = null;
+        document.addEventListener('visibilitychange', async () => {
+            if (this.wakeLock !== null && document.visibilityState === 'visible') {
+                this.requestWakeLock();
+            }
+        });
+    }
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    async requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                this.wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock is active');
+                this.wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock released');
+                });
+            }
+        } catch (err) {
+            console.error(`${err.name}, ${err.message}`);
+        }
     }
 
     initControls() {
@@ -56,7 +103,9 @@ class PlayerController {
             this.btnJoin.style.opacity = "0.7";
 
             // Connect
+            // Connect
             this.connect('TOBIS-JGA');
+            this.requestWakeLock();
         });
 
         ['A', 'B', 'C'].forEach(key => {
