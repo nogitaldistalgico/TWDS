@@ -148,3 +148,4 @@ class PeerManager {
         });
         this.handleConnection(this.conn);
     }
+}

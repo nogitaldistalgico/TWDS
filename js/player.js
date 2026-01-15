@@ -97,8 +97,15 @@ class PlayerController {
         this.peerManager.onError((err) => {
             clearTimeout(connectionTimeout);
             console.error("Player Error:", err);
-            alert("Fehler: " + err.type);
-            this.resetJoinButton();
+
+            if (err.type === 'disconnected') {
+                this.statusText.textContent = "Verbindung weg... Reconnect...";
+                this.statusText.style.color = "red";
+                // Optional: lock buttons?
+            } else {
+                alert("Fehler: " + err.type);
+                this.resetJoinButton();
+            }
         });
 
         this.peerManager.onData((data) => {
