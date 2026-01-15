@@ -298,8 +298,8 @@ class MasterGame {
                 const targetWidth = Math.min(window.innerWidth * 0.6, 500);
                 const targetHeight = Math.min(window.innerHeight * 0.4, 300);
 
-                // Position at top 5%
-                const targetTop = window.innerHeight * 0.05;
+                // Position at top 10%
+                const targetTop = window.innerHeight * 0.10;
                 const targetLeft = (window.innerWidth - targetWidth) / 2;
 
                 flyWrapper.style.top = targetTop + 'px';
