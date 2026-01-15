@@ -436,11 +436,15 @@ class MasterGame {
             // this.teams[0].el.querySelector('.player-score').textContent = state.scores[0] + ' €'; // Old dock logic
             // this.teams[1].el.querySelector('.player-score').textContent = state.scores[1] + ' €';
 
-            // New Header Logic
-            const score0 = document.getElementById('score-0');
-            const score1 = document.getElementById('score-1');
-            if (score0) score0.textContent = state.scores[0] + ' €';
-            if (score1) score1.textContent = state.scores[1] + ' €';
+            // Restore Scores
+            this.teams[0].score = state.scores[0];
+            this.teams[1].score = state.scores[1];
+
+            // Generic update via UI function or direct element check
+            const scoreEl0 = this.teams[0].el.querySelector('.player-score');
+            const scoreEl1 = this.teams[1].el.querySelector('.player-score');
+            if (scoreEl0) scoreEl0.textContent = state.scores[0] + ' €';
+            if (scoreEl1) scoreEl1.textContent = state.scores[1] + ' €';
 
             // Restore Turn
             this.currentTurn = state.currentTurn;
@@ -591,20 +595,13 @@ class MasterGame {
         this.teams.forEach(t => t.el.classList.remove('active-turn'));
         this.teams[this.currentTurn].el.classList.add('active-turn');
 
-        // Update Scores in Header
-        const score0 = document.getElementById('score-0');
-        const score1 = document.getElementById('score-1');
-        if (score0) {
-            score0.textContent = this.teams[0].score + ' €';
-            // Scale up animation
-            score0.style.transform = "scale(1.2)";
-            setTimeout(() => score0.style.transform = "scale(1)", 200);
-        }
-        if (score1) {
-            score1.textContent = this.teams[1].score + ' €';
-            score1.style.transform = "scale(1.2)";
-            setTimeout(() => score1.style.transform = "scale(1)", 200);
-        }
+        // Update Scores Logic
+        // We now have #team-0 and #team-1 with .player-score children again
+        const scoreEl0 = this.teams[0].el.querySelector('.player-score');
+        const scoreEl1 = this.teams[1].el.querySelector('.player-score');
+
+        if (scoreEl0) scoreEl0.textContent = this.teams[0].score + ' €';
+        if (scoreEl1) scoreEl1.textContent = this.teams[1].score + ' €';
 
         // Update Indicator (Optional secondary)
         const indicator = document.getElementById('turn-indicator');
