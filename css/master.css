@@ -411,6 +411,10 @@ header.studio-header {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+
+    /* Fail-safe centering */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Wall Fading */
