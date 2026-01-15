@@ -148,8 +148,8 @@ header.studio-header {
     border-radius: 12px;
     padding: 20px;
     font-weight: 800;
-    background: rgba(30, 30, 40, 0.85);
-    /* Darker, sleek */
+    background: rgba(30, 30, 40, 0.95);
+    /* Increased opacity for legibility */
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;

@@ -245,6 +245,7 @@ class MasterGame {
 
             // 1. MEASURE
             const rect = card.getBoundingClientRect();
+            this.activeCardOriginalRect = rect; // Store for return animation
 
             // 2. CREATE FLYING CLONE
             const flyWrapper = document.createElement('div');
@@ -278,11 +279,12 @@ class MasterGame {
 
             // 4. ANIMATE (Next Frame)
             requestAnimationFrame(() => {
-                // Target: Center of screen, larger
-                const targetWidth = Math.min(window.innerWidth * 0.8, 600); // Max 600px wide
-                const targetHeight = Math.min(window.innerHeight * 0.5, 400);
+                // Target: Top half of screen, avoiding overlap
+                const targetWidth = Math.min(window.innerWidth * 0.6, 500);
+                const targetHeight = Math.min(window.innerHeight * 0.4, 300);
 
-                const targetTop = (window.innerHeight - targetHeight) / 2 - 100; // Slightly above center (room for answers)
+                // Position at top 15%
+                const targetTop = window.innerHeight * 0.15;
                 const targetLeft = (window.innerWidth - targetWidth) / 2;
 
                 flyWrapper.style.top = targetTop + 'px';
@@ -509,18 +511,41 @@ class MasterGame {
         this.broadcast({ type: 'STATE_CHANGE', payload: 'WALL' });
         this.updateHostButton();
 
-        // CLEANUP ANIMATION
-        if (this.elFlyingCard) {
-            this.elFlyingCard.style.opacity = '0';
-            this.elFlyingCard.style.transform = 'scale(0.8)'; // Shrink out
+        // SAVE STATE
+        this.saveGame();
+
+        // RETURN ANIMATION
+        if (this.elFlyingCard && this.activeCardOriginalRect) {
+            const rect = this.activeCardOriginalRect;
+
+            // 1. Flip Back to Front (optional, or stick to back?)
+            // Let's flip back to indicate "closing"
+            this.elFlyingCard.classList.remove('flipped');
+
+            // 2. Move to original coords
+            this.elFlyingCard.style.top = rect.top + 'px';
+            this.elFlyingCard.style.left = rect.left + 'px';
+            this.elFlyingCard.style.width = rect.width + 'px';
+            this.elFlyingCard.style.height = rect.height + 'px';
+
+            // 3. Wait for transition, then cleanup
             setTimeout(() => {
                 if (this.elFlyingCard) this.elFlyingCard.remove();
                 this.elFlyingCard = null;
-            }, 500);
-        }
 
-        // SAVE STATE
-        this.saveGame();
+                // Show original card again (now with "played" style)
+                const card = document.getElementById(`cat-${this.selectedCategory}`);
+                if (card) {
+                    card.style.opacity = '1';
+                    // Ensure the "played" classes are fully active
+                    card.classList.add('played');
+                }
+            }, 1000); // Wait for CSS transition (1.2s set in CSS, but 1s is mostly fine)
+        } else {
+            // Fallback if animation missing
+            const card = document.getElementById(`cat-${this.selectedCategory}`);
+            if (card) card.style.opacity = '1';
+        }
     }
 
     updateTurnUI() {
