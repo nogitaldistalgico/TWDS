@@ -1,5 +1,17 @@
 /* Master/Host Logic */
 
+window.toggleFullscreen = function () {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+};
+
 // Debug Logger
 const debugEl = document.getElementById('debug-console');
 if (location.search.includes('debug=true')) {

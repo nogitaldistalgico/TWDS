@@ -385,7 +385,9 @@ header.studio-header {
     background: linear-gradient(90deg, #0b1a3a, #162447);
     border: 2px solid #2e4a85;
     border-radius: 50px;
-    padding: 1.5rem 2rem;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
     font-size: 1.5rem;
@@ -424,6 +426,18 @@ div.answer-card.correct {
     background: #2ecc71 !important;
     border-color: #fff !important;
     box-shadow: 0 0 30px #2ecc71;
+}
+
+/* Question Overlay (Now just holding answers at bottom) */
+.question-overlay {
+    position: fixed;
+    top: auto;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1000px;
+    z-index: 100;
 }
 
 /* Player Dock */
