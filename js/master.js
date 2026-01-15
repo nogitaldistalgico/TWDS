@@ -433,8 +433,14 @@ class MasterGame {
             // Restore Scores
             this.teams[0].score = state.scores[0];
             this.teams[1].score = state.scores[1];
-            this.teams[0].el.querySelector('.player-score').textContent = state.scores[0] + ' €';
-            this.teams[1].el.querySelector('.player-score').textContent = state.scores[1] + ' €';
+            // this.teams[0].el.querySelector('.player-score').textContent = state.scores[0] + ' €'; // Old dock logic
+            // this.teams[1].el.querySelector('.player-score').textContent = state.scores[1] + ' €';
+
+            // New Header Logic
+            const score0 = document.getElementById('score-0');
+            const score1 = document.getElementById('score-1');
+            if (score0) score0.textContent = state.scores[0] + ' €';
+            if (score1) score1.textContent = state.scores[1] + ' €';
 
             // Restore Turn
             this.currentTurn = state.currentTurn;
@@ -461,7 +467,7 @@ class MasterGame {
                 } else {
                     const gradient = (item.result === 'tobi') ? 'var(--card-purple-top), var(--card-purple-bottom)' : 'var(--card-purple-top), var(--card-purple-bottom)';
                     // Re-construct full background property to match live logic
-                    const bgSize = (item.result === 'lurch') ? '110%, cover' : 'contain, cover';
+                    const bgSize = (item.result === 'lurch') ? '100%, cover' : 'contain, cover';
 
                     card.style.background = `url('assets/${item.result}.png'), linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%)`;
                     card.style.backgroundSize = bgSize;
@@ -498,7 +504,7 @@ class MasterGame {
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
 
             // Standardize sizing: Tobi contain, Lurch zoomed 110%
-            const bgSize = (this.currentTurn === 1) ? '110%, cover, cover' : 'contain, cover, cover';
+            const bgSize = (this.currentTurn === 1) ? '100%, cover, cover' : 'contain, cover, cover';
 
             card.style.backgroundSize = bgSize;
             card.style.backgroundPosition = 'center center, center, center';
@@ -585,7 +591,22 @@ class MasterGame {
         this.teams.forEach(t => t.el.classList.remove('active-turn'));
         this.teams[this.currentTurn].el.classList.add('active-turn');
 
-        // Update Indicator
+        // Update Scores in Header
+        const score0 = document.getElementById('score-0');
+        const score1 = document.getElementById('score-1');
+        if (score0) {
+            score0.textContent = this.teams[0].score + ' €';
+            // Scale up animation
+            score0.style.transform = "scale(1.2)";
+            setTimeout(() => score0.style.transform = "scale(1)", 200);
+        }
+        if (score1) {
+            score1.textContent = this.teams[1].score + ' €';
+            score1.style.transform = "scale(1.2)";
+            setTimeout(() => score1.style.transform = "scale(1)", 200);
+        }
+
+        // Update Indicator (Optional secondary)
         const indicator = document.getElementById('turn-indicator');
         if (indicator) {
             indicator.textContent = (this.currentTurn === 0) ? "TOBIS RUNDE" : "LURCHS RUNDE";
@@ -594,92 +615,85 @@ class MasterGame {
     }
 
     animateScore(element, start, end) {
-        if (start === end) return;
-        const duration = 2000; // 2s animation
-        const startTime = performance.now();
-
-        const update = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            // Ease out quart
-            const ease = 1 - Math.pow(1 - progress, 4);
-
-            const current = Math.floor(start + (end - start) * ease);
+        // This function was unused or used differently. 
+        // Since we now update directly in updateTurnUI or handleAnswer, let's just use direct updates or reimplement if needed.
+        // For now, updateTurnUI handles static updates. 
+        // If we want smooth counting, we'd need to target 'score-0' and 'score-1' specifically.
+    }
             element.textContent = current + " €";
 
-            if (progress < 1) {
-                requestAnimationFrame(update);
-            } else {
-                element.textContent = end + " €";
-            }
-        };
+    if(progress < 1) {
         requestAnimationFrame(update);
+    } else {
+    element.textContent = end + " €";
+}
+        };
+requestAnimationFrame(update);
     }
 
-    broadcast(msg) {
-        // Send to all connected teams
-        this.teams.forEach(t => {
-            if (t.conn && t.conn.open) {
-                t.conn.send(msg);
-            }
-        });
-    }
+broadcast(msg) {
+    // Send to all connected teams
+    this.teams.forEach(t => {
+        if (t.conn && t.conn.open) {
+            t.conn.send(msg);
+        }
+    });
+}
 
-    initControls() {
-        document.addEventListener('keydown', (e) => {
-            const key = e.key.toLowerCase();
+initControls() {
+    document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
 
-            // GAME LOOP CONTROLS
-            if (e.key === ' ' || e.code === 'Space') {
-                if (this.state === STATE.QUESTION) {
-                    this.revealAnswer();
-                } else if (this.state === STATE.REVEAL) {
-                    this.closeQuestion();
-                }
-            }
-
-            // EMERGENCY KEYBOARD INPUTS (Fallback for unstable connections)
-            // T -> A
-            // Z -> B (QWERTZ layout adjacent)
-            // U -> C
+        // GAME LOOP CONTROLS
+        if (e.key === ' ' || e.code === 'Space') {
             if (this.state === STATE.QUESTION) {
-                if (key === 't') this.processAnswer('A');
-                else if (key === 'z' || key === 'y') this.processAnswer('B'); // Support Z (QWERTZ) and Y (QWERTY) just in case
-                else if (key === 'u') this.processAnswer('C');
+                this.revealAnswer();
+            } else if (this.state === STATE.REVEAL) {
+                this.closeQuestion();
+            }
+        }
+
+        // EMERGENCY KEYBOARD INPUTS (Fallback for unstable connections)
+        // T -> A
+        // Z -> B (QWERTZ layout adjacent)
+        // U -> C
+        if (this.state === STATE.QUESTION) {
+            if (key === 't') this.processAnswer('A');
+            else if (key === 'z' || key === 'y') this.processAnswer('B'); // Support Z (QWERTZ) and Y (QWERTY) just in case
+            else if (key === 'u') this.processAnswer('C');
+        }
+    });
+
+    // Mouse/Touch Control
+    this.btnHostAction = document.getElementById('btn-host-action');
+    if (this.btnHostAction) {
+        this.btnHostAction.addEventListener('click', () => {
+            if (this.state === STATE.QUESTION) {
+                this.revealAnswer();
+            } else if (this.state === STATE.REVEAL) {
+                this.closeQuestion();
             }
         });
-
-        // Mouse/Touch Control
-        this.btnHostAction = document.getElementById('btn-host-action');
-        if (this.btnHostAction) {
-            this.btnHostAction.addEventListener('click', () => {
-                if (this.state === STATE.QUESTION) {
-                    this.revealAnswer();
-                } else if (this.state === STATE.REVEAL) {
-                    this.closeQuestion();
-                }
-            });
-        }
     }
+}
 
-    updateHostButton() {
-        if (!this.btnHostAction) return;
+updateHostButton() {
+    if (!this.btnHostAction) return;
 
-        if (this.state === STATE.WALL) {
-            this.btnHostAction.style.display = 'none'; // Select category to start
-        } else if (this.state === STATE.QUESTION) {
-            this.btnHostAction.style.display = 'block';
-            this.btnHostAction.textContent = "AUFLÖSEN (Space)";
-            this.btnHostAction.style.background = "var(--color-primary)";
-        } else if (this.state === STATE.REVEAL) {
-            this.btnHostAction.style.display = 'block';
-            this.btnHostAction.textContent = "WEITER (Space)";
-            this.btnHostAction.style.background = "var(--color-secondary)";
-        }
+    if (this.state === STATE.WALL) {
+        this.btnHostAction.style.display = 'none'; // Select category to start
+    } else if (this.state === STATE.QUESTION) {
+        this.btnHostAction.style.display = 'block';
+        this.btnHostAction.textContent = "AUFLÖSEN (Space)";
+        this.btnHostAction.style.background = "var(--color-primary)";
+    } else if (this.state === STATE.REVEAL) {
+        this.btnHostAction.style.display = 'block';
+        this.btnHostAction.textContent = "WEITER (Space)";
+        this.btnHostAction.style.background = "var(--color-secondary)";
     }
+}
 
-    playAudio(name) { }
+playAudio(name) { }
 }
 
 // Start Game

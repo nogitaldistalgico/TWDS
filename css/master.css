@@ -199,18 +199,57 @@ header.studio-header {
 }
 
 /* LOGO CONTAINER */
+/* LOGO CONTAINER */
 .logo-wrapper {
     position: relative;
     transform: scale(1);
-    /* Adjust size */
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    z-index: 10;
+}
+
+/* HEADER SCORES */
+.header-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+    z-index: 20;
+}
+
+.score-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.score-value {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 20px currentColor;
+    font-family: 'Inter', sans-serif;
+}
+
+.team-tobi .score-value {
+    color: var(--color-primary);
+    text-shadow: 0 0 30px var(--color-primary-glow);
+}
+
+.team-lurch .score-value {
+    color: var(--color-primary);
+    /* Use same or secondary? Request said Tobi left, Lurch right. Let's use differnet colors if possible, or gold? */
+    /* Using Secondary for Lurch */
+    color: var(--color-secondary);
+    text-shadow: 0 0 30px var(--color-secondary-glow);
 }
 
 .studio-logo-img {
-    max-height: 500px;
+    max-height: 300px;
     /* Huge */
     /* Constrain height */
     max-width: 90%;

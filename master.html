@@ -26,17 +26,28 @@
         </button>
 
         <header class="studio-header">
-            <div class="header-corner left">
-                <span class="room-id" style="opacity: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity=1"
-                    onmouseout="this.style.opacity=0">ID: TOBIS-JGA</span>
+            <!-- Tobi Score (Left) -->
+            <div class="header-score team-tobi">
+                <div class="score-label">TOBI</div>
+                <div id="score-0" class="score-value">0 €</div>
             </div>
 
             <div class="logo-wrapper">
                 <img src="assets/logo_header.png" alt="TOBOVS JGA QUIZ" class="studio-logo-img">
             </div>
 
-            <div class="header-corner right">
-                <button id="btn-reset" onclick="game.resetGame()" title="Reset Game" class="reset-btn">↻</button>
+            <!-- Lurch Score (Right) -->
+            <div class="header-score team-lurch">
+                <div class="score-label">LURCH</div>
+                <div id="score-1" class="score-value">0 €</div>
+            </div>
+
+            <!-- Controls (Absolute) -->
+            <div class="header-corner left" style="top: 10px; left: 10px; position: absolute;">
+                <span class="room-id" style="opacity: 0.3; font-size: 0.8rem;">ID: TOBIS-JGA</span>
+            </div>
+            <div class="header-corner right" style="top: 10px; right: 10px; position: absolute;">
+                <button id="btn-reset" onclick="game.resetGame()" title="Reset" class="reset-btn">↻</button>
             </div>
         </header>
 
@@ -50,15 +61,12 @@
                 <div class="player-info">
                     <div class="player-name">Tobi</div>
                 </div>
-                <!-- Score inline? -->
-                <div class="player-score" style="font-weight:900; font-size:1.5rem">0 €</div>
             </div>
             <div id="team-1" class="player-indicator">
                 <div class="player-avatar" style="background-image: url('assets/lurch.png')"></div>
                 <div class="player-info">
                     <div class="player-name">Lurch</div>
                 </div>
-                <div class="player-score" style="font-weight:900; font-size:1.5rem">0 €</div>
             </div>
         </div>
 
