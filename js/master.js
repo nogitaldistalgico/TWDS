@@ -240,24 +240,69 @@ class MasterGame {
 
         try {
             console.log("Category selected:", index);
-            // Verify if category is already played
             const card = document.getElementById(`cat-${index}`);
-            if (card.classList.contains('played')) return;
+            if (!card || card.classList.contains('played')) return;
 
-            // ANIMATION STEP
-            card.classList.add('selecting');
+            // 1. MEASURE
+            const rect = card.getBoundingClientRect();
 
-            // Delay for Effect (Display the flash/pulse for 1.2s)
+            // 2. CREATE FLYING CLONE
+            const flyWrapper = document.createElement('div');
+            flyWrapper.className = 'flying-card-wrapper';
+            // Start at exact position of card
+            flyWrapper.style.top = rect.top + 'px';
+            flyWrapper.style.left = rect.left + 'px';
+            flyWrapper.style.width = rect.width + 'px';
+            flyWrapper.style.height = rect.height + 'px';
+
+            const flyInner = document.createElement('div');
+            flyInner.className = 'flying-card-inner';
+
+            const faceFront = document.createElement('div');
+            faceFront.className = 'card-face front';
+            faceFront.textContent = this.questions[index].category;
+
+            const faceBack = document.createElement('div');
+            faceBack.className = 'card-face back';
+            faceBack.textContent = this.questions[index].question;
+
+            flyInner.appendChild(faceFront);
+            flyInner.appendChild(faceBack);
+            flyWrapper.appendChild(flyInner);
+            document.body.appendChild(flyWrapper);
+
+            this.elFlyingCard = flyWrapper; // Keep ref to remove later
+
+            // 3. HIDE ORIGINAL (Invisible but takes space)
+            card.style.opacity = '0';
+
+            // 4. ANIMATE (Next Frame)
+            requestAnimationFrame(() => {
+                // Target: Center of screen, larger
+                const targetWidth = Math.min(window.innerWidth * 0.8, 600); // Max 600px wide
+                const targetHeight = Math.min(window.innerHeight * 0.5, 400);
+
+                const targetTop = (window.innerHeight - targetHeight) / 2 - 100; // Slightly above center (room for answers)
+                const targetLeft = (window.innerWidth - targetWidth) / 2;
+
+                flyWrapper.style.top = targetTop + 'px';
+                flyWrapper.style.left = targetLeft + 'px';
+                flyWrapper.style.width = targetWidth + 'px';
+                flyWrapper.style.height = targetHeight + 'px';
+
+                // Trigger Flip
+                flyWrapper.classList.add('flipped');
+            });
+
+            // 5. TRANSITION TO GAME STATE
             setTimeout(() => {
                 try {
-                    card.classList.remove('selecting');
-
                     this.selectedCategory = index;
                     this.currentQuestion = this.questions[index];
                     this.state = STATE.QUESTION;
 
-                    // POPULATE UI
-                    this.elQuestionText.textContent = this.currentQuestion.question;
+                    // POPULATE UI - Answers Only (Question text is on card)
+                    this.elQuestionText.textContent = ""; // Hide text in overlay
                     this.elAnswers.A.querySelector('.text').textContent = this.currentQuestion.options.A;
                     this.elAnswers.B.querySelector('.text').textContent = this.currentQuestion.options.B;
                     this.elAnswers.C.querySelector('.text').textContent = this.currentQuestion.options.C;
@@ -269,17 +314,17 @@ class MasterGame {
                     document.querySelector('.explanation-box').classList.add('hidden');
                     this.teams.forEach(t => t.el.classList.remove('answered'));
 
-                    // SHOW
+                    // SHOW OVERLAY (Answers)
                     this.elQuestionOverlay.classList.remove('hidden');
                     this.elQuestionOverlay.classList.add('animate-fade-in');
 
-                    // NOTIFY ALL
+                    // BROADCAST
                     this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
                     this.updateHostButton();
                 } catch (timeoutErr) {
                     console.error("Error inside selectCategory timeout:", timeoutErr);
                 }
-            }, 1200);
+            }, 1000); // 1s sync with animation
 
         } catch (err) {
             console.error("Error in selectCategory:", err);
@@ -463,6 +508,16 @@ class MasterGame {
         // NOTIFY
         this.broadcast({ type: 'STATE_CHANGE', payload: 'WALL' });
         this.updateHostButton();
+
+        // CLEANUP ANIMATION
+        if (this.elFlyingCard) {
+            this.elFlyingCard.style.opacity = '0';
+            this.elFlyingCard.style.transform = 'scale(0.8)'; // Shrink out
+            setTimeout(() => {
+                if (this.elFlyingCard) this.elFlyingCard.remove();
+                this.elFlyingCard = null;
+            }, 500);
+        }
 
         // SAVE STATE
         this.saveGame();

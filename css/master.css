@@ -111,315 +111,377 @@ header.studio-header {
 }
 
 .header-corner.right {
-    right: 20px;
-}
 
-/* Reset Button */
-.reset-btn {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.5);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.reset-btn:hover {
-    background: rgba(255, 0, 0, 0.2);
-    color: #ff4444;
-    border-color: #ff4444;
-    transform: rotate(180deg);
-}
-
-/* LOGO CONTAINER */
-.logo-wrapper {
-    position: relative;
-    transform: scale(1);
-    /* Adjust size */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.studio-logo-img {
-    max-height: 200px;
-    /* Constrain height */
-    max-width: 90%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.4));
-    /* Glow behind the image */
-    animation: floatLogo 6s ease-in-out infinite;
-}
-
-@keyframes floatLogo {
-
-    0%,
-    100% {
-        transform: translateY(0px);
+    /* 3D Flying Card Animation */
+    .flying-card-wrapper {
+        position: fixed;
+        z-index: 2000;
+        transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+        perspective: 1500px;
     }
 
-    50% {
-        transform: translateY(-5px);
+    .flying-card-inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        border-radius: 12px;
     }
-}
 
-/* Channel Logo Circle (Top Right) */
-.channel-logo {
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    width: 40px;
-    height: 40px;
-    background: #000;
-    border: 2px solid var(--neon-border);
-    border-radius: 50%;
-    color: var(--neon-border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    box-shadow: 0 0 10px var(--neon-border);
-    z-index: 10;
-}
+    .flying-card-wrapper.flipped .flying-card-inner {
+        transform: rotateY(180deg);
+    }
 
-/* Category Grid */
-.category-wall {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
-    /* Tighter gap like the show */
-    flex: 1;
-    width: 100%;
-    max-width: 1300px;
-    margin: 0 auto 120px auto;
-    padding: 0 2rem;
-}
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 12px;
+        padding: 20px;
+        font-weight: 800;
+        background: rgba(30, 30, 40, 0.85);
+        /* Darker, sleek */
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
 
-/* TV SHOW CARD STYLE */
-.category-card {
-    /* Glossy Blue Gradient */
-    background: linear-gradient(to bottom, var(--card-blue-top) 0%, var(--card-blue-bottom) 100%);
-    border: 2px solid #5899d4;
-    /* Lighter blue border initially */
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 0.5rem;
-    font-size: 1.8rem;
-    /* Big Text */
-    font-weight: 800;
-    color: #fff;
-    cursor: pointer;
-    position: relative;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    transition: transform 0.2s;
-}
+    .card-face.front {
+        /* Like the category card */
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border: 1px solid var(--neon-blue);
+        box-shadow: 0 0 10px var(--neon-blue);
+    }
 
-/* Gloss Overlay */
-.category-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 50%;
-    /* Top half only */
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-    border-radius: 6px 6px 40% 40% / 6px 6px 10px 10px;
-    /* Curved shine */
-    pointer-events: none;
-}
-
-.category-card:hover {
-    transform: scale(1.02);
-    border-color: #fff;
-    z-index: 10;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-/* Played / Won Card Style (The "Reference" Look) */
-.category-card.played {
-    pointer-events: none;
-    border: 3px solid var(--border-gold);
-    /* GOLD BORDER */
-    box-shadow: 0 0 15px var(--border-gold), inset 0 0 20px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%);
-}
-
-/* Faces are injected via JS inline styles, but base logic here */
-.category-card.played.team-0,
-.category-card.played.team-1 {
-    /* Background handled by JS for gradients + image */
-}
-
-/* Lost Card */
-.category-card.lost {
-    background: #222;
-    opacity: 0.8;
-    border-color: #444;
-}
-
-.category-card.lost::after {
-    content: none;
-    /* No gloss */
-}
-
-/* X for lost */
-.category-card.lost::before {
-    content: '?';
-    /* Or X? Show uses ? sometimes or empty. User used X in my generic version. */
-    content: '✕';
-    font-size: 4rem;
-    color: rgba(255, 0, 0, 0.6);
-    position: absolute;
-    z-index: 0;
-}
+    .card-face.back {
+        transform: rotateY(180deg);
+        background: linear-gradient(135deg, rgba(8, 15, 40, 0.95), rgba(20, 30, 60, 0.95));
+        font-size: 2rem;
+        line-height: 1.4;
+        color: #fff;
+        border: 2px solid var(--neon-pink);
+        box-shadow: 0 0 25px var(--neon-pink);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        padding: 30px;
+    }
 
 
-/* Question Overlay */
-.question-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(5, 10, 25, 0.95);
-    backdrop-filter: blur(20px);
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+    /* Reset Button */
+    .reset-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
 
-.question-text {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 3rem;
-    text-align: center;
-    max-width: 80%;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-}
+    .reset-btn:hover {
+        background: rgba(255, 0, 0, 0.2);
+        color: #ff4444;
+        border-color: #ff4444;
+        transform: rotate(180deg);
+    }
 
-.answers-grid {
-    display: grid;
-    gap: 20px;
-    width: 80%;
-    max-width: 1000px;
-}
+    /* LOGO CONTAINER */
+    .logo-wrapper {
+        position: relative;
+        transform: scale(1);
+        /* Adjust size */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
 
-.answer-card {
-    background: linear-gradient(90deg, #0b1a3a, #162447);
-    border: 2px solid #2e4a85;
-    border-radius: 50px;
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
+    .studio-logo-img {
+        max-height: 200px;
+        /* Constrain height */
+        max-width: 90%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.4));
+        /* Glow behind the image */
+        animation: floatLogo 6s ease-in-out infinite;
+    }
 
-.answer-card:hover {
-    border-color: #fff;
-    background: #1f3a6e;
-}
+    @keyframes floatLogo {
 
-.answer-letter {
-    width: 50px;
-    height: 50px;
-    background: var(--border-gold);
-    color: #000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    margin-right: 1.5rem;
-    box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
-}
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
 
-div.answer-card.selected {
-    background: #ffae00 !important;
-    color: #000;
-    border-color: #fff !important;
-    box-shadow: 0 0 30px #ffae00;
-}
+        50% {
+            transform: translateY(-5px);
+        }
+    }
 
-div.answer-card.correct {
-    background: #2ecc71 !important;
-    border-color: #fff !important;
-    box-shadow: 0 0 30px #2ecc71;
-}
+    /* Channel Logo Circle (Top Right) */
+    .channel-logo {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        width: 40px;
+        height: 40px;
+        background: #000;
+        border: 2px solid var(--neon-border);
+        border-radius: 50%;
+        color: var(--neon-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 0 10px var(--neon-border);
+        z-index: 10;
+    }
 
-/* Player Dock */
-.player-dock {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 3rem;
-    z-index: 100;
-}
+    /* Category Grid */
+    .category-wall {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 10px;
+        /* Tighter gap like the show */
+        flex: 1;
+        width: 100%;
+        max-width: 1300px;
+        margin: 0 auto 120px auto;
+        padding: 0 2rem;
+    }
 
-.player-indicator {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 0.5rem 1.5rem;
-    border-radius: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    opacity: 0.5;
-    transition: all 0.5s;
-}
+    /* TV SHOW CARD STYLE */
+    .category-card {
+        /* Glossy Blue Gradient */
+        background: linear-gradient(to bottom, var(--card-blue-top) 0%, var(--card-blue-bottom) 100%);
+        border: 2px solid #5899d4;
+        /* Lighter blue border initially */
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0.5rem;
+        font-size: 1.8rem;
+        /* Big Text */
+        font-weight: 800;
+        color: #fff;
+        cursor: pointer;
+        position: relative;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
 
-.player-indicator.active-turn {
-    opacity: 1;
-    background: rgba(0, 118, 191, 0.4);
-    border-color: var(--border-gold);
-    box-shadow: 0 0 20px rgba(0, 118, 191, 0.6);
-    transform: scale(1.1);
-}
+    /* Gloss Overlay */
+    .category-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 50%;
+        /* Top half only */
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-radius: 6px 6px 40% 40% / 6px 6px 10px 10px;
+        /* Curved shine */
+        pointer-events: none;
+    }
 
-.player-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-size: cover;
-    border: 2px solid #fff;
-}
-
-/* Selection Animation */
-@keyframes flash {
-    0% {
-        background: #fff;
-        box-shadow: 0 0 20px #fff;
+    .category-card:hover {
+        transform: scale(1.02);
         border-color: #fff;
-        color: #000;
+        z-index: 10;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
     }
 
-    100% {
+    /* Played / Won Card Style (The "Reference" Look) */
+    .category-card.played {
+        pointer-events: none;
+        border: 3px solid var(--border-gold);
+        /* GOLD BORDER */
+        box-shadow: 0 0 15px var(--border-gold), inset 0 0 20px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%);
+    }
+
+    /* Faces are injected via JS inline styles, but base logic here */
+    .category-card.played.team-0,
+    .category-card.played.team-1 {
+        /* Background handled by JS for gradients + image */
+    }
+
+    /* Lost Card */
+    .category-card.lost {
+        background: #222;
+        opacity: 0.8;
+        border-color: #444;
+    }
+
+    .category-card.lost::after {
+        content: none;
+        /* No gloss */
+    }
+
+    /* X for lost */
+    .category-card.lost::before {
+        content: '?';
+        /* Or X? Show uses ? sometimes or empty. User used X in my generic version. */
+        content: '✕';
+        font-size: 4rem;
+        color: rgba(255, 0, 0, 0.6);
+        position: absolute;
+        z-index: 0;
+    }
+
+
+    /* Question Overlay */
+    .question-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 10, 25, 0.95);
+        backdrop-filter: blur(20px);
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .question-text {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        text-align: center;
+        max-width: 80%;
+        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .answers-grid {
+        display: grid;
+        gap: 20px;
+        width: 80%;
+        max-width: 1000px;
+    }
+
+    .answer-card {
+        background: linear-gradient(90deg, #0b1a3a, #162447);
+        border: 2px solid #2e4a85;
+        border-radius: 50px;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .answer-card:hover {
+        border-color: #fff;
+        background: #1f3a6e;
+    }
+
+    .answer-letter {
+        width: 50px;
+        height: 50px;
         background: var(--border-gold);
-        box-shadow: 0 0 50px var(--border-gold);
-        border-color: #fff;
         color: #000;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        margin-right: 1.5rem;
+        box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
     }
-}
 
-.category-card.selecting {
-    animation: flash 0.3s infinite alternate;
-    z-index: 100;
-    transform: scale(1.1);
-}
+    div.answer-card.selected {
+        background: #ffae00 !important;
+        color: #000;
+        border-color: #fff !important;
+        box-shadow: 0 0 30px #ffae00;
+    }
+
+    div.answer-card.correct {
+        background: #2ecc71 !important;
+        border-color: #fff !important;
+        box-shadow: 0 0 30px #2ecc71;
+    }
+
+    /* Player Dock */
+    .player-dock {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 3rem;
+        z-index: 100;
+    }
+
+    .player-indicator {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.5rem 1.5rem;
+        border-radius: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        opacity: 0.5;
+        transition: all 0.5s;
+    }
+
+    .player-indicator.active-turn {
+        opacity: 1;
+        background: rgba(0, 118, 191, 0.4);
+        border-color: var(--border-gold);
+        box-shadow: 0 0 20px rgba(0, 118, 191, 0.6);
+        transform: scale(1.1);
+    }
+
+    .player-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-size: cover;
+        border: 2px solid #fff;
+    }
+
+    /* Selection Animation */
+    @keyframes flash {
+        0% {
+            background: #fff;
+            box-shadow: 0 0 20px #fff;
+            border-color: #fff;
+            color: #000;
+        }
+
+        100% {
+            background: var(--border-gold);
+            box-shadow: 0 0 50px var(--border-gold);
+            border-color: #fff;
+            color: #000;
+        }
+    }
+
+    .category-card.selecting {
+        animation: flash 0.3s infinite alternate;
+        z-index: 100;
+        transform: scale(1.1);
+    }
