@@ -296,6 +296,17 @@ class MasterGame {
         // HIGHLIGHT CORRECT
         correctEl.classList.add('correct', 'reveal-highlight');
 
+        // SCREEN PULSE
+        const app = document.getElementById('app');
+        if (this.lastAnswerCorrect) {
+            app.classList.add('flash-green');
+            setTimeout(() => app.classList.remove('flash-green'), 1000);
+        } else if (this.lastPlayerAnswer) {
+            // Wrong answer given
+            app.classList.add('flash-red');
+            setTimeout(() => app.classList.remove('flash-red'), 1000);
+        }
+
         // HIGHLIGHT PLAYER SELECTION (if wrong)
         if (!this.lastAnswerCorrect && this.lastPlayerAnswer) {
             this.elAnswers[this.lastPlayerAnswer].classList.add('wrong');

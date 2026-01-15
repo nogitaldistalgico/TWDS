@@ -25,9 +25,64 @@
     position: relative;
     /* Deep Space / Studio Atmosphere */
     background: var(--studio-bg);
+    background-size: 200% 200%;
+    animation: bgShift 30s ease-in-out infinite alternate;
     color: #fff;
     overflow: hidden;
     font-family: 'Inter', sans-serif;
+    transition: box-shadow 0.3s;
+}
+
+@keyframes bgShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 50% 100%;
+    }
+}
+
+.flash-red {
+    animation: pulseRed 0.8s ease-out;
+    box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.5) !important;
+}
+
+.flash-green {
+    animation: pulseGreen 0.8s ease-out;
+    box-shadow: inset 0 0 100px rgba(0, 255, 0, 0.3) !important;
+}
+
+@keyframes pulseRed {
+    0% {
+        box-shadow: inset 0 0 0 rgba(255, 0, 0, 0);
+    }
+
+    30% {
+        box-shadow: inset 0 0 150px rgba(255, 0, 0, 0.8);
+    }
+
+    100% {
+        box-shadow: inset 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+@keyframes pulseGreen {
+    0% {
+        box-shadow: inset 0 0 0 rgba(0, 255, 0, 0);
+    }
+
+    30% {
+        box-shadow: inset 0 0 150px rgba(0, 255, 0, 0.6);
+    }
+
+    100% {
+        box-shadow: inset 0 0 0 rgba(0, 255, 0, 0);
+    }
 }
 
 /* Optional Stars / Lens Flare Effect via pseudo-elements later if needed */
