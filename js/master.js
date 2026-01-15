@@ -288,6 +288,18 @@ class MasterGame {
             this.elAnswers[this.lastPlayerAnswer].classList.add('wrong');
         }
 
+        // CONFETTI for Musik & Gesundheit (if correct)
+        if (this.lastAnswerCorrect) {
+            const cat = this.currentQuestion.category.toLowerCase();
+            if (cat.includes('musik') || cat.includes('gesundheit')) {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
         // SHOW EXPLANATION
         const explBox = document.querySelector('.explanation-box');
         explBox.textContent = this.currentQuestion.explanation;
