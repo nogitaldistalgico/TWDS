@@ -459,7 +459,13 @@ class MasterGame {
                 if (item.result === 'lost') {
                     card.classList.add('lost');
                 } else {
-                    card.style.backgroundImage = `url('assets/${item.result}.png')`;
+                    const gradient = (item.result === 'tobi') ? 'var(--card-purple-top), var(--card-purple-bottom)' : 'var(--card-purple-top), var(--card-purple-bottom)';
+                    // Re-construct full background property to match live logic
+                    card.style.background = `url('assets/${item.result}.png'), linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%)`;
+                    card.style.backgroundSize = 'auto 90%, cover';
+                    card.style.backgroundPosition = 'center bottom, center';
+                    card.style.backgroundRepeat = 'no-repeat, no-repeat';
+
                     card.style.borderColor = (item.result === 'tobi') ? 'var(--color-primary)' : 'var(--color-secondary)';
                     card.style.boxShadow = `0 0 15px ${(item.result === 'tobi') ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
                 }
@@ -488,17 +494,14 @@ class MasterGame {
             const gradient = `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 100%), linear-gradient(to bottom, #9b287b 0%, #5c1248 100%)`;
 
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
-
-            // Reference Size: Face is LARGE (~70% of card height)
-            card.style.backgroundSize = '70%, cover, cover';
-
-            // Position: Center Bottom usually looks best for heads
-            card.style.backgroundPosition = 'center bottom -10px, center, center';
+            // Face: scaled to 90% height to avoid top cropping, anchored at bottom
+            card.style.backgroundSize = 'auto 90%, cover, cover';
+            card.style.backgroundPosition = 'center bottom, center, center';
+            card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
             // Add Gold Border via class, but ensure JS doesn't override it poorly
             card.classList.add('border-gold'); // master.css handles border-gold styling
 
-            card.style.backgroundRepeat = 'no-repeat, no-repeat';
             // The previous line for backgroundPosition was 'center, center', which is redundant with the more specific one above.
             // Keeping the more specific one and removing the generic one.
             // card.style.backgroundPosition = 'center, center'; // This line is removed as it's redundant/overwritten by the more specific one above.
