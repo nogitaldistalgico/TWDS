@@ -176,29 +176,10 @@ class MasterGame {
                 // LOGGING FOR DEBUGGING
                 console.log(`[Input Check] Turn: Team ${this.currentTurn} (${currentTeam.name})`);
                 console.log(`[Input Check] Sender: ${conn.peer}`);
-                console.log(`[Input Check] Expected: ${currentTeam.conn ? currentTeam.conn.peer : 'NULL'}`);
 
                 // ID Checking (Reset-proof)
                 if (currentTeam.conn && conn.peer === currentTeam.conn.peer) {
-                    console.log(`Team ${this.currentTurn} answered: ${data.payload}`);
-                    this.lastPlayerAnswer = data.payload;
-
-                    const currentTeamEl = this.teams[this.currentTurn].el;
-                    currentTeamEl.classList.add('answered'); // Visual feedback
-
-                    // Highlight the chosen answer card
-                    const ansEl = this.elAnswers[data.payload];
-                    if (ansEl) {
-                        console.log("Adding .selected class to:", ansEl);
-                        ansEl.classList.add('selected');
-                    } else {
-                        console.error("Critical: Could not find answer element for payload:", data.payload);
-                    }
-
-                    // Check correctness immediately (but don't show yet)
-                    this.lastAnswerCorrect = (data.payload === this.currentQuestion.correct);
-
-                    this.playAudio('lock-in');
+                    this.processAnswer(data.payload);
                 } else {
                     console.warn(`Ignored answer from wrong team/connection.`);
                     if (conn) {
@@ -214,246 +195,51 @@ class MasterGame {
         }
     }
 
-    renderWall() {
-        this.elWall.innerHTML = '';
-        this.questions.forEach((q, index) => {
-            const card = document.createElement('div');
-            card.className = 'glass-panel category-card';
-            card.textContent = q.category;
-            card.id = `cat-${index}`;
-            card.addEventListener('click', () => this.selectCategory(index));
-            this.elWall.appendChild(card);
-        });
-    }
-
-
-
-    selectCategory(index) {
-        if (this.state !== STATE.WALL) return;
-        // Verify if category is already played
-        const card = document.getElementById(`cat-${index}`);
-        if (card.classList.contains('played')) return;
-
-        // ANIMATION STEP
-        card.classList.add('selecting');
-        // Optional: Play "Selection" sound here if we had one
-        // this.playAudio('select'); 
-
-        // Delay for Effect (Display the flash/pulse for 1.2s)
-        setTimeout(() => {
-            card.classList.remove('selecting');
-
-            this.selectedCategory = index;
-            this.currentQuestion = this.questions[index];
-            this.state = STATE.QUESTION;
-
-            // POPULATE UI
-            this.elQuestionText.textContent = this.currentQuestion.question;
-            this.elAnswers.A.querySelector('.text').textContent = this.currentQuestion.options.A;
-            this.elAnswers.B.querySelector('.text').textContent = this.currentQuestion.options.B;
-            this.elAnswers.C.querySelector('.text').textContent = this.currentQuestion.options.C;
-
-            // RESET STYLES
-            Object.values(this.elAnswers).forEach(el => {
-                el.className = 'answer-card glass-panel';
-            });
-            document.querySelector('.explanation-box').classList.add('hidden');
-            this.teams.forEach(t => t.el.classList.remove('answered'));
-
-            // SHOW
-            this.elQuestionOverlay.classList.remove('hidden');
-            this.elQuestionOverlay.classList.add('animate-fade-in');
-
-            // NOTIFY ALL
-            this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
-            this.updateHostButton();
-        }, 1200); // 1.2s delay
-    }
-
-    revealAnswer() {
+    // Centralized Answer Processing (triggered by Network OR Keyboard)
+    processAnswer(answerPayload) {
         if (this.state !== STATE.QUESTION) return;
-        this.state = STATE.REVEAL;
 
-        const correct = this.currentQuestion.correct;
-        const correctEl = this.elAnswers[correct];
+        console.log(`Processing Answer: ${answerPayload} for Team ${this.currentTurn}`);
+        this.lastPlayerAnswer = answerPayload;
 
-        // HIGHLIGHT CORRECT
-        correctEl.classList.add('correct', 'reveal-highlight');
+        const currentTeamEl = this.teams[this.currentTurn].el;
+        currentTeamEl.classList.add('answered'); // Visual feedback
 
-        // HIGHLIGHT PLAYER SELECTION (if wrong)
-        if (!this.lastAnswerCorrect && this.lastPlayerAnswer) {
-            this.elAnswers[this.lastPlayerAnswer].classList.add('wrong');
-        }
-
-        // SHOW EXPLANATION
-        const explBox = document.querySelector('.explanation-box');
-        explBox.textContent = this.currentQuestion.explanation;
-        explBox.classList.remove('hidden');
-        explBox.classList.add('animate-scale-in');
-
-        // NOTIFY
-        this.broadcast({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: correct });
-        this.updateHostButton();
-    }
-
-    saveGame() {
-        const state = {
-            scores: this.teams.map(t => t.score),
-            currentTurn: this.currentTurn,
-            playedCategories: []
-        };
-
-        const cards = document.querySelectorAll('.category-card.played');
-        cards.forEach(card => {
-            const index = parseInt(card.id.replace('cat-', ''));
-            let result = 'lost';
-            if (card.style.backgroundImage.includes('tobi')) result = 'tobi';
-            if (card.style.backgroundImage.includes('lurch')) result = 'lurch';
-
-            state.playedCategories.push({ index, result });
-        });
-
-        localStorage.setItem('wwds_gamestate', JSON.stringify(state));
-    }
-
-    loadGame() {
-        const saved = localStorage.getItem('wwds_gamestate');
-        if (!saved) return;
-
-        try {
-            const state = JSON.parse(saved);
-            // Restore Scores
-            this.teams[0].score = state.scores[0];
-            this.teams[1].score = state.scores[1];
-            this.teams[0].el.querySelector('.player-score').textContent = state.scores[0] + ' €';
-            this.teams[1].el.querySelector('.player-score').textContent = state.scores[1] + ' €';
-
-            // Restore Turn
-            this.currentTurn = state.currentTurn;
-            this.updateTurnUI();
-
-            this.pendingLoadState = state;
-        } catch (e) {
-            console.error("Error loading state:", e);
-        }
-    }
-
-    applyLoadedState() {
-        if (!this.pendingLoadState) return;
-        const state = this.pendingLoadState;
-
-        state.playedCategories.forEach(item => {
-            const card = document.getElementById(`cat-${item.index}`);
-            if (card) {
-                card.classList.add('played');
-                card.textContent = '';
-
-                if (item.result === 'lost') {
-                    card.classList.add('lost');
-                } else {
-                    card.style.backgroundImage = `url('assets/${item.result}.png')`;
-                    card.style.borderColor = (item.result === 'tobi') ? 'var(--color-primary)' : 'var(--color-secondary)';
-                    card.style.boxShadow = `0 0 15px ${(item.result === 'tobi') ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
-                }
-            }
-        });
-        this.pendingLoadState = null;
-    }
-
-    resetGame() {
-        if (confirm("Spiel wirklich zurücksetzen? Alle Punkte gehen verloren!")) {
-            localStorage.removeItem('wwds_gamestate');
-            location.reload();
-        }
-    }
-
-    closeQuestion() {
-        // UPDATE WALL
-        const card = document.getElementById(`cat-${this.selectedCategory}`);
-        card.classList.add('played');
-
-        // APPLY WIN/LOSS STATE
-        if (this.lastAnswerCorrect) {
-            // Team Won -> Show Face
-            // Layer 1: Face Image (Top), Layer 2: Gradient (Top), Layer 3: Gradient (Bottom)
-            // Show Style: Purple/Pink Gradient for Winner
-            const gradient = `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 100%), linear-gradient(to bottom, #9b287b 0%, #5c1248 100%)`;
-
-            card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
-
-            // Reference Size: Face is LARGE (~70% of card height)
-            card.style.backgroundSize = '70%, cover, cover';
-
-            // Position: Center Bottom usually looks best for heads
-            card.style.backgroundPosition = 'center bottom -10px, center, center';
-
-            // Add Gold Border via class, but ensure JS doesn't override it poorly
-            card.classList.add('border-gold'); // master.css handles border-gold styling
-
-            card.style.backgroundRepeat = 'no-repeat, no-repeat';
-            // The previous line for backgroundPosition was 'center, center', which is redundant with the more specific one above.
-            // Keeping the more specific one and removing the generic one.
-            // card.style.backgroundPosition = 'center, center'; // This line is removed as it's redundant/overwritten by the more specific one above.
-
-            card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
-            // The boxShadow was removed as per the instruction's implied change (it was not in the new snippet).
-            card.textContent = '';
-
-            this.teams[this.currentTurn].score += 500;
-            this.teams[this.currentTurn].el.querySelector('.player-score').textContent = this.teams[this.currentTurn].score + ' €';
+        // Highlight the chosen answer card
+        const ansEl = this.elAnswers[answerPayload];
+        if (ansEl) {
+            ansEl.classList.add('selected');
         } else {
-            card.classList.add('lost');
+            console.error("Critical: Could not find answer element for payload:", answerPayload);
         }
 
-        // SWITCH TURN
-        this.currentTurn = (this.currentTurn + 1) % 2;
-        this.updateTurnUI();
+        // Check correctness immediately (but don't show yet)
+        this.lastAnswerCorrect = (answerPayload === this.currentQuestion.correct);
 
-        // HIDE OVERLAY
-        this.elQuestionOverlay.classList.add('hidden');
-        this.state = STATE.WALL;
-
-        // RESET STATE
-        this.lastPlayerAnswer = null;
-        this.lastAnswerCorrect = false;
-
-        // NOTIFY
-        this.broadcast({ type: 'STATE_CHANGE', payload: 'WALL' });
-        this.updateHostButton();
-
-        // SAVE STATE
-        this.saveGame();
-    }
-
-    updateTurnUI() {
-        this.teams.forEach(t => t.el.classList.remove('active-turn'));
-        this.teams[this.currentTurn].el.classList.add('active-turn');
-
-        // Update Indicator
-        const indicator = document.getElementById('turn-indicator');
-        if (indicator) {
-            indicator.textContent = (this.currentTurn === 0) ? "TOBIS RUNDE" : "LURCHS RUNDE";
-            indicator.style.color = (this.currentTurn === 0) ? "var(--color-primary)" : "var(--color-secondary)";
-        }
-    }
-
-    broadcast(msg) {
-        // Send to all connected teams
-        this.teams.forEach(t => {
-            if (t.conn && t.conn.open) {
-                t.conn.send(msg);
-            }
-        });
+        this.playAudio('lock-in');
     }
 
     initControls() {
         document.addEventListener('keydown', (e) => {
-            if (e.key === ' ') {
+            const key = e.key.toLowerCase();
+
+            // GAME LOOP CONTROLS
+            if (e.key === ' ' || e.code === 'Space') {
                 if (this.state === STATE.QUESTION) {
                     this.revealAnswer();
                 } else if (this.state === STATE.REVEAL) {
                     this.closeQuestion();
                 }
+            }
+
+            // EMERGENCY KEYBOARD INPUTS (Fallback for unstable connections)
+            // T -> A
+            // Z -> B (QWERTZ layout adjacent)
+            // U -> C
+            if (this.state === STATE.QUESTION) {
+                if (key === 't') this.processAnswer('A');
+                else if (key === 'z' || key === 'y') this.processAnswer('B'); // Support Z (QWERTZ) and Y (QWERTY) just in case
+                else if (key === 'u') this.processAnswer('C');
             }
         });
 
