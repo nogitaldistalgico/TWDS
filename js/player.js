@@ -45,7 +45,6 @@ class PlayerController {
         };
 
         this.initControls();
-        this.initControls();
         this.initTeamSelection();
         this.initUtilities();
     }
