@@ -402,8 +402,12 @@ class MasterGame {
             // The boxShadow was removed as per the instruction's implied change (it was not in the new snippet).
             card.textContent = '';
 
+            const oldScore = this.teams[this.currentTurn].score;
             this.teams[this.currentTurn].score += 500;
-            this.teams[this.currentTurn].el.querySelector('.player-score').textContent = this.teams[this.currentTurn].score + ' €';
+            const newScore = this.teams[this.currentTurn].score;
+
+            const scoreEl = this.teams[this.currentTurn].el.querySelector('.player-score');
+            this.animateScore(scoreEl, oldScore, newScore);
         } else {
             card.classList.add('lost');
         }
@@ -438,6 +442,30 @@ class MasterGame {
             indicator.textContent = (this.currentTurn === 0) ? "TOBIS RUNDE" : "LURCHS RUNDE";
             indicator.style.color = (this.currentTurn === 0) ? "var(--color-primary)" : "var(--color-secondary)";
         }
+    }
+
+    animateScore(element, start, end) {
+        if (start === end) return;
+        const duration = 2000; // 2s animation
+        const startTime = performance.now();
+
+        const update = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease out quart
+            const ease = 1 - Math.pow(1 - progress, 4);
+
+            const current = Math.floor(start + (end - start) * ease);
+            element.textContent = current + " €";
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.textContent = end + " €";
+            }
+        };
+        requestAnimationFrame(update);
     }
 
     broadcast(msg) {
