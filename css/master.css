@@ -35,13 +35,11 @@
 /* Header */
 header.studio-header {
     display: flex;
-    /* Changed to flex for better centering */
     justify-content: center;
-    align-items: flex-start;
-    /* Align to top */
-    padding-top: 2rem;
+    align-items: center;
+    /* Center vertically */
+    padding-top: 1rem;
     height: 250px;
-    /* Taller header for big logo */
     z-index: 50;
     position: relative;
 }
@@ -53,17 +51,37 @@ header.studio-header {
 }
 
 .header-corner.left {
-    left: 30px;
+    left: 20px;
 }
 
 .header-corner.right {
-    right: 30px;
+    right: 20px;
+}
+
+/* Reset Button */
+.reset-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.reset-btn:hover {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff4444;
+    border-color: #ff4444;
+    transform: rotate(180deg);
 }
 
 /* LOGO CONTAINER */
 .logo-wrapper {
     position: relative;
-    transform: scale(0.8);
+    transform: scale(0.9);
     /* Adjust size */
 }
 
@@ -71,18 +89,19 @@ header.studio-header {
 .neon-border {
     position: relative;
     border: 4px solid var(--neon-border);
-    border-radius: 40px;
-    padding: 10px 40px;
+    border-radius: 30px;
+    padding: 15px 50px;
     box-shadow:
         0 0 10px var(--neon-border),
         0 0 20px var(--neon-border),
-        inset 0 0 10px var(--neon-border);
-    background: rgba(0, 0, 0, 0.3);
+        inset 0 0 15px var(--neon-border);
+    background: rgba(0, 0, 0, 0.4);
     /* Slight tint inside */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0px;
     min-width: 500px;
 }
 
@@ -94,62 +113,53 @@ header.studio-header {
     left: 5px;
     right: 5px;
     height: 45%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.05) 100%);
-    border-radius: 35px 35px 100% 100% / 35px 35px 10px 10px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 25px 25px 100% 100% / 25px 25px 10px 10px;
     pointer-events: none;
 }
 
 /* Logo Text Structure */
 .logo-row {
-    line-height: 0.9;
+    line-height: 1;
     text-align: center;
     z-index: 2;
+    display: flex;
+    gap: 20px;
 }
 
 .logo-row.top {
-    font-size: 2.5rem;
-    align-self: flex-start;
-    /* Align text to left/start */
-    margin-bottom: 0px;
-    transform: translateX(-40px) translateY(-5px);
-    /* Offset like reference "WER" */
-}
-
-.logo-row.middle {
-    font-size: 5rem;
-    margin: -10px 0;
+    font-size: 4rem;
+    margin-bottom: 5px;
 }
 
 .logo-row.bottom {
-    font-size: 5rem;
-    transform: translateY(-5px);
+    font-size: 4rem;
+    margin-top: -5px;
 }
 
 /* Neon Text Styles */
 .pink-neon {
     font-family: 'Inter', sans-serif;
     font-weight: 900;
-    color: #fff;
-    -webkit-text-stroke: 2px var(--neon-pink);
+    color: transparent;
+    -webkit-text-stroke: 2px #ff00de;
+    /* Hot Pink Stroke */
     text-shadow:
-        0 0 5px #fff,
-        0 0 10px var(--neon-pink),
-        0 0 20px var(--neon-pink),
-        0 0 40px var(--neon-pink);
+        0 0 10px #ff00de,
+        0 0 20px #ff00de;
+    letter-spacing: 2px;
 }
 
-.blue-neon {
+.cyan-neon {
     font-family: 'Inter', sans-serif;
     font-weight: 900;
-    color: #e0f7fa;
-    /* Slightly cyan white */
-    -webkit-text-stroke: 2px #0088ff;
+    color: transparent;
+    /* Hollow look */
+    -webkit-text-stroke: 2px #00ffff;
+    /* Cyan Stroke */
     text-shadow:
-        0 0 5px #fff,
-        0 0 10px var(--neon-blue),
-        0 0 20px var(--neon-blue),
-        0 0 40px var(--neon-blue),
-        0 0 80px var(--neon-blue);
+        0 0 10px #00ffff,
+        0 0 20px #00ffff;
     letter-spacing: 2px;
 }
 
