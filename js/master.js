@@ -1092,7 +1092,31 @@ class MasterGame {
             });
         }
 
-        // Mouse/Touch Control
+        // Mouse/Touch Control for "Spacebar" (Reveal / Close)
+        // User wants to click "on the tile with the question" (or background) to proceed
+        if (this.elQuestionOverlay) {
+            this.elQuestionOverlay.addEventListener('click', (e) => {
+                // IGNORE if clicking an answer card (or its children)
+                if (e.target.closest('.answer-card')) return;
+
+                // IGNORE if clicking the betting UI (Finale)
+                if (e.target.closest('#finale-betting') || e.target.closest('.betting-grid')) return;
+
+                // Otherwise, act as Spacebar
+                if (this.state === STATE.QUESTION) {
+                    this.revealAnswer();
+                } else if (this.state === STATE.REVEAL) {
+                    this.closeQuestion();
+                } else if (this.state === STATE.FINALE_QUESTION) {
+                    // For Finale, we use manual trigger too
+                    this.resolveFinale();
+                } else if (this.state === STATE.FINALE_REVEAL) {
+                    // Maybe advance finale? (Currently automated by timeouts, but safe to ignore or add specific logic)
+                }
+            });
+        }
+
+        // Mouse/Touch Control (Button Fallback)
         this.btnHostAction = document.getElementById('btn-host-action');
         if (this.btnHostAction) {
             this.btnHostAction.addEventListener('click', () => {
