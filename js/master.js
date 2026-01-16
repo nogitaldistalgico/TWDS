@@ -320,6 +320,7 @@ class MasterGame {
 
                     // POPULATE UI - Answers Only (Question text is on card)
                     this.elQuestionText.textContent = ""; // Hide text in overlay
+                    this.elQuestionText.style.display = 'none'; // Ensure no black box appears
                     this.elAnswers.A.querySelector('.text').textContent = this.currentQuestion.options.A;
                     this.elAnswers.B.querySelector('.text').textContent = this.currentQuestion.options.B;
                     this.elAnswers.C.querySelector('.text').textContent = this.currentQuestion.options.C;
