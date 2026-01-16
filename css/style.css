@@ -716,3 +716,52 @@ body {
         transform: translateY(-20px);
     }
 }
+
+/* HIGH-END ANIMATIONS */
+.calc-card {
+    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    /* For crown absolute pos */
+    z-index: 10;
+}
+
+.finale-mode-winner .calc-card.loser {
+    filter: blur(5px) grayscale(0.8);
+    opacity: 0.3;
+    transform: scale(0.9);
+}
+
+.finale-mode-winner .calc-card.winner {
+    z-index: 100;
+    /* Transformation handled by FLIP or specific class */
+}
+
+/* CROWN */
+.crown-icon {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    font-size: 5rem;
+    filter: drop-shadow(0 0 20px gold);
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 101;
+}
+
+.calc-card.winner .crown-icon.visible {
+    transform: translateX(-50%) scale(1) rotate(5deg);
+    opacity: 1;
+    top: -80px;
+}
+
+/* ANIMATION CLASS FOR CENTER FLY */
+.calc-card.fly-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.5);
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 100px var(--neon-gold);
+    border-color: var(--neon-gold);
+}

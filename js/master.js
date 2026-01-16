@@ -158,6 +158,14 @@ class MasterGame {
         this.initControls();
         this.updateTurnUI();
 
+        // Manual Reveal Trigger
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space' && this.state === STATE.FINALE_QUESTION) {
+                console.log("Manual Reveal Triggered");
+                this.resolveFinale();
+            }
+        });
+
         // Cleanup on close to free the ID
         window.addEventListener('beforeunload', () => {
             if (this.peerManager.peer) {
@@ -839,7 +847,12 @@ class MasterGame {
 
         // Check if both answered
         if (this.finaleAnswers[0] !== null && this.finaleAnswers[1] !== null) {
-            setTimeout(() => this.resolveFinale(), 1000);
+            // WAIT FOR MANUAL TRIGGER (Spacebar)
+            console.log("Both answered. Waiting for Host Spacebar...");
+
+            // Optional: Show a "Ready" indicator for host
+            const qText = this.elFinaleQuestion.querySelector('.master-question-text');
+            if (qText) qText.style.borderColor = "#00ff88"; // Subtle hint
         }
     }
 
@@ -901,68 +914,71 @@ class MasterGame {
         else if (this.teams[1].score > this.teams[0].score) winnerId = 1;
         else winnerId = 'draw';
 
-        // STEP 3: Show Winner after calculation
+        // STEP 3: High-End Winner Animation
         setTimeout(() => {
-            this.showWinnerScreen(winnerId);
-        }, 5000); // 1s wait + 2s anim + 2s pause
+            this.animateWinner(winnerId);
+        }, 4000); // 1s wait + 2s anim + 1s pause
     }
 
-    animateScoreGeneric(element, start, end, duration) {
-        const startTime = performance.now();
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const ease = 1 - Math.pow(1 - progress, 4); // EaseOutQuart
-
-            const current = Math.floor(start + (end - start) * ease);
-            element.textContent = current + ' €';
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                element.textContent = end + ' €';
-            }
-        };
-        requestAnimationFrame(animate);
-    }
-
-    showWinnerScreen(winnerId) {
-        const elCalc = document.getElementById('finale-calc');
-        if (elCalc) elCalc.classList.add('hidden');
-
-        this.elFinaleWinner.classList.remove('hidden');
-
-        const winnerHeading = this.elFinaleWinner.querySelector('.winner-title');
-        const winnerName = document.getElementById('winner-name');
-        const winnerImg = document.getElementById('winner-img');
-        const winnerScore = document.getElementById('winner-score');
-
+    animateWinner(winnerId) {
         if (winnerId === 'draw') {
-            winnerHeading.textContent = "UNENTSCHIEDEN!";
-            winnerName.textContent = "BEIDE TEAMS";
-            winnerImg.style.backgroundImage = "none";
-            winnerScore.textContent = this.teams[0].score + ' €';
-        } else {
-            const wTeam = this.teams[winnerId];
-            winnerHeading.textContent = "GEWINNER";
-            winnerName.textContent = wTeam.name;
-            winnerImg.style.backgroundImage = `url('assets/${winnerId === 0 ? 'tobi' : 'lurch'}.png')`;
-            winnerScore.textContent = wTeam.score + ' €';
-
-            // Colorize
-            const color = (winnerId === 0) ? '#ffaa00' : '#0099ff';
-            winnerName.style.color = color;
-            winnerImg.style.borderColor = color;
-            winnerImg.style.boxShadow = `0 0 100px ${color}`;
-
-            // Confetti Explosion
-            if (window.confetti) {
-                confetti({ particleCount: 500, spread: 100, origin: { y: 0.6 } });
-            }
+            // Fallback for draw (just show text or stay on calc screen)
+            // For now simple alert or just broadcast
+            this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_REVEAL', winner: 'draw' });
+            alert("UNENTSCHIEDEN! BEIDE HABEN GEWONNEN (oder verloren)!");
+            return;
         }
 
+        const elCalc = document.getElementById('finale-calc');
+        elCalc.classList.add('finale-mode-winner');
+
+        const winCard = document.getElementById(`calc-team-${winnerId}`);
+        const loseCard = document.getElementById(`calc-team-${winnerId === 0 ? 1 : 0}`);
+
+        // 1. Fade out Loser
+        loseCard.classList.add('loser');
+
+        // 2. Fly Winner to Center
+        winCard.classList.add('fly-center', 'winner');
+
+        // 3. Show Crown & Confetti
+        setTimeout(() => {
+            const crown = winCard.querySelector('.crown-icon');
+            if (crown) crown.classList.add('visible');
+
+            // Audio
+            if (this.sfx && this.sfx.correct) this.sfx.correct.play().catch(e => { });
+
+            // Confetti
+            if (window.confetti) {
+                const colors = (winnerId === 0) ? ['#ffaa00', '#ffffff'] : ['#0099ff', '#ffffff'];
+                const end = Date.now() + 3000;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: colors
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: colors
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+        }, 800);
+
         // Broadcast End
-        this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_REVEAL' });
+        this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_WINNER', winner: winnerId });
     }
 
     updateTurnUI() {
