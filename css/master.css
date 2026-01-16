@@ -749,9 +749,32 @@ div.answer-card.correct {
     width: 90%;
     max-width: 1000px;
     z-index: 100;
+    pointer-events: none;
+    /* Let clicks pass through to background if needed, but answer cards are auto */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
 }
 
-/* Player Dock */
+/* Question Text Overlay - When visible */
+.question-text {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    pointer-events: auto;
+}
+
+.answers-grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+    pointer-events: auto;
+}
+
+/* Player Dock & Indicators */
 .player-dock {
     position: fixed;
     bottom: 20px;
@@ -762,6 +785,11 @@ div.answer-card.correct {
     z-index: 100;
 }
 
+/* Ensure Player Indicators in Header use consistent styling */
+/* Note: The header HTML uses id="team-0" class="player-indicator". 
+   There is NO footer player dock in the new HTML (it was removed/hidden). 
+   So we focus on header styles only. */
+
 .player-indicator {
     background: rgba(0, 0, 0, 0.6);
     padding: 0.5rem 1.5rem;
@@ -771,6 +799,7 @@ div.answer-card.correct {
     align-items: center;
     gap: 10px;
     opacity: 0.5;
+    /* Inactive state */
     transition: all 0.5s;
 }
 
@@ -790,6 +819,12 @@ div.answer-card.correct {
     border: 2px solid #fff;
 }
 
+.player-score {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #fff;
+}
+
 /* Selection Animation */
 @keyframes flash {
     0% {
@@ -800,11 +835,16 @@ div.answer-card.correct {
     }
 
     100% {
-        background: var(--border-gold);
-        box-shadow: 0 0 50px var(--border-gold);
-        border-color: #fff;
-        color: #000;
+        background: #2ecc71;
     }
+}
+
+100% {
+    background: var(--border-gold);
+    box-shadow: 0 0 50px var(--border-gold);
+    border-color: #fff;
+    color: #000;
+}
 }
 
 .category-card.selecting {

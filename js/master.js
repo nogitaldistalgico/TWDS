@@ -607,9 +607,13 @@ class MasterGame {
     }
 
     animateScore(element, start, end) {
-        if (!element) return;
+        if (!element) {
+            console.error("animateScore: Element not found");
+            return;
+        }
 
-        // Animation Config
+        console.log(`Animating score from ${start} to ${end}`);
+
         const duration = 2000; // 2 seconds
         const startTime = performance.now();
 
@@ -617,7 +621,7 @@ class MasterGame {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
 
-            // Ease Out Quart: 1 - (1 - t)^4
+            // Ease Out Quart
             const ease = 1 - Math.pow(1 - progress, 4);
 
             const current = Math.floor(start + (end - start) * ease);
@@ -626,10 +630,9 @@ class MasterGame {
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                element.textContent = end + ' €'; // Ensure final exact value
-                // Add a little pop effect at the end
+                element.textContent = end + ' €';
                 element.classList.remove('pop-score');
-                void element.offsetWidth; // Trigger reflow
+                void element.offsetWidth;
                 element.classList.add('pop-score');
             }
         };
