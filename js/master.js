@@ -174,6 +174,10 @@ class MasterGame {
                 console.log('Received data:', data);
                 if (data.type === 'CLAIM_TEAM') {
                     this.handleTeamClaim(conn, data.payload);
+                } else if (data.type === 'REQUEST_STATE') {
+                    // NEW: Pull-based Sync (Player asks for data)
+                    console.log(`Sending full state to ${conn.peer}`);
+                    this.sendFullState(conn);
                 } else {
                     // Pass other messages to general handler with CONN context
                     this.handlePlayerInput(data, conn);
@@ -212,6 +216,18 @@ class MasterGame {
 
         // Confirm to player
         conn.send({ type: 'TEAM_CONFIRMED', payload: teamId });
+
+        // IMMEDIATE SYNC: Send current state
+        conn.send({
+            type: 'STATE_CHANGE',
+            payload: this.state,
+            questionsClosed: false // Optional context
+        });
+
+        // If we are in QUESTION/REVEAL, also send the last correctness info if needed
+        if (this.state === STATE.REVEAL) {
+            conn.send({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: this.currentQuestion.correct });
+        }
     }
 
     handlePlayerInput(data, conn) {
@@ -686,6 +702,22 @@ class MasterGame {
                 t.conn.send(msg);
             }
         });
+    }
+
+    sendFullState(conn) {
+        // 1. Current Game State
+        conn.send({
+            type: 'STATE_CHANGE',
+            payload: this.state
+        });
+
+        // 2. Scores
+        // (Optional, if player ever needs them)
+
+        // 3. Last Correctness (if in Reveal)
+        if (this.state === STATE.REVEAL) {
+            conn.send({ type: 'STATE_CHANGE', payload: 'REVEAL', correct: this.currentQuestion.correct });
+        }
     }
 
     initControls() {

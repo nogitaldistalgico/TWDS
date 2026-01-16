@@ -143,7 +143,11 @@ class PlayerController {
         this.peerManager.onConnectionOpen(() => {
             attempt = 0; // Reset retries on success
             this.isConnected = true;
+            this.updateStatusIndicator('connected');
             console.log('Connection Established!');
+
+            // PULL-BASED SYNC: Immediately ask for state
+            this.peerManager.send({ type: 'REQUEST_STATE' });
             this.peerManager.send({ type: 'LOGIN' });
 
             // AUTO-LOGIN Logic
@@ -185,6 +189,16 @@ class PlayerController {
             this.handleGameData(data);
         });
 
+        this.peerManager.onHeartbeatLost(() => {
+            console.warn("Lost Heartbeat - Reconnecting...");
+            this.updateStatusIndicator('disconnected');
+            this.statusText.textContent = "Verbindung verloren...";
+            this.statusText.style.color = "red";
+            this.isConnected = false;
+            // Immediate retry
+            tryConnect();
+        });
+
         this.peerManager.init();
     }
 
@@ -223,6 +237,36 @@ class PlayerController {
         this.elControls.classList.remove('hidden');
         this.elControls.style.display = 'flex'; // Override inline none
         this.elControls.classList.add('animate-fade-in');
+    }
+
+    updateStatusIndicator(status) {
+        // Simple dot in the header
+        let dot = document.getElementById('status-dot');
+        if (!dot) {
+            const header = document.querySelector('.status-header');
+            if (header) {
+                dot = document.createElement('span');
+                dot.id = 'status-dot';
+                dot.style.display = 'inline-block';
+                dot.style.width = '10px';
+                dot.style.height = '10px';
+                dot.style.borderRadius = '50%';
+                dot.style.marginRight = '8px';
+                header.prepend(dot);
+            }
+        }
+
+        if (dot) {
+            if (status === 'connected') {
+                dot.style.backgroundColor = '#0f0';
+                dot.style.boxShadow = '0 0 10px #0f0';
+            } else if (status === 'disconnected') {
+                dot.style.backgroundColor = '#f00';
+                dot.style.boxShadow = '0 0 10px #f00';
+            } else {
+                dot.style.backgroundColor = '#fa0'; // Connecting
+            }
+        }
     }
 
     sendAnswer(choice) {

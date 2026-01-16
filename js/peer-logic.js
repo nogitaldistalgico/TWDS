@@ -13,7 +13,8 @@ class PeerManager {
             onData: () => { },
             onClose: () => { },
             onConnectionOpen: () => { },
-            onError: () => { }
+            onError: () => { },
+            onHeartbeatLost: () => { } // New hook
         };
     }
 
@@ -77,6 +78,8 @@ class PeerManager {
         });
 
         conn.on('data', (data) => {
+            this.recordHeartbeat(); // Alive!
+
             // Heartbeat check
             if (data.type === 'PING') {
                 // Respond with PONG
@@ -114,12 +117,31 @@ class PeerManager {
 
     startHeartbeat() {
         this.stopHeartbeat();
-        // Send a PING every 3 seconds to keep connection alive
+        this.lastPingTime = Date.now();
+
+        // Check loop
         this.heartbeatInterval = setInterval(() => {
-            if (this.conn && this.conn.open) {
-                this.conn.send({ type: 'PING' });
+            if (!this.conn || !this.conn.open) return;
+
+            // 1. Send Ping
+            this.conn.send({ type: 'PING' });
+
+            // 2. Check Timeout (Host & Client)
+            // If we haven't received a message (or PONG) in 5000ms, assume dead
+            if (Date.now() - this.lastPingTime > 5000) {
+                console.warn("Heartbeat lost/timeout!");
+                if (this.callbacks.onHeartbeatLost) this.callbacks.onHeartbeatLost();
+
+                // Force shutdown to trigger clean reconnect
+                this.stopHeartbeat();
+                this.conn.close();
             }
-        }, 3000);
+        }, 2000); // Ping every 2s
+    }
+
+    // Call this whenever ANY data is received
+    recordHeartbeat() {
+        this.lastPingTime = Date.now();
     }
 
     stopHeartbeat() {
@@ -166,6 +188,7 @@ class PeerManager {
     onConnectionOpen(cb) { this.callbacks.onConnectionOpen = cb; }
     onConnection(cb) { this.callbacks.onConnection = cb; }
     onError(cb) { this.callbacks.onError = cb; }
+    onHeartbeatLost(cb) { this.callbacks.onHeartbeatLost = cb; }
 
     connect(hostId) {
         if (this.isHost) return;
