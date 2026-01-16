@@ -85,99 +85,98 @@
                 </div>
             </div>
         </div>
+        <!-- Finale Overlay -->
+        <div id="finale-overlay" class="finale-overlay hidden">
+            <!-- Phase 1: Betting -->
+            <div id="finale-betting" class="finale-phase">
+                <h1 class="finale-title">DAS FINALE</h1>
+                <p class="finale-subtitle">Setzt euren Betrag!</p>
+                <div class="betting-grid">
+                    <div class="betting-status" id="bet-status-0">
+                        <div class="team-avatar large" style="background-image: url('assets/tobi.png')"></div>
+                        <div class="status-text">Wartet...</div>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="betting-status" id="bet-status-1">
+                        <div class="team-avatar large" style="background-image: url('assets/lurch.png')"></div>
+                        <div class="status-text">Wartet...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Master Question -->
+            <div id="finale-question" class="finale-phase hidden">
+                <h2 class="master-question-label">MASTERFRAGE</h2>
+                <div class="master-question-text">Hier steht die Masterfrage...</div>
+                <div class="master-answers">
+                    <div id="final-ans-A" class="answer-card master-card">
+                        <div class="answer-letter">A</div>
+                        <div class="text">Option A</div>
+                    </div>
+                    <div id="final-ans-B" class="answer-card master-card">
+                        <div class="answer-letter">B</div>
+                        <div class="text">Option B</div>
+                    </div>
+                    <div id="final-ans-C" class="answer-card master-card">
+                        <div class="answer-letter">C</div>
+                        <div class="text">Option C</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Score Calculation -->
+            <div id="finale-calc" class="finale-phase hidden">
+                <h1 class="finale-title">PUNKTESTAND</h1>
+                <div class="calc-grid">
+                    <!-- Tobi -->
+                    <div id="calc-team-0" class="calc-card">
+                        <div class="crown-icon">👑</div>
+                        <div class="calc-avatar" style="background-image: url('assets/tobi.png')"></div>
+                        <div class="calc-score-row">
+                            <span id="old-score-0">0 €</span>
+                            <span id="change-0" class="calc-change">(+0)</span>
+                        </div>
+                    </div>
+                    <!-- Lurch -->
+                    <div id="calc-team-1" class="calc-card">
+                        <div class="crown-icon">👑</div>
+                        <div class="calc-avatar" style="background-image: url('assets/lurch.png')"></div>
+                        <div class="calc-score-row">
+                            <span id="old-score-1">0 €</span>
+                            <span id="change-1" class="calc-change">(+0)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 4: Winner -->
+            <div id="finale-winner" class="finale-phase hidden">
+                <h1 class="winner-title">GEWINNER</h1>
+                <div class="winner-avatar-container">
+                    <div class="winner-avatar" id="winner-img"></div>
+                </div>
+                <div class="winner-name" id="winner-name">TEAM NAME</div>
+                <div class="winner-score" id="winner-score">0 €</div>
+            </div>
+        </div>
+
+        <!-- HACKER OVERLAY (Hidden) -->
+        <div id="hacker-overlay" class="hacker-overlay hidden">
+            <div class="error-terminal">
+                <div class="error-title">FATAL SYSTEM ERROR</div>
+                <div class="error-body">
+                    > DETECTED IMPLAUSIBLE DATA<br>
+                    > WINNER: LURCH<br>
+                    > ANALYSIS: <span class="error-code">IQ TOO LOW</span><br>
+                    > ERROR CODE: 0xDEADBEEF<br>
+                    > RECALCULATING...
+                </div>
+            </div>
+        </div>
+
         <div class="explanation-box hidden"></div>
-    </div>
 
-    <!-- Finale Overlay -->
-    <div id="finale-overlay" class="finale-overlay hidden">
-        <!-- Phase 1: Betting -->
-        <div id="finale-betting" class="finale-phase">
-            <h1 class="finale-title">DAS FINALE</h1>
-            <p class="finale-subtitle">Setzt euren Betrag!</p>
-            <div class="betting-grid">
-                <div class="betting-status" id="bet-status-0">
-                    <div class="team-avatar large" style="background-image: url('assets/tobi.png')"></div>
-                    <div class="status-text">Wartet...</div>
-                </div>
-                <div class="vs-divider">VS</div>
-                <div class="betting-status" id="bet-status-1">
-                    <div class="team-avatar large" style="background-image: url('assets/lurch.png')"></div>
-                    <div class="status-text">Wartet...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Phase 2: Master Question -->
-        <div id="finale-question" class="finale-phase hidden">
-            <h2 class="master-question-label">MASTERFRAGE</h2>
-            <div class="master-question-text">Hier steht die Masterfrage...</div>
-            <div class="master-answers">
-                <div id="final-ans-A" class="answer-card master-card">
-                    <div class="answer-letter">A</div>
-                    <div class="text">Option A</div>
-                </div>
-                <div id="final-ans-B" class="answer-card master-card">
-                    <div class="answer-letter">B</div>
-                    <div class="text">Option B</div>
-                </div>
-                <div id="final-ans-C" class="answer-card master-card">
-                    <div class="answer-letter">C</div>
-                    <div class="text">Option C</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Phase 3: Score Calculation -->
-        <div id="finale-calc" class="finale-phase hidden">
-            <h1 class="finale-title">PUNKTESTAND</h1>
-            <div class="calc-grid">
-                <!-- Tobi -->
-                <div id="calc-team-0" class="calc-card">
-                    <div class="crown-icon">👑</div>
-                    <div class="calc-avatar" style="background-image: url('assets/tobi.png')"></div>
-                    <div class="calc-score-row">
-                        <span id="old-score-0">0 €</span>
-                        <span id="change-0" class="calc-change">(+0)</span>
-                    </div>
-                </div>
-                <!-- Lurch -->
-                <div id="calc-team-1" class="calc-card">
-                    <div class="crown-icon">👑</div>
-                    <div class="calc-avatar" style="background-image: url('assets/lurch.png')"></div>
-                    <div class="calc-score-row">
-                        <span id="old-score-1">0 €</span>
-                        <span id="change-1" class="calc-change">(+0)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Phase 4: Winner -->
-        <div id="finale-winner" class="finale-phase hidden">
-            <h1 class="winner-title">GEWINNER</h1>
-            <div class="winner-avatar-container">
-                <div class="winner-avatar" id="winner-img"></div>
-            </div>
-            <div class="winner-name" id="winner-name">TEAM NAME</div>
-            <div class="winner-score" id="winner-score">0 €</div>
-        </div>
-    </div>
-
-    <!-- HACKER OVERLAY (Hidden) -->
-    <div id="hacker-overlay" class="hacker-overlay hidden">
-        <div class="error-terminal">
-            <div class="error-title">FATAL SYSTEM ERROR</div>
-            <div class="error-body">
-                > DETECTED IMPLAUSIBLE DATA<br>
-                > WINNER: LURCH<br>
-                > ANALYSIS: <span class="error-code">IQ TOO LOW</span><br>
-                > ERROR CODE: 0xDEADBEEF<br>
-                > RECALCULATING...
-            </div>
-        </div>
-    </div>
-
-    </div>
+    </div> <!-- Close #app -->
 
     <!-- Turn Indicator (Hidden/Integrated in Dock) -->
 
