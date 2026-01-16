@@ -397,7 +397,11 @@ class MasterGame {
                     });
 
                     // BROADCAST
-                    this.broadcast({ type: 'STATE_CHANGE', payload: 'QUESTION' });
+                    this.broadcast({
+                        type: 'STATE_CHANGE',
+                        payload: 'QUESTION',
+                        turn: this.currentTurn // Add Turn Info
+                    });
                     this.updateHostButton();
                 } catch (timeoutErr) {
                     console.error("Error inside selectCategory timeout:", timeoutErr);
@@ -708,7 +712,8 @@ class MasterGame {
         // 1. Current Game State
         conn.send({
             type: 'STATE_CHANGE',
-            payload: this.state
+            payload: this.state,
+            turn: this.currentTurn
         });
 
         // 2. Scores

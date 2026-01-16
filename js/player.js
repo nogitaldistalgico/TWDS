@@ -1,8 +1,6 @@
-/* Player Logic */
 // Mobile Debug Logger
 const debugEl = document.getElementById('debug-console');
-// FORCE DEBUG ON
-if (true) {
+if (location.search.includes('debug=true')) {
     debugEl.style.display = 'block';
     const originalLog = console.log;
     const originalError = console.error;
@@ -313,9 +311,21 @@ class PlayerController {
 
             } else if (data.payload === 'QUESTION') {
                 this.statusText.textContent = "Make your choice!";
-                // UNLOCK
+                // UNLOCK ONLY IF IT IS MY TURN
                 this.resetVisuals();
-                this.setInteraction(true);
+
+                // Compare loose (string vs int)
+                if (data.turn == this.myTeamId) {
+                    this.statusText.textContent = "DU BIST DRAN!";
+                    this.statusText.style.color = "var(--neon-green, #0f0)";
+                    this.setInteraction(true);
+                    // Vibrate to notify
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                } else {
+                    this.statusText.textContent = "Gegner ist dran...";
+                    this.statusText.style.color = "#aaa";
+                    this.setInteraction(false);
+                }
 
             } else if (data.payload === 'REVEAL') {
                 this.statusText.textContent = "Check the screen!";
