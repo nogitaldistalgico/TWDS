@@ -873,6 +873,13 @@ div.answer-card.correct {
     animation: blinkRed 0.5s infinite;
 }
 
+.hacker-overlay.hidden,
+.finale-overlay.hidden,
+.question-overlay.hidden {
+    display: none !important;
+    pointer-events: none !important;
+}
+
 .error-body {
     font-size: 1.5rem;
     line-height: 1.4;
