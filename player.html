@@ -63,6 +63,24 @@
             <!-- Optional Buzzer for future use -->
             <!-- <div class="buzzer-btn">BUZZER</div> -->
         </div>
+
+        <!-- Betting Screen -->
+        <div id="betting-screen" class="login-container glass-panel hidden" style="display: none;">
+            <h2 class="text-gradient" style="text-align:center;">FINALE WETTE</h2>
+            <div class="current-score-display">
+                Dein Kontostand:<br>
+                <span id="my-score-display" style="font-size:2rem; color:#fff; font-weight:bold;">0 €</span>
+            </div>
+
+            <div class="bet-controls">
+                <input type="number" id="bet-amount" placeholder="Betrag eingeben" min="0" step="1" inputmode="numeric">
+                <div class="bet-buttons">
+                    <button id="btn-all-in" class="btn-secondary">ALL IN 🚀</button>
+                    <button id="btn-submit-bet" class="btn-primary">WETTE SETZEN</button>
+                </div>
+            </div>
+            <div id="bet-error-msg" style="color: #ff6b6b; margin-top: 10px; display:none;">Ungültiger Betrag!</div>
+        </div>
     </div>
 
     <script src="js/peer-logic.js"></script>

@@ -101,7 +101,10 @@ if (location.search.includes('debug=true')) {
 const STATE = {
     WALL: 'WALL',
     QUESTION: 'QUESTION',
-    REVEAL: 'REVEAL'
+    REVEAL: 'REVEAL',
+    FINALE_BETTING: 'FINALE_BETTING',
+    FINALE_QUESTION: 'FINALE_QUESTION',
+    FINALE_REVEAL: 'FINALE_REVEAL'
 };
 
 class MasterGame {
@@ -121,6 +124,10 @@ class MasterGame {
         this.lastPlayerAnswer = null; // Store which choice was made
         this.lastAnswerCorrect = false;
 
+        // Finale State
+        this.finaleBets = { 0: null, 1: null }; // TeamID -> Amount
+        this.finaleAnswers = { 0: null, 1: null }; // TeamID -> Answer
+
         // DOM Elements
         this.elWall = document.querySelector('.category-wall');
         this.elQuestionOverlay = document.querySelector('.question-overlay');
@@ -131,6 +138,12 @@ class MasterGame {
             B: document.getElementById('ans-B'),
             C: document.getElementById('ans-C')
         };
+
+        // FINALE DOM
+        this.elFinaleOverlay = document.getElementById('finale-overlay');
+        this.elFinaleBetting = document.getElementById('finale-betting');
+        this.elFinaleQuestion = document.getElementById('finale-question');
+        this.elFinaleWinner = document.getElementById('finale-winner');
 
         // SOUNDS (DOM-based)
         this.sfx = {
@@ -288,8 +301,21 @@ class MasterGame {
                         });
                     }
                 }
+            } else if (this.state === STATE.FINALE_QUESTION) {
+                const team = this.teams.find(t => t.conn === conn);
+                if (team) {
+                    this.processFinaleAnswer(team.id, data.payload);
+                }
             } else {
                 console.warn('Received answer but not in QUESTION state.');
+            }
+        } else if (data.type === 'BET') {
+            if (this.state === STATE.FINALE_BETTING) {
+                // Identify team
+                const team = this.teams.find(t => t.conn === conn);
+                if (team) {
+                    this.processFinaleBet(team.id, data.payload);
+                }
             }
         }
     }
@@ -696,9 +722,6 @@ class MasterGame {
             // 2. Move to original coords
             this.elFlyingCard.style.top = rect.top + 'px';
             this.elFlyingCard.style.left = rect.left + 'px';
-            this.elFlyingCard.style.width = rect.width + 'px';
-            this.elFlyingCard.style.height = rect.height + 'px';
-
             // 3. Wait for transition, then cleanup
             setTimeout(() => {
                 if (this.elFlyingCard) this.elFlyingCard.remove();
@@ -708,15 +731,177 @@ class MasterGame {
                 const card = document.getElementById(`cat-${this.selectedCategory}`);
                 if (card) {
                     card.style.opacity = '1';
-                    // Ensure the "played" classes are fully active
                     card.classList.add('played');
                 }
-            }, 1000); // Wait for CSS transition (1.2s set in CSS, but 1s is mostly fine)
+            }, 1000);
         } else {
             // Fallback if animation missing
             const card = document.getElementById(`cat-${this.selectedCategory}`);
             if (card) card.style.opacity = '1';
         }
+
+        // CHECK FOR FINALE
+        const unplayed = document.querySelectorAll('.category-card:not(.played)');
+        if (unplayed.length === 0) {
+            console.log("ALL QUESTIONS PLAYED -> STARTING FINALE");
+            setTimeout(() => this.startFinale(), 2000);
+        }
+    }
+
+    /* FINALE LOGIC */
+    startFinale() {
+        console.log("--- STARTING FINALE ---");
+        this.state = STATE.FINALE_BETTING;
+
+        // UI Transition
+        this.elWall.style.display = 'none';
+        this.elQuestionOverlay.classList.add('hidden');
+        this.elFinaleOverlay.classList.remove('hidden');
+        this.elFinaleBetting.classList.remove('hidden');
+
+        // Reset Finale State
+        this.finaleBets = { 0: null, 1: null };
+        this.finaleAnswers = { 0: null, 1: null };
+
+        // Notify Players
+        this.teams.forEach(team => {
+            if (team.conn) {
+                // Send specific score for validation
+                team.conn.send({
+                    type: 'STATE_CHANGE',
+                    payload: 'FINALE_BETTING',
+                    maxScore: team.score
+                });
+            }
+        });
+    }
+
+    processFinaleBet(teamId, amount) {
+        teamId = parseInt(teamId);
+        console.log(`Team ${teamId} bets ${amount}`);
+        this.finaleBets[teamId] = amount;
+
+        // UI Update
+        const statusEl = document.getElementById(`bet-status-${teamId}`);
+        if (statusEl) {
+            statusEl.classList.add('ready');
+            statusEl.querySelector('.status-text').textContent = "EINSATZ STEHT";
+        }
+
+        // Check if both have bet
+        if (this.finaleBets[0] !== null && this.finaleBets[1] !== null) {
+            setTimeout(() => this.startFinaleQuestion(), 1500);
+        }
+    }
+
+    startFinaleQuestion() {
+        this.state = STATE.FINALE_QUESTION;
+        this.elFinaleBetting.classList.add('hidden');
+        this.elFinaleQuestion.classList.remove('hidden');
+
+        // Hardcoded Master Question
+        this.currentQuestion = {
+            category: "MASTERFRAGE",
+            question: "Welches dieser Tiere hat als einziges 3 Herzen?",
+            options: { A: "Der Krake (Oktopus)", B: "Das Blauwal", C: "Die Giraffe" },
+            correct: "A",
+            explanation: "Kraken haben ein Hauptherz und zwei Kiemenherzen, die das Blut durch die Kiemen pumpen."
+        };
+
+        // Render Question
+        this.elFinaleQuestion.querySelector('.master-question-text').textContent = this.currentQuestion.question;
+        document.getElementById('final-ans-A').textContent = "A: " + this.currentQuestion.options.A;
+        document.getElementById('final-ans-B').textContent = "B: " + this.currentQuestion.options.B;
+        document.getElementById('final-ans-C').textContent = "C: " + this.currentQuestion.options.C;
+
+        // Broadcast
+        this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_QUESTION' });
+    }
+
+    processFinaleAnswer(teamId, answer) {
+        teamId = parseInt(teamId);
+        if (this.finaleAnswers[teamId] !== null) return; // Already answered
+
+        this.finaleAnswers[teamId] = answer;
+        console.log(`Team ${teamId} answers ${answer}`);
+
+        // Visual Feedback (e.g. highlight their side of screen or waiting msg)
+        // For simplicity, just log it. Maybe turn status green if we had indicators.
+
+        // Check if both answered
+        if (this.finaleAnswers[0] !== null && this.finaleAnswers[1] !== null) {
+            setTimeout(() => this.resolveFinale(), 1000);
+        }
+    }
+
+    resolveFinale() {
+        this.state = STATE.FINALE_REVEAL;
+
+        // 1. Reveal Correct
+        const correct = this.currentQuestion.correct;
+        const correctEl = document.getElementById('final-ans-' + correct);
+        if (correctEl) correctEl.classList.add('correct', 'reveal-highlight');
+
+        // 2. Calculate Scores
+        let winnerId = null;
+        let highestScore = -1;
+
+        this.teams.forEach(team => {
+            const bet = this.finaleBets[team.id];
+            const ans = this.finaleAnswers[team.id];
+            const isCorrect = (ans === correct);
+
+            if (isCorrect) {
+                team.score += bet;
+                // Maybe show confetti on their side
+            } else {
+                team.score -= bet;
+            }
+
+            // Update internal score (UI update happens in Winner view)
+        });
+
+        // Determine Winner
+        if (this.teams[0].score > this.teams[1].score) winnerId = 0;
+        else if (this.teams[1].score > this.teams[0].score) winnerId = 1;
+        else winnerId = 'draw'; // Tie
+
+        // 3. Show Winner Screen
+        setTimeout(() => {
+            this.elFinaleQuestion.classList.add('hidden');
+            this.elFinaleWinner.classList.remove('hidden');
+
+            const winnerHeading = this.elFinaleWinner.querySelector('.winner-title');
+            const winnerName = document.getElementById('winner-name');
+            const winnerImg = document.getElementById('winner-img');
+            const winnerScore = document.getElementById('winner-score');
+
+            if (winnerId === 'draw') {
+                winnerHeading.textContent = "UNENTSCHIEDEN!";
+                winnerName.textContent = "BEIDE TEAMS";
+                winnerImg.style.backgroundImage = "none";
+                winnerScore.textContent = this.teams[0].score + ' €';
+            } else {
+                const wTeam = this.teams[winnerId];
+                winnerHeading.textContent = "GEWINNER";
+                winnerName.textContent = wTeam.name;
+                winnerImg.style.backgroundImage = `url('assets/${winnerId === 0 ? 'tobi' : 'lurch'}.png')`;
+                winnerScore.textContent = wTeam.score + ' €';
+
+                // Colorize
+                const color = (winnerId === 0) ? '#ffaa00' : '#0099ff';
+                winnerName.style.color = color;
+                winnerImg.style.borderColor = color;
+                winnerImg.style.boxShadow = `0 0 100px ${color}`;
+
+                // Confetti Explosion
+                confetti({ particleCount: 500, spread: 100, origin: { y: 0.6 } });
+            }
+
+            // Broadcast End
+            this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_REVEAL', correct: correct });
+
+        }, 3000);
     }
 
     updateTurnUI() {

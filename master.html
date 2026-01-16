@@ -84,8 +84,51 @@
                     <div class="text">Option C</div>
                 </div>
             </div>
-            <div class="explanation-box hidden"></div>
         </div>
+        <div class="explanation-box hidden"></div>
+    </div>
+
+    <!-- Finale Overlay -->
+    <div id="finale-overlay" class="finale-overlay hidden">
+        <!-- Phase 1: Betting -->
+        <div id="finale-betting" class="finale-phase">
+            <h1 class="finale-title">DAS FINALE</h1>
+            <p class="finale-subtitle">Setzt euren Betrag!</p>
+            <div class="betting-grid">
+                <div class="betting-status" id="bet-status-0">
+                    <div class="team-avatar large" style="background-image: url('assets/tobi.png')"></div>
+                    <div class="status-text">Wartet...</div>
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="betting-status" id="bet-status-1">
+                    <div class="team-avatar large" style="background-image: url('assets/lurch.png')"></div>
+                    <div class="status-text">Wartet...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 2: Master Question -->
+        <div id="finale-question" class="finale-phase hidden">
+            <h2 class="master-question-label">MASTERFRAGE</h2>
+            <div class="master-question-text">Hier steht die Masterfrage...</div>
+            <div class="master-answers">
+                <!-- A/B/C cards similar to normal game but maybe larger -->
+                <div id="final-ans-A" class="answer-card master-card">A</div>
+                <div id="final-ans-B" class="answer-card master-card">B</div>
+                <div id="final-ans-C" class="answer-card master-card">C</div>
+            </div>
+        </div>
+
+        <!-- Phase 3: Winner -->
+        <div id="finale-winner" class="finale-phase hidden">
+            <h1 class="winner-title">GEWINNER</h1>
+            <div class="winner-avatar-container">
+                <div class="winner-avatar" id="winner-img"></div>
+            </div>
+            <div class="winner-name" id="winner-name">TEAM NAME</div>
+            <div class="winner-score" id="winner-score">0 €</div>
+        </div>
+    </div>
     </div>
 
     <!-- Turn Indicator (Hidden/Integrated in Dock) -->

@@ -351,6 +351,17 @@ class PlayerController {
                     this.btns[this.lastChoice].style.filter = 'none'; // REMOVE GRAYSCALE
                     this.statusText.textContent = "LEIDER FALSCH ❌";
                 }
+            } else if (data.payload === 'FINALE_BETTING') {
+                // Switch to betting screen
+                this.showBettingScreen(data.maxScore); // Expecting maxScore from server
+            } else if (data.payload === 'FINALE_QUESTION') {
+                // Switch back to controls
+                document.getElementById('betting-screen').classList.add('hidden');
+                document.getElementById('betting-screen').style.display = 'none';
+                this.showControls();
+                this.statusText.textContent = "MASTERFRAGE!";
+                this.setInteraction(true);
+                this.resetVisuals();
             }
         } else if (data.type === 'TEAM_CONFIRMED') {
             console.log("Team Confirmed! Switching to Controls.");
@@ -369,7 +380,12 @@ class PlayerController {
             }, 500);
         } else if (data.type === 'ERROR') {
             alert(data.message);
-            this.resetButtons();
+            // Assuming resetButtons is a method that exists or should be added
+            // this.resetButtons();
+        } else if (data.type === 'SCORE_UPDATE') {
+            // New message type to sync score
+            this.myScore = data.payload;
+            document.getElementById('my-score-display').textContent = this.myScore + ' €';
         }
     }
 
@@ -394,6 +410,49 @@ class PlayerController {
                 b.style.filter = 'grayscale(1)';
             }
         });
+    }
+
+    // FINALE HELPERS
+    showBettingScreen(maxScore) {
+        this.elControls.classList.add('hidden');
+        this.elControls.style.display = 'none'; // Ensure
+
+        const betScreen = document.getElementById('betting-screen');
+        betScreen.classList.remove('hidden');
+        betScreen.style.display = 'flex';
+
+        this.myScore = maxScore;
+        document.getElementById('my-score-display').textContent = maxScore + ' €';
+
+        const input = document.getElementById('bet-amount');
+        input.max = maxScore;
+        input.value = '';
+        input.focus();
+
+        // Bind events if not already
+        if (!this.betEventsBound) {
+            document.getElementById('btn-all-in').addEventListener('click', () => {
+                input.value = this.myScore;
+            });
+
+            document.getElementById('btn-submit-bet').addEventListener('click', () => {
+                const val = parseInt(input.value);
+                if (isNaN(val) || val < 0 || val > this.myScore) {
+                    const err = document.getElementById('bet-error-msg');
+                    err.style.display = 'block';
+                    setTimeout(() => err.style.display = 'none', 3000);
+                    // Shake animation
+                    input.classList.add('shake');
+                    setTimeout(() => input.classList.remove('shake'), 500);
+                } else {
+                    // Send Bet
+                    this.peerManager.send({ type: 'BET', payload: val });
+                    // Lock UI
+                    betScreen.innerHTML = '<h2 class="text-gradient">WETTE PLATZIERT!</h2><p>Viel Glück!</p>';
+                }
+            });
+            this.betEventsBound = true;
+        }
     }
 }
 

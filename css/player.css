@@ -385,9 +385,66 @@ body {
     }
 
     .btn-answer {
-        font-size: 2.5rem;
+        font-size: 3rem;
         min-height: 80px;
     }
+}
+
+/* BETTING SCREEN */
+.current-score-display {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.bet-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+#bet-amount {
+    width: 100%;
+    padding: 15px;
+    font-size: 2rem;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    outline: none;
+}
+
+#bet-amount:focus {
+    border-color: #00ff88;
+}
+
+.bet-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.bet-buttons button {
+    flex: 1;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-primary {
+    background: var(--neon-green, #00ff88);
+    color: #000;
 }
 
 .hidden {
