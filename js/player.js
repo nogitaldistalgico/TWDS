@@ -340,10 +340,12 @@ class PlayerController {
                 if (this.lastChoice === correct) {
                     // Correct!
                     this.btns[this.lastChoice].classList.add('correct');
+                    this.btns[this.lastChoice].style.filter = 'none'; // REMOVE GRAYSCALE
                     this.statusText.textContent = "RICHTIG! 🎉";
                 } else if (this.lastChoice) {
                     // Wrong
                     this.btns[this.lastChoice].classList.add('wrong');
+                    this.btns[this.lastChoice].style.filter = 'none'; // REMOVE GRAYSCALE
                     this.statusText.textContent = "LEIDER FALSCH ❌";
                 }
             }
