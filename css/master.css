@@ -846,13 +846,7 @@ div.answer-card.correct {
     pointer-events: none;
 }
 
-100% {
-    background: var(--border-gold);
-    box-shadow: 0 0 50px var(--border-gold);
-    border-color: #fff;
-    color: #000;
-}
-}
+
 
 .category-card.selecting {
     animation: flash 0.3s infinite alternate;
