@@ -218,7 +218,10 @@ class PlayerController {
 
     showControls() {
         this.elTeamSelect.classList.add('hidden');
+        this.elTeamSelect.style.display = 'none'; // Ensure it hides
+
         this.elControls.classList.remove('hidden');
+        this.elControls.style.display = 'flex'; // Override inline none
         this.elControls.classList.add('animate-fade-in');
     }
 
@@ -286,10 +289,14 @@ class PlayerController {
                 }
             }
         } else if (data.type === 'TEAM_CONFIRMED') {
+            console.log("Team Confirmed! Switching to Controls.");
+            this.statusMsg.textContent = "Verbunden! Warte auf Start...";
             // Success! Move to controls
             this.showControls();
-            // Start locked until question comes
-            this.setInteraction(false);
+
+            // Force interface update based on potential missed state
+            this.setInteraction(false); // Default to locked until SYNC arrives
+
         } else if (data.type === 'TEAM_TAKEN') {
             this.statusMsg.textContent = "Team already taken! Choose another.";
             document.getElementById(`select-team-${data.payload}`).classList.add('taken');
