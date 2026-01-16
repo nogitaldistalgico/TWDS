@@ -21,6 +21,10 @@
     user-select: none;
 }
 
+.hidden {
+    display: none !important;
+}
+
 body {
     background: var(--studio-bg);
     background-size: 200% 200%;
@@ -112,6 +116,7 @@ body {
 
     /* Chrome/Gold Gradient */
     background: linear-gradient(180deg, #ffffff 0%, #b0c0d0 50%, #ffffff 100%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 

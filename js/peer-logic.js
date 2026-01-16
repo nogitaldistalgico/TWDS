@@ -19,13 +19,23 @@ class PeerManager {
 
     init(id = null) {
         // Use a random ID if none provided (for Host)
-        // Note: In a real PeerJS app, we might check for existing IDs or handle collisions.
-        // For simplicity/demo: Host generates a random 4-char ID.
-
         const peerId = id || (this.isHost ? this.generateRoomId() : null);
 
+        // iOS / Safari Https Check
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.startsWith('127.0')) {
+            console.warn("⚠️ [P2P] WebRTC on iOS/Safari requires HTTPS! Connection might fail.");
+            if (this.callbacks.onError) this.callbacks.onError({ type: 'warning-ssl', message: 'iOS requires HTTPS for WebRTC.' });
+        }
+
         this.peer = new Peer(peerId, {
-            debug: 2
+            debug: 2,
+            secure: true, // Force secure connections if possible (PeerJS Server defaults)
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            }
         });
 
         this.peer.on('open', (id) => {
@@ -42,11 +52,17 @@ class PeerManager {
         });
 
         this.peer.on('error', (err) => {
-            console.error(err);
+            console.error("PeerJS Error:", err);
+            // More granular error handling
+            if (err.type === 'browser-incompatible') {
+                alert("Browser not compatible with WebRTC (try Chrome or Safari 11+)");
+            }
+
             if (this.callbacks.onError) {
                 this.callbacks.onError(err);
             } else {
-                alert('Connection Error: ' + err.type);
+                // Fallback alert
+                console.warn('Connection Error logged silently:', err.type);
             }
         });
     }

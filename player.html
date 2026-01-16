@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WWDS Controller</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/player.css">
@@ -22,7 +23,7 @@
 
 
         <!-- Team Selection Screen -->
-        <div id="team-select-screen" class="login-container glass-panel hidden">
+        <div id="team-select-screen" class="login-container glass-panel hidden" style="display: none;">
             <h2 class="text-gradient" style="text-align:center;">Select Your Team</h2>
             <div class="team-selection-grid">
                 <div class="team-card" id="select-team-0">
@@ -49,7 +50,7 @@
         </div>
 
         <!-- Controls Screen (Hidden initially) -->
-        <div id="controls-screen" class="controller-layout hidden">
+        <div id="controls-screen" class="controller-layout hidden" style="display: none;">
             <div class="status-header" id="status-text">Connected to Host</div>
 
             <div class="controls-grid">
