@@ -560,6 +560,17 @@ class MasterGame {
         const card = document.getElementById(`cat-${this.selectedCategory}`);
         card.classList.add('played');
 
+        // AUDIO FEEDBACK
+        if (this.sfx) {
+            if (this.lastAnswerCorrect) {
+                this.sfx.correct.currentTime = 0;
+                this.sfx.correct.play().catch(e => console.warn(e));
+            } else {
+                this.sfx.wrong.currentTime = 0;
+                this.sfx.wrong.play().catch(e => console.warn(e));
+            }
+        }
+
         // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
             // Team Won -> Show Face
