@@ -753,6 +753,84 @@ div.answer-card.correct {
     box-shadow: 0 0 40px #2ecc71;
 }
 
+/* CROWN */
+.crown-icon {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    font-size: 5rem;
+    filter: drop-shadow(0 0 20px gold);
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 101;
+}
+
+.calc-card.winner .crown-icon.visible {
+    transform: translateX(-50%) scale(1) rotate(5deg);
+    opacity: 1;
+    top: -80px;
+}
+
+/* ANIMATION CLASS FOR CENTER FLY */
+.calc-card.fly-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.5);
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 100px var(--neon-gold);
+    border-color: var(--neon-gold);
+}
+
+
+/* ===========================
+   MEGA TOBI VICTORY
+   =========================== */
+.studio-logo-img {
+    transition: transform 3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 9001;
+    /* Over everything */
+    position: relative;
+}
+
+.studio-logo-img.mega-tobi {
+    transform: scale(8) rotate(-5deg) translateY(50px);
+    filter: drop-shadow(0 0 50px rgba(255, 170, 0, 0.8));
+}
+
+.flying-tobi-head {
+    position: fixed;
+    bottom: -150px;
+    width: 60px;
+    height: 60px;
+    background-image: url('../assets/tobi.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    animation: headFloatUp linear forwards;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes headFloatUp {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(-10vh) rotate(10deg) scale(1);
+    }
+
+    100% {
+        transform: translateY(-120vh) rotate(360deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
 /* Question Overlay (Now just holding answers at bottom) */
 .question-overlay {
     position: fixed;

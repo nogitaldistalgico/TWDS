@@ -955,36 +955,87 @@ class MasterGame {
             // Audio
             if (this.sfx && this.sfx.correct) this.sfx.correct.play().catch(e => { });
 
-            // Confetti
-            if (window.confetti) {
-                const colors = (winnerId === 0) ? ['#ffaa00', '#ffffff'] : ['#0099ff', '#ffffff'];
-                const end = Date.now() + 3000;
+            // SPECIAL TOBI VICTORY (Team 0)
+            if (winnerId === 0) {
+                console.log("MEGA TOBI MODE ACTIVATED");
 
-                (function frame() {
-                    confetti({
-                        particleCount: 5,
-                        angle: 60,
-                        spread: 55,
-                        origin: { x: 0 },
-                        colors: colors
-                    });
-                    confetti({
-                        particleCount: 5,
-                        angle: 120,
-                        spread: 55,
-                        origin: { x: 1 },
-                        colors: colors
-                    });
+                // 1. MEGA LOGO
+                const logo = document.querySelector('.studio-logo-img');
+                if (logo) logo.classList.add('mega-tobi');
 
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame);
-                    }
-                }());
+                // 2. HEAD SWARM
+                this.spawnTobiSwarm();
+
+                // 3. MASSIVE CONFETTI (Side Cannons)
+                this.fireConfettiCannons();
+            } else {
+                // NORMAL CONFETTI for Lurch
+                if (window.confetti) {
+                    const colors = ['#0099ff', '#ffffff'];
+                    confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: colors });
+                }
             }
         }, 800);
 
         // Broadcast End
         this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_WINNER', winner: winnerId });
+    }
+
+    spawnTobiSwarm() {
+        const count = 50; // Total heads
+        const duration = 5000; // Spawning duration
+
+        const spawn = () => {
+            const head = document.createElement('div');
+            head.className = 'flying-tobi-head';
+
+            // Random Props
+            const left = Math.random() * 100; // 0-100vw
+            const animDuration = 3 + Math.random() * 4; // 3-7s
+            const size = 60 + Math.random() * 60; // 60-120px
+
+            head.style.left = left + 'vw';
+            head.style.animationDuration = animDuration + 's';
+            head.style.width = size + 'px';
+            head.style.height = size + 'px';
+
+            document.body.appendChild(head);
+
+            // Cleanup
+            setTimeout(() => head.remove(), animDuration * 1000);
+        };
+
+        // Interval
+        const interval = setInterval(spawn, 200); // New head every 200ms
+        setTimeout(() => clearInterval(interval), duration); // Stop spawning after 5s
+    }
+
+    fireConfettiCannons() {
+        if (!window.confetti) return;
+        const colors = ['#ffaa00', '#ffffff', '#ffd700'];
+
+        const end = Date.now() + 4000;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0, y: 0.8 },
+                colors: colors
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1, y: 0.8 },
+                colors: colors
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
     }
 
     updateTurnUI() {
