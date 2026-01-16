@@ -346,10 +346,10 @@ header.studio-header {
 }
 
 .studio-logo-img {
-    max-height: 180px;
-    /* Scaled down to fit header */
+    max-height: 380px;
+    /* Huge */
     /* Constrain height */
-    max-width: 100%;
+    max-width: 90%;
     object-fit: contain;
     filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.4));
     /* Glow behind the image */
@@ -393,12 +393,14 @@ header.studio-header {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
-    /* Tighter gap like the show */
+    gap: 15px;
+    /* Bigger gap */
     flex: 1;
     width: 100%;
-    max-width: 1300px;
-    margin: 0 auto 120px auto;
+    max-width: 1600px;
+    /* Much wider */
+    margin: 0 auto 40px auto;
+    /* Reduced bottom margin */
     padding: 0 2rem;
 }
 
@@ -414,8 +416,8 @@ header.studio-header {
     justify-content: center;
     text-align: center;
     padding: 0.5rem;
-    font-size: 1.8rem;
-    /* Big Text */
+    font-size: 2.2rem;
+    /* Bigger Text */
     font-weight: 800;
     color: #fff;
     cursor: pointer;
