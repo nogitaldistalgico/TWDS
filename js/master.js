@@ -477,6 +477,17 @@ class MasterGame {
             this.elAnswers[this.lastPlayerAnswer].classList.add('wrong');
         }
 
+        // AUDIO FEEDBACK (Moved from closeQuestion)
+        if (this.sfx) {
+            if (this.lastAnswerCorrect) {
+                this.sfx.correct.currentTime = 0;
+                this.sfx.correct.play().catch(e => console.error("SFX ERROR (Correct):", e));
+            } else {
+                this.sfx.wrong.currentTime = 0;
+                this.sfx.wrong.play().catch(e => console.error("SFX ERROR (Wrong):", e));
+            }
+        }
+
         // CONFETTI for Musik & Gesundheit (if correct)
         if (this.lastAnswerCorrect) {
             const cat = this.currentQuestion.category.toLowerCase();
@@ -597,17 +608,6 @@ class MasterGame {
         // UPDATE WALL
         const card = document.getElementById(`cat-${this.selectedCategory}`);
         card.classList.add('played');
-
-        // AUDIO FEEDBACK
-        if (this.sfx) {
-            if (this.lastAnswerCorrect) {
-                this.sfx.correct.currentTime = 0;
-                this.sfx.correct.play().catch(e => console.error("SFX ERROR (Correct):", e));
-            } else {
-                this.sfx.wrong.currentTime = 0;
-                this.sfx.wrong.play().catch(e => console.error("SFX ERROR (Wrong):", e));
-            }
-        }
 
         // APPLY WIN/LOSS STATE
         if (this.lastAnswerCorrect) {
