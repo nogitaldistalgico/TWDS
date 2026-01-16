@@ -839,6 +839,13 @@ div.answer-card.correct {
     }
 }
 
+/* Utility: Hidden */
+.hidden {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
 100% {
     background: var(--border-gold);
     box-shadow: 0 0 50px var(--border-gold);
