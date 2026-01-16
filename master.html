@@ -158,6 +158,40 @@
                 <div class="winner-name" id="winner-name">TEAM NAME</div>
                 <div class="winner-score" id="winner-score">0 €</div>
             </div>
+
+            <!-- EMERGENCY CONTROLS (Hidden) - Trigger by clicking 'DAS FINALE' title 3 times -->
+            <div id="emergency-controls" class="emergency-panel hidden"
+                style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); padding: 20px; border: 1px solid red; z-index: 20000; text-align: center;">
+                <h3 style="color: red; margin-bottom: 10px;">EMERGENCY CONTROL</h3>
+                <div style="display:flex; gap: 20px; margin-bottom: 10px;">
+                    <div>
+                        <label>Tobi Bet:</label>
+                        <input type="number" id="manual-bet-0" placeholder="0">
+                        <button onclick="manualSubmitBet(0)">Set</button>
+                    </div>
+                    <div>
+                        <label>Lurch Bet:</label>
+                        <input type="number" id="manual-bet-1" placeholder="0">
+                        <button onclick="manualSubmitBet(1)">Set</button>
+                    </div>
+                </div>
+                <div style="display:flex; gap: 20px;">
+                    <div>
+                        <label>Tobi Ans:</label>
+                        <input type="text" id="manual-ans-0" placeholder="A, B, C"
+                            style="width: 50px; text-transform:uppercase;">
+                        <button onclick="manualSubmitAns(0)">Set</button>
+                    </div>
+                    <div>
+                        <label>Lurch Ans:</label>
+                        <input type="text" id="manual-ans-1" placeholder="A, B, C"
+                            style="width: 50px; text-transform:uppercase;">
+                        <button onclick="manualSubmitAns(1)">Set</button>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('emergency-controls').classList.add('hidden')"
+                    style="margin-top:10px; background: #333;">Close</button>
+            </div>
         </div>
 
         <!-- HACKER OVERLAY (Hidden) -->

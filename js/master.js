@@ -841,6 +841,36 @@ class MasterGame {
         this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_QUESTION' });
     }
 
+    // === EMERGENCY CONTROLS ===
+    setupEmergencyControls() {
+        // Triple Click on Title to toggle
+        const title = document.querySelector('.finale-title');
+        let clicks = 0;
+        let timer;
+        if (title) {
+            title.addEventListener('click', () => {
+                clicks++;
+                clearTimeout(timer);
+                timer = setTimeout(() => clicks = 0, 500);
+                if (clicks === 3) {
+                    document.getElementById('emergency-controls').classList.remove('hidden');
+                    clicks = 0;
+                }
+            });
+        }
+
+        // Global Helpers for buttons
+        window.manualSubmitBet = (teamId) => {
+            const val = document.getElementById(`manual-bet-${teamId}`).value;
+            if (val) this.processFinaleBet(teamId, parseInt(val));
+        }
+
+        window.manualSubmitAns = (teamId) => {
+            const val = document.getElementById(`manual-ans-${teamId}`).value.toUpperCase();
+            if (['A', 'B', 'C'].includes(val)) this.processFinaleAnswer(teamId, val);
+        }
+    }
+
     processFinaleAnswer(teamId, answer) {
         teamId = parseInt(teamId);
         if (this.finaleAnswers[teamId] !== null) return; // Already answered
@@ -1292,4 +1322,6 @@ class MasterGame {
 // Start Game
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new MasterGame();
+    game.renderWall();
+    game.setupEmergencyControls(); // Init emergency hooks
 });

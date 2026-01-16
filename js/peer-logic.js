@@ -66,6 +66,8 @@ class PeerManager {
                 console.warn('Connection Error logged silently:', err.type);
             }
         });
+
+        this.setupVisibilityHandler();
     }
 
     handleConnection(conn) {
@@ -127,8 +129,8 @@ class PeerManager {
             this.conn.send({ type: 'PING' });
 
             // 2. Check Timeout (Host & Client)
-            // If we haven't received a message (or PONG) in 5000ms, assume dead
-            if (Date.now() - this.lastPingTime > 5000) {
+            // If we haven't received a message (or PONG) in 8000ms, assume dead
+            if (Date.now() - this.lastPingTime > 8000) {
                 console.warn("Heartbeat lost/timeout!");
                 if (this.callbacks.onHeartbeatLost) this.callbacks.onHeartbeatLost();
 
@@ -136,7 +138,22 @@ class PeerManager {
                 this.stopHeartbeat();
                 this.conn.close();
             }
-        }, 2000); // Ping every 2s
+        }, 1500); // Ping every 1.5s
+    }
+
+    setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log("Page visible -> Checking connection...");
+                if (!this.conn || !this.conn.open) {
+                    console.log("Connection dead/closed while hidden. Reconnecting...");
+                    this.reconnect();
+                } else {
+                    // Force a ping immediately
+                    this.conn.send({ type: 'PING' });
+                }
+            }
+        });
     }
 
     // Call this whenever ANY data is received
