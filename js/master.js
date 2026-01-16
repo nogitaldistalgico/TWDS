@@ -595,13 +595,8 @@ class MasterGame {
         this.teams.forEach(t => t.el.classList.remove('active-turn'));
         this.teams[this.currentTurn].el.classList.add('active-turn');
 
-        // Update Scores Logic
-        // We now have #team-0 and #team-1 with .player-score children again
-        const scoreEl0 = this.teams[0].el.querySelector('.player-score');
-        const scoreEl1 = this.teams[1].el.querySelector('.player-score');
-
-        if (scoreEl0) scoreEl0.textContent = this.teams[0].score + ' €';
-        if (scoreEl1) scoreEl1.textContent = this.teams[1].score + ' €';
+        // Note: Score updating is removed from here to not conflict with animateScore.
+        // Scores are updated via animateScore (on win) or explicitly in loadGame.
 
         // Update Indicator (Optional secondary)
         const indicator = document.getElementById('turn-indicator');
@@ -612,10 +607,34 @@ class MasterGame {
     }
 
     animateScore(element, start, end) {
-        // This function was unused or used differently. 
-        // Since we now update directly in updateTurnUI or handleAnswer, let's just use direct updates or reimplement if needed.
-        // For now, updateTurnUI handles static updates. 
-        // If we want smooth counting, we'd need to target 'score-0' and 'score-1' specifically.
+        if (!element) return;
+
+        // Animation Config
+        const duration = 2000; // 2 seconds
+        const startTime = performance.now();
+
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease Out Quart: 1 - (1 - t)^4
+            const ease = 1 - Math.pow(1 - progress, 4);
+
+            const current = Math.floor(start + (end - start) * ease);
+            element.textContent = current + ' €';
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                element.textContent = end + ' €'; // Ensure final exact value
+                // Add a little pop effect at the end
+                element.classList.remove('pop-score');
+                void element.offsetWidth; // Trigger reflow
+                element.classList.add('pop-score');
+            }
+        };
+
+        requestAnimationFrame(animate);
     }
 
 
