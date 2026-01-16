@@ -301,12 +301,18 @@ body {
 }
 
 .intro-active .head-left {
-    animation: rocketLaunchLeft 2.5s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    animation: rocketLaunchLeft 4s cubic-bezier(0.5, 0, 0.5, 1) forwards;
 }
 
 .intro-active .head-right {
-    animation: rocketLaunchRight 2.5s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    animation: rocketLaunchRight 4s cubic-bezier(0.5, 0, 0.5, 1) forwards;
 }
+
+/* Keyframes usually follow here, but I replaced them in previous step mostly?
+   Wait, I replaced lines 303-349.
+   The original had keyframes. My replacement removed keyframes!
+   I need to restore the keyframes I accidentally deleted!
+*/
 
 @keyframes rocketLaunchLeft {
     0% {
@@ -380,8 +386,9 @@ body {
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .content-wrapper {
-        padding: 2rem 1.5rem;
-        margin-top: 80px;
+        padding: 1.5rem 1rem;
+        margin-top: 60px;
+        width: 95%;
     }
 
     .tobov-headline-wrapper {
@@ -390,37 +397,54 @@ body {
         left: 0;
         transform: none;
         width: 100%;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .tobov-title {
-        font-size: 2.5rem;
-        transform: rotate(-3deg);
+        font-size: 2rem;
+        transform: flex;
+        line-height: 1.1;
+    }
+
+    .tobov-title .highlight {
+        font-size: 1.2em;
     }
 
     .tobi-hero-image {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
+        margin-bottom: 1rem;
     }
 
     .start-btn {
-        font-size: 1.2rem;
-        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        padding: 0.8rem 2rem;
         width: 100%;
+        margin-top: 0.5rem;
     }
 
     .gallery-grid {
-        gap: 10px;
+        gap: 8px;
+        margin-top: 1rem;
     }
 
     .photo-placeholder {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
+        font-size: 0.5rem;
     }
 
     .jga-container {
-        overflow-y: auto;
-        align-items: flex-start;
-        padding-top: 2rem;
+        align-items: center;
+        /* Center vertically on mobile too if possible */
+        padding-top: 0;
+        height: 100vh;
+        overflow: hidden;
+        /* Prevent scroll if we can fit it */
+    }
+
+    .game-info p {
+        font-size: 0.9rem;
+        margin-top: 0.5rem !important;
     }
 }

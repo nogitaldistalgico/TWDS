@@ -672,32 +672,46 @@ header.studio-header {
 }
 
 /* Lost Card Style */
+/* Lost Card Style - Glassy + Diagonal Cross */
 .category-card.lost {
-    background: #2a2a2a;
-    border-color: #555;
-    color: #555;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.3);
+    /* Faded text */
     box-shadow: none;
     cursor: default;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(5px);
 }
 
+/* White Diagonal Line (Bottom-Left to Top-Right) */
 .category-card.lost::before {
     content: '';
     position: absolute;
-    width: 120%;
-    height: 4px;
-    background: #555;
-    transform: rotate(45deg);
+    top: 50%;
+    left: 50%;
+    width: 140%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.5);
+    /* Semi-transparent white line */
+    transform: translate(-50%, -50%) rotate(-45deg);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
+/* Optional: Second line for full X if desired, currently just one diagonal per prompt image interpretation? 
+   User said "with x crossed out", so let's add the second line to make it a proper X. 
+*/
 .category-card.lost::after {
     content: '';
     position: absolute;
-    width: 120%;
-    height: 4px;
-    background: #555;
-    transform: rotate(-45deg);
+    top: 50%;
+    left: 50%;
+    width: 140%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%) rotate(45deg);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
 
