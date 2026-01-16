@@ -92,6 +92,15 @@ class MasterGame {
             C: document.getElementById('ans-C')
         };
 
+        // SOUNDS
+        this.sfx = {
+            login: new Audio('assets/eingeloggt.mp3'),
+            correct: new Audio('assets/richtig.mp3'),
+            wrong: new Audio('assets/falsch.mp3')
+        };
+        // Preload
+        Object.values(this.sfx).forEach(s => s.load());
+
         this.loadQuestions();
         this.loadGame(); // Restore state from storage
         this.initNetwork();
@@ -268,7 +277,11 @@ class MasterGame {
         // Check correctness immediately (but don't show yet)
         this.lastAnswerCorrect = (answerPayload === this.currentQuestion.correct);
 
-        this.playAudio('lock-in');
+        // Play Lock-In Sound
+        if (this.sfx && this.sfx.login) {
+            this.sfx.login.currentTime = 0;
+            this.sfx.login.play().catch(e => console.warn("Audio play failed", e));
+        }
     }
 
     renderWall() {
