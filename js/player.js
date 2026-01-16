@@ -421,36 +421,74 @@ class PlayerController {
         betScreen.classList.remove('hidden');
         betScreen.style.display = 'flex';
 
+        // RESET UI STATE (Fix for reconnects)
+        const betControls = betScreen.querySelector('.bet-controls');
+        const successMsg = document.getElementById('bet-success-msg');
+        const errorMsg = document.getElementById('bet-error-msg');
+
+        if (betControls) betControls.style.display = 'flex';
+        if (successMsg) successMsg.classList.add('hidden');
+        if (errorMsg) errorMsg.style.display = 'none';
+
+        // Fallback if maxScore is missing/invalid
+        if (maxScore === undefined || maxScore === null) {
+            maxScore = this.myScore || 0;
+        }
+
         this.myScore = maxScore;
-        document.getElementById('my-score-display').textContent = maxScore + ' €';
+        const scoreDisplay = document.getElementById('my-score-display');
+        if (scoreDisplay) scoreDisplay.textContent = maxScore + ' €';
 
         const input = document.getElementById('bet-amount');
-        input.max = maxScore;
-        input.value = '';
-        input.focus();
+        if (input) {
+            input.max = maxScore;
+            input.value = ''; // Reset value
+            input.disabled = false; // Ensure enabled
+            input.focus();
+        }
 
         // Bind events if not already
         if (!this.betEventsBound) {
-            document.getElementById('btn-all-in').addEventListener('click', () => {
-                input.value = this.myScore;
-            });
+            const btnAllIn = document.getElementById('btn-all-in');
+            const btnSubmit = document.getElementById('btn-submit-bet');
 
-            document.getElementById('btn-submit-bet').addEventListener('click', () => {
-                const val = parseInt(input.value);
-                if (isNaN(val) || val < 0 || val > this.myScore) {
-                    const err = document.getElementById('bet-error-msg');
-                    err.style.display = 'block';
-                    setTimeout(() => err.style.display = 'none', 3000);
-                    // Shake animation
-                    input.classList.add('shake');
-                    setTimeout(() => input.classList.remove('shake'), 500);
-                } else {
-                    // Send Bet
-                    this.peerManager.send({ type: 'BET', payload: val });
-                    // Lock UI
-                    betScreen.innerHTML = '<h2 class="text-gradient">WETTE PLATZIERT!</h2><p>Viel Glück!</p>';
-                }
-            });
+            if (btnAllIn) {
+                btnAllIn.addEventListener('click', () => {
+                    if (input) input.value = this.myScore;
+                });
+            }
+
+            if (btnSubmit) {
+                btnSubmit.addEventListener('click', () => {
+                    if (!input) return;
+
+                    let val = parseInt(input.value);
+                    if (input.value === "") val = NaN; // Explicit check for empty string
+
+                    if (isNaN(val) || val < 0 || val > this.myScore) {
+                        const err = document.getElementById('bet-error-msg');
+                        if (err) {
+                            err.style.display = 'block';
+                            err.textContent = (val > this.myScore) ? "Nicht genug Guthaben!" : "Ungültiger Betrag!";
+                            setTimeout(() => err.style.display = 'none', 3000);
+                        }
+                        // Shake animation
+                        input.classList.add('shake');
+                        setTimeout(() => input.classList.remove('shake'), 500);
+                    } else {
+                        // Send Bet
+                        this.peerManager.send({ type: 'BET', payload: val });
+
+                        // Show Success State (Toggle Visibility)
+                        if (betControls) betControls.style.display = 'none';
+                        if (successMsg) successMsg.classList.remove('hidden');
+                        if (successMsg) successMsg.style.display = 'flex';
+
+                        // Disable Input to prevent double send
+                        input.disabled = true;
+                    }
+                });
+            }
             this.betEventsBound = true;
         }
     }
