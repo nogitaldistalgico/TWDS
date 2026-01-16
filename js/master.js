@@ -531,13 +531,17 @@ class MasterGame {
                     // Re-construct full background property to match live logic
                     const bgSize = (item.result === 'lurch') ? '76%, cover' : 'contain, cover';
 
+                    const isTobi = item.result === 'tobi';
+                    // Tobi = Gold (#ffaa00), Lurch = Blue (#0076bf / Neon Blue)
+                    const color = isTobi ? '#ffaa00' : '#0099ff';
+
                     card.style.background = `url('assets/${item.result}.png'), linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%)`;
                     card.style.backgroundSize = bgSize;
                     card.style.backgroundPosition = 'center center, center';
                     card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
-                    card.style.borderColor = (item.result === 'tobi') ? 'var(--color-primary)' : 'var(--color-secondary)';
-                    card.style.boxShadow = `0 0 15px ${(item.result === 'tobi') ? 'var(--color-primary-glow)' : 'var(--color-secondary-glow)'}`;
+                    card.style.borderColor = color;
+                    card.style.boxShadow = `0 0 20px ${color}`;
                 }
             }
         });
@@ -572,15 +576,13 @@ class MasterGame {
             card.style.backgroundPosition = 'center center, center, center';
             card.style.backgroundRepeat = 'no-repeat, no-repeat';
 
-            // Add Gold Border via class, but ensure JS doesn't override it poorly
-            card.classList.add('border-gold'); // master.css handles border-gold styling
+            // COLOR LOGIC
+            // Team 0 (Tobi) = Gold/Orange
+            // Team 1 (Lurch) = Blue
+            const color = (this.currentTurn === 0) ? '#ffaa00' : '#0099ff';
 
-            // The previous line for backgroundPosition was 'center, center', which is redundant with the more specific one above.
-            // Keeping the more specific one and removing the generic one.
-            // card.style.backgroundPosition = 'center, center'; // This line is removed as it's redundant/overwritten by the more specific one above.
-
-            card.style.borderColor = this.currentTurn === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
-            // The boxShadow was removed as per the instruction's implied change (it was not in the new snippet).
+            card.style.borderColor = color;
+            card.style.boxShadow = `0 0 20px ${color}`;
             card.textContent = '';
 
             const oldScore = this.teams[this.currentTurn].score;
