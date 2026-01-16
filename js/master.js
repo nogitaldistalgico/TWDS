@@ -38,7 +38,30 @@ document.addEventListener('click', function restoreFs() {
 
 window.testSound = function () {
     const s = document.getElementById('sfx-login');
-    if (s) s.play().catch(e => alert("Sound error: " + e));
+    if (!s) return alert("Audio Element not found!");
+
+    // Diagnostic info
+    const info = `ReadyState: ${s.readyState}, Error: ${s.error ? s.error.code : 'None'}, Src: ${s.currentSrc}`;
+    console.log(info);
+
+    // Attempt 1: Standard Play
+    s.play().then(() => {
+        console.log("Play success!");
+    }).catch(e => {
+        // Attempt 2: Force Load and Play
+        console.warn("Play failed, retrying with load()", e);
+        s.load();
+        s.play().then(() => {
+            console.log("Play success after load!");
+        }).catch(e2 => {
+            // Attempt 3: New Audio Object (Fallback)
+            console.warn("Play failed again. Trying new Audio()", e2);
+            const s2 = new Audio('assets/eingeloggt.mp3');
+            s2.play().then(() => alert("Success with new Audio() object!")).catch(e3 => {
+                alert(`ALL FAILS. ${e3.name}: ${e3.message}\n${info}`);
+            });
+        });
+    });
 }
 
 // Debug Logger
