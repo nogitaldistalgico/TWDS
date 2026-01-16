@@ -935,6 +935,13 @@ class MasterGame {
             return;
         }
 
+        // LURCH FAKEOUT CHECK
+        // If Lurch (1) wins, we do a fakeout sequence, then Tobi (0) wins
+        if (winnerId === 1) {
+            this.triggerLurchFakeout();
+            return;
+        }
+
         const elCalc = document.getElementById('finale-calc');
         elCalc.classList.add('finale-mode-winner');
 
@@ -1030,12 +1037,58 @@ class MasterGame {
                 spread: 55,
                 origin: { x: 1, y: 0.8 },
                 colors: colors
-            });
-
-            if (Date.now() < end) {
+        if(Date.now() < end) {
                 requestAnimationFrame(frame);
             }
         }());
+    }
+
+    triggerLurchFakeout() {
+        console.log("TRIGGERING LURCH FAKEOUT...");
+
+        // 1. Start normal win animation for a brief moment
+        const elCalc = document.getElementById('finale-calc');
+        elCalc.classList.add('finale-mode-winner');
+        const lurchCard = document.getElementById('calc-team-1');
+        const tobiCard = document.getElementById('calc-team-0');
+
+        lurchCard.classList.add('fly-center', 'winner'); // Lurch flies up
+        tobiCard.classList.add('loser');
+
+        // 2. Wait 2s then GLITCH
+        setTimeout(() => {
+            // SHOW ERROR SCREEN
+            const hacker = document.getElementById('hacker-overlay');
+            if (hacker) hacker.classList.remove('hidden');
+
+            // Play Error Sound?
+            if (this.sfx && this.sfx.wrong) {
+                this.sfx.wrong.currentTime = 0;
+                this.sfx.wrong.play();
+                setTimeout(() => this.sfx.wrong.play(), 200); // Double beep
+                setTimeout(() => this.sfx.wrong.play(), 400); // Triple beep
+            }
+
+        }, 2000);
+
+        // 3. Wait 5s then REVEAL TRUE WINNER
+        setTimeout(() => {
+            // Hide Error
+            const hacker = document.getElementById('hacker-overlay');
+            if (hacker) hacker.classList.add('hidden');
+
+            // RESET CARDS roughly
+            lurchCard.classList.remove('fly-center', 'winner');
+            lurchCard.classList.add('loser'); // Now Lurch loses
+            tobiCard.classList.remove('loser'); // Tobi resets
+
+            // Give visual break
+            setTimeout(() => {
+                // CALL TOBI WIN MANUALLY
+                this.animateWinner(0); // Force Tobi Win
+            }, 500);
+
+        }, 7000); // 2s + 5s reading time
     }
 
     updateTurnUI() {
