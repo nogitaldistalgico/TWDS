@@ -1037,7 +1037,9 @@ class MasterGame {
                 spread: 55,
                 origin: { x: 1, y: 0.8 },
                 colors: colors
-        if(Date.now() < end) {
+            });
+
+            if (Date.now() < end) {
                 requestAnimationFrame(frame);
             }
         }());
