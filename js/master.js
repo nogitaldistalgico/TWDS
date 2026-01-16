@@ -471,7 +471,7 @@ class MasterGame {
                 } else {
                     const gradient = (item.result === 'tobi') ? 'var(--card-purple-top), var(--card-purple-bottom)' : 'var(--card-purple-top), var(--card-purple-bottom)';
                     // Re-construct full background property to match live logic
-                    const bgSize = (item.result === 'lurch') ? '80%, cover' : 'contain, cover';
+                    const bgSize = (item.result === 'lurch') ? '76%, cover' : 'contain, cover';
 
                     card.style.background = `url('assets/${item.result}.png'), linear-gradient(to bottom, var(--card-purple-top) 0%, var(--card-purple-bottom) 100%)`;
                     card.style.backgroundSize = bgSize;
@@ -508,7 +508,7 @@ class MasterGame {
             card.style.backgroundImage = `url('assets/${this.currentTurn === 0 ? 'tobi' : 'lurch'}.png'), ${gradient}`;
 
             // Standardize sizing: Tobi contain, Lurch zoomed 110%
-            const bgSize = (this.currentTurn === 1) ? '80%, cover, cover' : 'contain, cover, cover';
+            const bgSize = (this.currentTurn === 1) ? '76%, cover, cover' : 'contain, cover, cover';
 
             card.style.backgroundSize = bgSize;
             card.style.backgroundPosition = 'center center, center, center';

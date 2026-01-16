@@ -84,6 +84,10 @@ class PlayerController {
     }
 
     initControls() {
+        // Auto-Join immediately on init (or separate initConnection)
+        this.startJoinProcess();
+
+        // Retry button (only visible if auto-join fails)
         this.btnJoin.addEventListener('click', () => {
             this.startJoinProcess();
         });
@@ -95,6 +99,7 @@ class PlayerController {
 
     startJoinProcess() {
         // Visual feedback immediately
+        this.elLogin.classList.remove('hidden'); // Show loading screen initially
         this.btnJoin.textContent = "VERBINDE...";
         this.btnJoin.disabled = true;
         this.btnJoin.style.opacity = "0.7";
@@ -144,6 +149,7 @@ class PlayerController {
             const savedTeam = localStorage.getItem('wwds_player_team');
             if (savedTeam) {
                 console.log("Auto-claiming team: " + savedTeam);
+                // Optimistic UI for re-joiners
                 this.selectTeam(parseInt(savedTeam));
             } else {
                 // UI Transition
@@ -158,20 +164,19 @@ class PlayerController {
                 // Host ID not found yet? Retry.
                 if (attempt < maxRetries) {
                     attempt++;
-                    this.statusMsg.textContent = `Host nicht gefunden. Suche... (${attempt})`;
+                    this.statusMsg.textContent = `Suche Studio... (${attempt})`;
                     setTimeout(tryConnect, 2000); // Retry after 2s
                 } else {
-                    alert("Host 'TOBIS-JGA' nicht gefunden. Ist der Master-Tab offen?");
-                    this.resetJoinButton();
+                    // Only show manual Retry button if auto-fail completely
+                    this.showManualConnect("Studio nicht gefunden. Ist der Master an?");
                 }
             } else if (err.type === 'disconnected') {
-                this.statusText.textContent = "Verbindung weg... Suche...";
+                this.statusText.textContent = "Verbindung verloren... Reconnect...";
                 this.statusText.style.color = "red";
                 // Auto-retry indefinitely for disconnects
                 setTimeout(tryConnect, 2000);
             } else {
-                alert("Fehler: " + err.type);
-                this.resetJoinButton();
+                this.showManualConnect("Verbindungsfehler: " + err.type);
             }
         });
 
@@ -182,8 +187,11 @@ class PlayerController {
         this.peerManager.init();
     }
 
-    resetJoinButton() {
-        this.btnJoin.textContent = "SPIEL BEITRETEN";
+    showManualConnect(msg) {
+        this.elLogin.classList.remove('hidden');
+        this.elLogin.querySelector('h2').textContent = "Verbindung";
+        this.statusMsg.textContent = msg;
+        this.btnJoin.textContent = "NEU VERBINDEN";
         this.btnJoin.disabled = false;
         this.btnJoin.style.opacity = "1";
     }
@@ -227,94 +235,94 @@ class PlayerController {
             b.disabled = true; // Disable interaction
             b.style.pointerEvents = 'none';
         });
-    });
+
         this.btns[choice].classList.add('selected');
 
-// Lock immediately to prevent spamming
-this.setInteraction(false);
-// But keep selected one fully opaque/visible
-this.btns[choice].style.opacity = '1';
-this.btns[choice].style.filter = 'none';
-
-this.lastChoice = choice; // Store choice for feedback
-
-this.peerManager.send({ type: 'ANSWER', payload: choice });
-    }
-
-handleGameData(data) {
-    if (data.type === 'STATE_CHANGE') {
-        if (data.payload === 'WALL') {
-            this.statusText.textContent = "Waiting for Host...";
-            // RESET & LOCK
-            this.resetVisuals();
-            this.setInteraction(false);
-            this.lastChoice = null;
-
-        } else if (data.payload === 'QUESTION') {
-            this.statusText.textContent = "Make your choice!";
-            // UNLOCK
-            this.resetVisuals();
-            this.setInteraction(true);
-
-        } else if (data.payload === 'REVEAL') {
-            this.statusText.textContent = "Check the screen!";
-            // LOCK
-            this.setInteraction(false);
-
-            // Show feedback (Visuals only, no interaction)
-            const correct = data.correct;
-            // Re-enable opacity for clarity, but keep disabled
-            Object.values(this.btns).forEach(b => b.style.opacity = '1');
-
-            if (this.lastChoice === correct) {
-                // Correct!
-                this.btns[this.lastChoice].classList.add('correct');
-                this.statusText.textContent = "RICHTIG! 🎉";
-            } else if (this.lastChoice) {
-                // Wrong
-                this.btns[this.lastChoice].classList.add('wrong');
-                this.statusText.textContent = "LEIDER FALSCH ❌";
-            }
-        }
-    } else if (data.type === 'TEAM_CONFIRMED') {
-        // Success! Move to controls
-        this.showControls();
-        // Start locked until question comes
+        // Lock immediately to prevent spamming
         this.setInteraction(false);
-    } else if (data.type === 'TEAM_TAKEN') {
-        this.statusMsg.textContent = "Team already taken! Choose another.";
-        document.getElementById(`select-team-${data.payload}`).classList.add('taken');
-        setTimeout(() => {
-            document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
-        }, 500);
-    } else if (data.type === 'ERROR') {
-        alert(data.message);
-        this.resetButtons();
+        // But keep selected one fully opaque/visible
+        this.btns[choice].style.opacity = '1';
+        this.btns[choice].style.filter = 'none';
+
+        this.lastChoice = choice; // Store choice for feedback
+
+        this.peerManager.send({ type: 'ANSWER', payload: choice });
     }
-}
 
-resetVisuals() {
-    Object.values(this.btns).forEach(b => {
-        b.classList.remove('selected', 'correct', 'wrong');
-    });
-}
+    handleGameData(data) {
+        if (data.type === 'STATE_CHANGE') {
+            if (data.payload === 'WALL') {
+                this.statusText.textContent = "Waiting for Host...";
+                // RESET & LOCK
+                this.resetVisuals();
+                this.setInteraction(false);
+                this.lastChoice = null;
 
-setInteraction(active) {
-    this.canAnswer = active;
-    Object.values(this.btns).forEach(b => {
-        if (active) {
-            b.disabled = false;
-            b.style.pointerEvents = 'auto';
-            b.style.opacity = '1';
-            b.style.filter = 'none';
-        } else {
-            b.disabled = true;
-            b.style.pointerEvents = 'none';
-            b.style.opacity = '0.5';
-            b.style.filter = 'grayscale(1)';
+            } else if (data.payload === 'QUESTION') {
+                this.statusText.textContent = "Make your choice!";
+                // UNLOCK
+                this.resetVisuals();
+                this.setInteraction(true);
+
+            } else if (data.payload === 'REVEAL') {
+                this.statusText.textContent = "Check the screen!";
+                // LOCK
+                this.setInteraction(false);
+
+                // Show feedback (Visuals only, no interaction)
+                const correct = data.correct;
+                // Re-enable opacity for clarity, but keep disabled
+                Object.values(this.btns).forEach(b => b.style.opacity = '1');
+
+                if (this.lastChoice === correct) {
+                    // Correct!
+                    this.btns[this.lastChoice].classList.add('correct');
+                    this.statusText.textContent = "RICHTIG! 🎉";
+                } else if (this.lastChoice) {
+                    // Wrong
+                    this.btns[this.lastChoice].classList.add('wrong');
+                    this.statusText.textContent = "LEIDER FALSCH ❌";
+                }
+            }
+        } else if (data.type === 'TEAM_CONFIRMED') {
+            // Success! Move to controls
+            this.showControls();
+            // Start locked until question comes
+            this.setInteraction(false);
+        } else if (data.type === 'TEAM_TAKEN') {
+            this.statusMsg.textContent = "Team already taken! Choose another.";
+            document.getElementById(`select-team-${data.payload}`).classList.add('taken');
+            setTimeout(() => {
+                document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
+            }, 500);
+        } else if (data.type === 'ERROR') {
+            alert(data.message);
+            this.resetButtons();
         }
-    });
-}
+    }
+
+    resetVisuals() {
+        Object.values(this.btns).forEach(b => {
+            b.classList.remove('selected', 'correct', 'wrong');
+        });
+    }
+
+    setInteraction(active) {
+        this.canAnswer = active;
+        Object.values(this.btns).forEach(b => {
+            if (active) {
+                b.disabled = false;
+                b.style.pointerEvents = 'auto';
+                b.style.opacity = '1';
+                b.style.filter = 'none';
+            } else {
+                b.disabled = true;
+                b.style.pointerEvents = 'none';
+                b.style.opacity = '0.5';
+                b.style.filter = 'grayscale(1)';
+            }
+        });
+    }
 }
 
 // Start Player
