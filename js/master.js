@@ -1057,7 +1057,7 @@ class MasterGame {
         lurchCard.classList.add('fly-center', 'winner'); // Lurch flies up
         tobiCard.classList.add('loser');
 
-        // 2. Wait 2s then GLITCH
+        // 2. Wait 4s then GLITCH (Longer delay as requested)
         setTimeout(() => {
             // SHOW ERROR SCREEN
             const hacker = document.getElementById('hacker-overlay');
@@ -1071,9 +1071,9 @@ class MasterGame {
                 setTimeout(() => this.sfx.wrong.play(), 400); // Triple beep
             }
 
-        }, 2000);
+        }, 4000);
 
-        // 3. Wait 5s then REVEAL TRUE WINNER
+        // 3. Wait 9s then REVEAL TRUE WINNER
         setTimeout(() => {
             // Hide Error
             const hacker = document.getElementById('hacker-overlay');
@@ -1084,13 +1084,37 @@ class MasterGame {
             lurchCard.classList.add('loser'); // Now Lurch loses
             tobiCard.classList.remove('loser'); // Tobi resets
 
+            // TIMED SCORE RIGGING
+            // Rule: If Tobi answered WRONG, restore his old score (don't lose money).
+            //       If Tobi answered CORRECT, keep his high score.
+            //       Basically: Tobi cannot lose points in the fakeout.
+            const tobi = this.teams[0];
+            const bet = this.finaleBets[0] || 0;
+            const tobiAns = this.finaleAnswers[0];
+            const correct = (tobiAns === this.currentQuestion.correct);
+
+            console.log(`Fakeout Rigging: Tobi Correct? ${correct}, Score: ${tobi.score}, Bet: ${bet}`);
+
+            if (!correct) {
+                // He lost points, give them back!
+                tobi.score += bet;
+                console.log(`Restored Tobi Score to ${tobi.score}`);
+            } else {
+                console.log(`Tobi won fairly, keeping score ${tobi.score}`);
+            }
+
+            // Update DOM to reflect rigged score
+            const elScore = document.getElementById(`old-score-0`); // The 'new' score is confusingly named/placed in calc-grid
+            // Actually calc grid shows 'old score' (span id old-score-0) and change (+/-).
+            // We want to force the Final Winner calculation to use this new rigged score.
+
             // Give visual break
             setTimeout(() => {
                 // CALL TOBI WIN MANUALLY
                 this.animateWinner(0); // Force Tobi Win
             }, 500);
 
-        }, 7000); // 2s + 5s reading time
+        }, 9000); // 4s + 5s reading time
     }
 
     updateTurnUI() {

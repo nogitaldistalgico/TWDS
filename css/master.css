@@ -841,7 +841,7 @@ div.answer-card.correct {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
+    background: #000;
     z-index: 9998;
     /* Just below Mega Tobi heads */
     display: flex;
@@ -849,6 +849,36 @@ div.answer-card.correct {
     align-items: center;
     overflow: hidden;
     backdrop-filter: blur(5px);
+    /* Matrix Effect Base */
+}
+
+/* Scrolling Code Background */
+.hacker-overlay::before {
+    content: '0101010100101 ERROR 010100 10101010 FATAL 1010101 0010101 NULL 101010 SYSTEM 0101010 FAILURE 1010101 010101 POINTER 0101010';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: rgba(0, 255, 0, 0.2);
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    word-break: break-all;
+    background: linear-gradient(0deg, rgba(0, 20, 0, 0.9), rgba(0, 0, 0, 0.9));
+    z-index: -1;
+    animation: scrollCode 2s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes scrollCode {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 100px;
+    }
 }
 
 .error-terminal {
