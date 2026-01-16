@@ -1081,6 +1081,17 @@ class MasterGame {
             }
         });
 
+        // MOUSE INPUTS FOR ANSWERS (Clickable Cards)
+        if (this.elAnswers) {
+            Object.entries(this.elAnswers).forEach(([option, el]) => {
+                el.addEventListener('click', () => {
+                    if (this.state === STATE.QUESTION) {
+                        this.processAnswer(option);
+                    }
+                });
+            });
+        }
+
         // Mouse/Touch Control
         this.btnHostAction = document.getElementById('btn-host-action');
         if (this.btnHostAction) {
