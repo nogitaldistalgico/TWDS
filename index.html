@@ -84,13 +84,20 @@
         let started = false;
 
         window.toggleFullscreen = function () {
+            const btn = document.getElementById('btn-fullscreen');
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
+                document.documentElement.requestFullscreen().then(() => {
+                    sessionStorage.setItem('wwds_fullscreen_pref', 'true');
+                    btn.innerHTML = '⛶'; // Active icon (or different)
+                    btn.style.opacity = '1';
+                }).catch(err => {
                     console.warn(`Error attempting to enable fullscreen: ${err.message}`);
                 });
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
+                    sessionStorage.setItem('wwds_fullscreen_pref', 'false');
+                    btn.style.opacity = '0.5';
                 }
             }
         };

@@ -2,15 +2,27 @@
 
 window.toggleFullscreen = function () {
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
+        document.documentElement.requestFullscreen().then(() => {
+            sessionStorage.setItem('wwds_fullscreen_pref', 'true');
+        }).catch(err => {
             console.warn(`Error attempting to enable fullscreen: ${err.message}`);
         });
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
+            sessionStorage.setItem('wwds_fullscreen_pref', 'false');
         }
     }
 };
+
+// Auto-Restore Fullscreen on user interaction if preferred
+document.addEventListener('click', function restoreFs() {
+    if (sessionStorage.getItem('wwds_fullscreen_pref') === 'true' && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => { });
+    }
+    // Remove after first interaction to avoid annoyance
+    document.removeEventListener('click', restoreFs);
+}, { once: true });
 
 // Debug Logger
 const debugEl = document.getElementById('debug-console');
