@@ -136,6 +136,7 @@ class PlayerController {
 
         this.peerManager.onOpen((id) => {
             console.log('Player ID:', id);
+            this.statusMsg.innerHTML = `Player ID: ${id}<br>Suche Studio...`;
             tryConnect();
         });
 

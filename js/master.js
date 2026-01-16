@@ -80,6 +80,7 @@ class MasterGame {
             C: document.getElementById('ans-C')
         };
 
+        this.createStartOverlay(); // Add overlay to restore fullscreen
         this.loadQuestions();
         this.loadGame(); // Restore state from storage
         this.initNetwork();
@@ -103,6 +104,32 @@ class MasterGame {
         } catch (e) {
             console.error("Failed to load questions", e);
         }
+    }
+
+    createStartOverlay() {
+        // Create an overlay that requires a click to start (and trigger fullscreen)
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.85)';
+        overlay.style.zIndex = '10000';
+        overlay.style.display = 'flex';
+        overlay.style.flexDirection = 'column';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.cursor = 'pointer';
+        overlay.innerHTML = `
+            <h1 style="color:white; font-size:3rem; margin-bottom:1rem;">BEREIT?</h1>
+            <p style="color:#aaa; font-size:1.5rem;">Klicken für Fullscreen & Start</p>
+        `;
+
+        overlay.onclick = () => {
+            document.documentElement.requestFullscreen().catch(e => console.log(e));
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
+        };
+
+        document.body.appendChild(overlay);
     }
 
     initNetwork() {
