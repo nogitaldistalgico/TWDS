@@ -15,12 +15,24 @@ window.toggleFullscreen = function () {
     }
 };
 
-// Auto-Restore Fullscreen on user interaction if preferred
+// Auto-Restore Fullscreen on user interaction AND unlock Audio
 document.addEventListener('click', function restoreFs() {
+    // 1. Fullscreen
     if (sessionStorage.getItem('wwds_fullscreen_pref') === 'true' && !document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => { });
     }
-    // Remove after first interaction to avoid annoyance
+
+    // 2. Unlock Audio Context (play silent or just load)
+    if (window.game && window.game.sfx) {
+        // Try to play and pause immediately to unlock
+        window.game.sfx.login.play().then(() => {
+            window.game.sfx.login.pause();
+            window.game.sfx.login.currentTime = 0;
+            console.log("Audio Unlocked!");
+        }).catch(e => console.warn("Audio unlock failed on click", e));
+    }
+
+    // Remove after first interaction
     document.removeEventListener('click', restoreFs);
 }, { once: true });
 
@@ -280,7 +292,7 @@ class MasterGame {
         // Play Lock-In Sound
         if (this.sfx && this.sfx.login) {
             this.sfx.login.currentTime = 0;
-            this.sfx.login.play().catch(e => console.warn("Audio play failed", e));
+            this.sfx.login.play().catch(e => console.error("SFX ERROR (Login):", e));
         }
     }
 
@@ -564,10 +576,10 @@ class MasterGame {
         if (this.sfx) {
             if (this.lastAnswerCorrect) {
                 this.sfx.correct.currentTime = 0;
-                this.sfx.correct.play().catch(e => console.warn(e));
+                this.sfx.correct.play().catch(e => console.error("SFX ERROR (Correct):", e));
             } else {
                 this.sfx.wrong.currentTime = 0;
-                this.sfx.wrong.play().catch(e => console.warn(e));
+                this.sfx.wrong.play().catch(e => console.error("SFX ERROR (Wrong):", e));
             }
         }
 
