@@ -160,9 +160,10 @@ class PeerManager {
 
     send(data) {
         if (this.conn && this.conn.open) {
+            console.log("Sending:", data.type);
             this.conn.send(data);
         } else {
-            console.warn('Connection not open, cannot send data');
+            console.warn(`SEND FAILED (${data.type}): Conn not open`);
             // Don't alert on heartbeat fail, just warn
             if (data.type !== 'PING' && data.type !== 'PONG') {
                 // Trigger callback so UI can show "Offline"

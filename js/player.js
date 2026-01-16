@@ -1,7 +1,8 @@
 /* Player Logic */
 // Mobile Debug Logger
 const debugEl = document.getElementById('debug-console');
-if (location.search.includes('debug=true')) {
+// FORCE DEBUG ON
+if (true) {
     debugEl.style.display = 'block';
     const originalLog = console.log;
     const originalError = console.error;
@@ -212,12 +213,14 @@ class PlayerController {
     }
 
     showTeamSelection() {
+        console.log("UI: Showing Team Selection");
         this.elLogin.classList.add('hidden');
         this.elTeamSelect.classList.remove('hidden');
         this.elTeamSelect.classList.add('animate-fade-in');
     }
 
     selectTeam(teamId) {
+        console.log(`UI: Selected Team ${teamId}`);
         // Store locally
         this.myTeamId = teamId;
         localStorage.setItem('wwds_player_team', teamId);
