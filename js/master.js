@@ -799,20 +799,29 @@ class MasterGame {
         this.elFinaleBetting.classList.add('hidden');
         this.elFinaleQuestion.classList.remove('hidden');
 
-        // Hardcoded Master Question
+        // Hardcoded Master Question (Could be moved to JSON later)
         this.currentQuestion = {
             category: "MASTERFRAGE",
             question: "Welches dieser Tiere hat als einziges 3 Herzen?",
-            options: { A: "Der Krake (Oktopus)", B: "Das Blauwal", C: "Die Giraffe" },
+            options: { A: "Der Krake (Oktopus)", B: "Der Blauwal", C: "Die Giraffe" },
             correct: "A",
             explanation: "Kraken haben ein Hauptherz und zwei Kiemenherzen, die das Blut durch die Kiemen pumpen."
         };
 
         // Render Question
         this.elFinaleQuestion.querySelector('.master-question-text').textContent = this.currentQuestion.question;
-        document.getElementById('final-ans-A').textContent = "A: " + this.currentQuestion.options.A;
-        document.getElementById('final-ans-B').textContent = "B: " + this.currentQuestion.options.B;
-        document.getElementById('final-ans-C').textContent = "C: " + this.currentQuestion.options.C;
+
+        // Render Master Cards Structured
+        const renderCard = (letter, text) => {
+            const el = document.getElementById('final-ans-' + letter);
+            el.querySelector('.answer-letter').textContent = letter;
+            el.querySelector('.text').textContent = text;
+            el.className = 'answer-card master-card'; // Reset classes
+        };
+
+        renderCard('A', this.currentQuestion.options.A);
+        renderCard('B', this.currentQuestion.options.B);
+        renderCard('C', this.currentQuestion.options.C);
 
         // Broadcast
         this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_QUESTION' });
@@ -837,71 +846,123 @@ class MasterGame {
     resolveFinale() {
         this.state = STATE.FINALE_REVEAL;
 
-        // 1. Reveal Correct
+        // 1. Reveal Correct Answer
         const correct = this.currentQuestion.correct;
         const correctEl = document.getElementById('final-ans-' + correct);
         if (correctEl) correctEl.classList.add('correct', 'reveal-highlight');
 
-        // 2. Calculate Scores
-        let winnerId = null;
-        let highestScore = -1;
+        // Audio Feedback
+        if (this.sfx && this.sfx.correct) {
+            this.sfx.correct.play().catch(e => { });
+        }
 
+        // STEP 2: Show Calculation Screen after delay
+        setTimeout(() => {
+            this.showScoreCalculation();
+        }, 3000); // 3s delay to see answer
+    }
+
+    showScoreCalculation() {
+        this.elFinaleQuestion.classList.add('hidden');
+        const elCalc = document.getElementById('finale-calc');
+        if (elCalc) elCalc.classList.remove('hidden');
+
+        // Prepare Data
+        let winnerId = null;
         this.teams.forEach(team => {
             const bet = this.finaleBets[team.id];
             const ans = this.finaleAnswers[team.id];
-            const isCorrect = (ans === correct);
+            const isCorrect = (ans === this.currentQuestion.correct);
+            const oldScore = team.score;
 
-            if (isCorrect) {
-                team.score += bet;
-                // Maybe show confetti on their side
-            } else {
-                team.score -= bet;
-            }
+            // Calculate Change
+            const change = isCorrect ? bet : -bet;
+            const newScore = oldScore + change;
 
-            // Update internal score (UI update happens in Winner view)
+            // Update internal score
+            team.score = newScore;
+
+            // Pre-fill UI
+            const scoreEl = document.getElementById(`old-score-${team.id}`);
+            const changeEl = document.getElementById(`change-${team.id}`);
+
+            scoreEl.textContent = oldScore + ' €';
+            changeEl.textContent = (change >= 0 ? '+' : '') + change;
+            changeEl.className = 'calc-change ' + (isCorrect ? 'win' : 'loss'); // Color code
+
+            // ANIMATE
+            setTimeout(() => {
+                this.animateScoreGeneric(scoreEl, oldScore, newScore, 2000);
+            }, 1000);
         });
 
-        // Determine Winner
+        // Determine Winner for Next Step
         if (this.teams[0].score > this.teams[1].score) winnerId = 0;
         else if (this.teams[1].score > this.teams[0].score) winnerId = 1;
-        else winnerId = 'draw'; // Tie
+        else winnerId = 'draw';
 
-        // 3. Show Winner Screen
+        // STEP 3: Show Winner after calculation
         setTimeout(() => {
-            this.elFinaleQuestion.classList.add('hidden');
-            this.elFinaleWinner.classList.remove('hidden');
+            this.showWinnerScreen(winnerId);
+        }, 5000); // 1s wait + 2s anim + 2s pause
+    }
 
-            const winnerHeading = this.elFinaleWinner.querySelector('.winner-title');
-            const winnerName = document.getElementById('winner-name');
-            const winnerImg = document.getElementById('winner-img');
-            const winnerScore = document.getElementById('winner-score');
+    animateScoreGeneric(element, start, end, duration) {
+        const startTime = performance.now();
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 4); // EaseOutQuart
 
-            if (winnerId === 'draw') {
-                winnerHeading.textContent = "UNENTSCHIEDEN!";
-                winnerName.textContent = "BEIDE TEAMS";
-                winnerImg.style.backgroundImage = "none";
-                winnerScore.textContent = this.teams[0].score + ' €';
+            const current = Math.floor(start + (end - start) * ease);
+            element.textContent = current + ' €';
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
             } else {
-                const wTeam = this.teams[winnerId];
-                winnerHeading.textContent = "GEWINNER";
-                winnerName.textContent = wTeam.name;
-                winnerImg.style.backgroundImage = `url('assets/${winnerId === 0 ? 'tobi' : 'lurch'}.png')`;
-                winnerScore.textContent = wTeam.score + ' €';
+                element.textContent = end + ' €';
+            }
+        };
+        requestAnimationFrame(animate);
+    }
 
-                // Colorize
-                const color = (winnerId === 0) ? '#ffaa00' : '#0099ff';
-                winnerName.style.color = color;
-                winnerImg.style.borderColor = color;
-                winnerImg.style.boxShadow = `0 0 100px ${color}`;
+    showWinnerScreen(winnerId) {
+        const elCalc = document.getElementById('finale-calc');
+        if (elCalc) elCalc.classList.add('hidden');
 
-                // Confetti Explosion
+        this.elFinaleWinner.classList.remove('hidden');
+
+        const winnerHeading = this.elFinaleWinner.querySelector('.winner-title');
+        const winnerName = document.getElementById('winner-name');
+        const winnerImg = document.getElementById('winner-img');
+        const winnerScore = document.getElementById('winner-score');
+
+        if (winnerId === 'draw') {
+            winnerHeading.textContent = "UNENTSCHIEDEN!";
+            winnerName.textContent = "BEIDE TEAMS";
+            winnerImg.style.backgroundImage = "none";
+            winnerScore.textContent = this.teams[0].score + ' €';
+        } else {
+            const wTeam = this.teams[winnerId];
+            winnerHeading.textContent = "GEWINNER";
+            winnerName.textContent = wTeam.name;
+            winnerImg.style.backgroundImage = `url('assets/${winnerId === 0 ? 'tobi' : 'lurch'}.png')`;
+            winnerScore.textContent = wTeam.score + ' €';
+
+            // Colorize
+            const color = (winnerId === 0) ? '#ffaa00' : '#0099ff';
+            winnerName.style.color = color;
+            winnerImg.style.borderColor = color;
+            winnerImg.style.boxShadow = `0 0 100px ${color}`;
+
+            // Confetti Explosion
+            if (window.confetti) {
                 confetti({ particleCount: 500, spread: 100, origin: { y: 0.6 } });
             }
+        }
 
-            // Broadcast End
-            this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_REVEAL', correct: correct });
-
-        }, 3000);
+        // Broadcast End
+        this.broadcast({ type: 'STATE_CHANGE', payload: 'FINALE_REVEAL' });
     }
 
     updateTurnUI() {

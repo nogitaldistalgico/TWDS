@@ -112,14 +112,45 @@
             <h2 class="master-question-label">MASTERFRAGE</h2>
             <div class="master-question-text">Hier steht die Masterfrage...</div>
             <div class="master-answers">
-                <!-- A/B/C cards similar to normal game but maybe larger -->
-                <div id="final-ans-A" class="answer-card master-card">A</div>
-                <div id="final-ans-B" class="answer-card master-card">B</div>
-                <div id="final-ans-C" class="answer-card master-card">C</div>
+                <div id="final-ans-A" class="answer-card master-card">
+                    <div class="answer-letter">A</div>
+                    <div class="text">Option A</div>
+                </div>
+                <div id="final-ans-B" class="answer-card master-card">
+                    <div class="answer-letter">B</div>
+                    <div class="text">Option B</div>
+                </div>
+                <div id="final-ans-C" class="answer-card master-card">
+                    <div class="answer-letter">C</div>
+                    <div class="text">Option C</div>
+                </div>
             </div>
         </div>
 
-        <!-- Phase 3: Winner -->
+        <!-- Phase 3: Score Calculation -->
+        <div id="finale-calc" class="finale-phase hidden">
+            <h1 class="finale-title">PUNKTESTAND</h1>
+            <div class="calc-grid">
+                <!-- Tobi -->
+                <div id="calc-team-0" class="calc-card">
+                    <div class="calc-avatar" style="background-image: url('assets/tobi.png')"></div>
+                    <div class="calc-score-row">
+                        <span id="old-score-0">0 €</span>
+                        <span id="change-0" class="calc-change">(+0)</span>
+                    </div>
+                </div>
+                <!-- Lurch -->
+                <div id="calc-team-1" class="calc-card">
+                    <div class="calc-avatar" style="background-image: url('assets/lurch.png')"></div>
+                    <div class="calc-score-row">
+                        <span id="old-score-1">0 €</span>
+                        <span id="change-1" class="calc-change">(+0)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 4: Winner -->
         <div id="finale-winner" class="finale-phase hidden">
             <h1 class="winner-title">GEWINNER</h1>
             <div class="winner-avatar-container">

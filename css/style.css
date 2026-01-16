@@ -584,11 +584,82 @@ body {
 }
 
 .answer-card.master-card {
-    width: 250px;
-    height: 180px;
-    font-size: 4rem;
-    background: rgba(255, 255, 255, 0.03);
+    width: 300px;
+    height: 220px;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    text-align: center;
+}
+
+.answer-card.master-card .answer-letter {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--neon-gold);
+    margin-bottom: 0.5rem;
+}
+
+.answer-card.master-card .text {
+    font-size: 1.2rem;
+    line-height: 1.4;
+    color: #fff;
+}
+
+/* CALCULATION SCREEN */
+.calc-grid {
+    display: flex;
+    gap: 4rem;
+    margin-top: 3rem;
+}
+
+.calc-card {
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    width: 350px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calc-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 1rem;
+}
+
+.calc-score-row {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calc-change {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.calc-change.win {
+    color: #00ff88;
+}
+
+.calc-change.loss {
+    color: #ff3333;
 }
 
 /* WINNER SCREEN */
