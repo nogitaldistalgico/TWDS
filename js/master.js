@@ -85,6 +85,13 @@ class MasterGame {
         this.initNetwork();
         this.initControls();
         this.updateTurnUI();
+
+        // Cleanup on close to free the ID
+        window.addEventListener('beforeunload', () => {
+            if (this.peerManager.peer) {
+                this.peerManager.peer.destroy();
+            }
+        });
     }
 
     async loadQuestions() {
@@ -111,9 +118,12 @@ class MasterGame {
 
             // Handle ID Taken (e.g. previous session didn't close properly)
             if (err.type === 'unavailable-id') {
-                this.elRoomId.innerHTML = `<span style="color:orange; font-size:0.6em">ID belegt. <br>Warte kurz...</span>`;
-                // Retry automatically to clear zombie connections
-                setTimeout(() => location.reload(), 2000);
+                this.elRoomId.innerHTML = `<span style="color:orange; font-size:0.6em">ID belegt.<br>Warte 5s...</span>`;
+                console.warn("ID taken. Retrying in 5s...");
+                setTimeout(() => {
+                    this.peerManager.peer.destroy();
+                    this.peerManager.init('TOBIS-JGA');
+                }, 5000);
             } else {
                 this.elRoomId.innerHTML = `<span style="color:red; font-size:0.8em">Error: ${err.type}</span>`;
             }
