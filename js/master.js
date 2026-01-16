@@ -22,19 +22,24 @@ document.addEventListener('click', function restoreFs() {
         document.documentElement.requestFullscreen().catch(() => { });
     }
 
-    // 2. Unlock Audio Context (play silent or just load)
-    if (window.game && window.game.sfx) {
-        // Try to play and pause immediately to unlock
-        window.game.sfx.login.play().then(() => {
-            window.game.sfx.login.pause();
-            window.game.sfx.login.currentTime = 0;
-            console.log("Audio Unlocked!");
-        }).catch(e => console.warn("Audio unlock failed on click", e));
+    // 2. Unlock/Test Audio
+    const sfx = document.getElementById('sfx-login');
+    if (sfx) {
+        sfx.play().then(() => {
+            sfx.pause();
+            sfx.currentTime = 0;
+            console.log("Audio Context Unlocked (DOM)");
+        }).catch(e => console.warn("Audio unlock failed", e));
     }
 
     // Remove after first interaction
     document.removeEventListener('click', restoreFs);
 }, { once: true });
+
+window.testSound = function () {
+    const s = document.getElementById('sfx-login');
+    if (s) s.play().catch(e => alert("Sound error: " + e));
+}
 
 // Debug Logger
 const debugEl = document.getElementById('debug-console');
@@ -104,14 +109,12 @@ class MasterGame {
             C: document.getElementById('ans-C')
         };
 
-        // SOUNDS
+        // SOUNDS (DOM-based)
         this.sfx = {
-            login: new Audio('assets/eingeloggt.mp3'),
-            correct: new Audio('assets/richtig.mp3'),
-            wrong: new Audio('assets/falsch.mp3')
+            login: document.getElementById('sfx-login'),
+            correct: document.getElementById('sfx-correct'),
+            wrong: document.getElementById('sfx-wrong')
         };
-        // Preload
-        Object.values(this.sfx).forEach(s => s.load());
 
         this.loadQuestions();
         this.loadGame(); // Restore state from storage

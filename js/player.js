@@ -235,10 +235,13 @@ class PlayerController {
 
     showControls() {
         this.elTeamSelect.classList.add('hidden');
-        this.elTeamSelect.style.display = 'none'; // Ensure it hides
+        this.elTeamSelect.style.display = 'none';
+
+        this.elLogin.classList.add('hidden'); // Also hide Login explicitly
+        this.elLogin.style.display = 'none';
 
         this.elControls.classList.remove('hidden');
-        this.elControls.style.display = 'flex'; // Override inline none
+        this.elControls.style.display = 'flex';
         this.elControls.classList.add('animate-fade-in');
     }
 
@@ -303,7 +306,7 @@ class PlayerController {
     handleGameData(data) {
         if (data.type === 'STATE_CHANGE') {
             if (data.payload === 'WALL') {
-                this.statusText.textContent = "Waiting for Host...";
+                this.statusText.textContent = "Warte auf nächste Frage...";
                 // RESET & LOCK
                 this.resetVisuals();
                 this.setInteraction(false);
@@ -322,7 +325,7 @@ class PlayerController {
                     // Vibrate to notify
                     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 } else {
-                    this.statusText.textContent = "Gegner ist dran...";
+                    this.statusText.textContent = "Du bist nicht dran...";
                     this.statusText.style.color = "#aaa";
                     this.setInteraction(false);
                 }
