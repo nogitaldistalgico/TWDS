@@ -276,7 +276,8 @@ class MasterGame {
         conn.send({
             type: 'STATE_CHANGE',
             payload: this.state,
-            questionsClosed: false // Optional context
+            questionsClosed: false,
+            maxScore: team.score // Send score for Finale Betting
         });
 
         // If we are in QUESTION/REVEAL, also send the last correctness info if needed
@@ -796,9 +797,14 @@ class MasterGame {
             statusEl.querySelector('.status-text').textContent = "EINSATZ STEHT";
         }
 
+        console.log("Current Bets:", JSON.stringify(this.finaleBets));
+
         // Check if both have bet
         if (this.finaleBets[0] !== null && this.finaleBets[1] !== null) {
+            console.log("Both bets received. Starting Finale Question in 1.5s...");
             setTimeout(() => this.startFinaleQuestion(), 1500);
+        } else {
+            console.log("Waiting for other team...");
         }
     }
 
@@ -1041,11 +1047,16 @@ class MasterGame {
     }
 
     sendFullState(conn) {
+        // Find team for this connection to send correct score
+        const team = this.teams.find(t => t.conn === conn);
+        const myScore = team ? team.score : 0;
+
         // 1. Current Game State
         conn.send({
             type: 'STATE_CHANGE',
             payload: this.state,
-            turn: this.currentTurn
+            turn: this.currentTurn,
+            maxScore: myScore
         });
 
         // 2. Scores
