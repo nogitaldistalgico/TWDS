@@ -298,6 +298,12 @@ class MasterGame {
     processAnswer(answerPayload) {
         if (this.state !== STATE.QUESTION) return;
 
+        // PLAY SOUND IMMEDIATELY
+        if (this.sfx && this.sfx.login) {
+            this.sfx.login.currentTime = 0;
+            this.sfx.login.play().catch(e => console.error("SFX ERROR (Login):", e));
+        }
+
         console.log(`Processing Answer: ${answerPayload} for Team ${this.currentTurn}`);
         this.lastPlayerAnswer = answerPayload;
 
@@ -454,6 +460,19 @@ class MasterGame {
     revealAnswer() {
         if (this.state !== STATE.QUESTION) return;
         this.state = STATE.REVEAL;
+
+        this.lastAnswerCorrect = (this.lastPlayerAnswer === this.currentQuestion.correct);
+
+        // AUDIO FEEDBACK IMMEDIATELY
+        if (this.sfx) {
+            if (this.lastAnswerCorrect) {
+                this.sfx.correct.currentTime = 0;
+                this.sfx.correct.play().catch(e => console.error("SFX ERROR (Correct):", e));
+            } else {
+                this.sfx.wrong.currentTime = 0;
+                this.sfx.wrong.play().catch(e => console.error("SFX ERROR (Wrong):", e));
+            }
+        }
 
         const correct = this.currentQuestion.correct;
         const correctEl = this.elAnswers[correct];
