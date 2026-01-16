@@ -117,7 +117,8 @@ header.studio-header {
 /* 3D Flying Card Animation */
 .flying-card-wrapper {
     position: fixed;
-    z-index: 2000;
+    z-index: 10002;
+    /* Must be above Hacker Overlay (9998) and Mega Tobi (9001) */
     transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
     perspective: 1500px;
 }
