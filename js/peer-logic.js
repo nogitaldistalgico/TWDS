@@ -160,7 +160,9 @@ class PeerManager {
 
     send(data) {
         if (this.conn && this.conn.open) {
-            console.log("Sending:", data.type);
+            if (data.type !== 'PING' && data.type !== 'PONG') {
+                console.log("Sending:", data.type);
+            }
             this.conn.send(data);
         } else {
             console.warn(`SEND FAILED (${data.type}): Conn not open`);

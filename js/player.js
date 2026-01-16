@@ -215,7 +215,9 @@ class PlayerController {
     showTeamSelection() {
         console.log("UI: Showing Team Selection");
         this.elLogin.classList.add('hidden');
+
         this.elTeamSelect.classList.remove('hidden');
+        this.elTeamSelect.style.display = 'grid'; // FORCE GRID/FLEX
         this.elTeamSelect.classList.add('animate-fade-in');
     }
 
