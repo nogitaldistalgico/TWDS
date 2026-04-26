@@ -1,36 +1,54 @@
-/* PeerJS Logic Wrapper */
+/* PeerJS Logic Wrapper – v2 (Bug fixes, minimal changes from original) */
 
 class PeerManager {
     constructor(isHost = false) {
         this.peer = null;
         this.conn = null;
         this.isHost = isHost;
+        this.initialized = false;
+        this.lastHostId = null;
+        this.intentionalClose = false;
+        this._reconnecting = false;
+
         this.callbacks = {
             onOpen: () => { },
             onData: () => { },
             onClose: () => { },
-            onOpen: () => { },
-            onData: () => { },
-            onClose: () => { },
             onConnectionOpen: () => { },
+            onConnection: () => { },
             onError: () => { },
-            onHeartbeatLost: () => { } // New hook
+            onHeartbeatLost: () => { }
         };
     }
 
     init(id = null) {
-        // Use a random ID if none provided (for Host)
+        // Prevent double initialization
+        if (this.initialized && this.peer && !this.peer.destroyed) {
+            console.warn('[P2P] Already initialized, skipping.');
+            // If peer is already open, fire onOpen immediately so tryConnect runs
+            if (this.peer.open) {
+                this.callbacks.onOpen(this.peer.id);
+            }
+            return;
+        }
+
+        // Cleanup old peer
+        if (this.peer) {
+            try { this.peer.destroy(); } catch (e) { /* ignore */ }
+            this.peer = null;
+        }
+
         const peerId = id || (this.isHost ? this.generateRoomId() : null);
 
-        // iOS / Safari Https Check
+        // iOS / Safari HTTPS Check
         if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.startsWith('127.0')) {
-            console.warn("⚠️ [P2P] WebRTC on iOS/Safari requires HTTPS! Connection might fail.");
+            console.warn("⚠️ [P2P] WebRTC on iOS/Safari requires HTTPS!");
             if (this.callbacks.onError) this.callbacks.onError({ type: 'warning-ssl', message: 'iOS requires HTTPS for WebRTC.' });
         }
 
         this.peer = new Peer(peerId, {
             debug: 2,
-            secure: true, // Force secure connections if possible (PeerJS Server defaults)
+            secure: true,
             config: {
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
@@ -40,79 +58,85 @@ class PeerManager {
         });
 
         this.peer.on('open', (id) => {
-            console.log('My peer ID is: ' + id);
+            console.log('[P2P] My peer ID is: ' + id);
+            this.initialized = true;
             this.callbacks.onOpen(id);
         });
 
         this.peer.on('connection', (conn) => {
+            // Host: pass to game logic (master.js handlePlayerJoin)
             if (this.callbacks.onConnection) {
                 this.callbacks.onConnection(conn);
             }
-            // Always handle basic data updates
-            this.handleConnection(conn);
+            // Client: also handle locally
+            if (!this.isHost) {
+                this.handleConnection(conn);
+            }
         });
 
         this.peer.on('error', (err) => {
-            console.error("PeerJS Error:", err);
-            // More granular error handling
+            console.error("[P2P] PeerJS Error:", err.type);
             if (err.type === 'browser-incompatible') {
-                alert("Browser not compatible with WebRTC (try Chrome or Safari 11+)");
+                alert("Browser not compatible with WebRTC");
             }
-
             if (this.callbacks.onError) {
                 this.callbacks.onError(err);
-            } else {
-                // Fallback alert
-                console.warn('Connection Error logged silently:', err.type);
             }
         });
 
-        this.setupVisibilityHandler();
+        // Auto-reconnect to signaling server if disconnected
+        this.peer.on('disconnected', () => {
+            console.warn('[P2P] Disconnected from signaling server');
+            if (this.peer && !this.peer.destroyed) {
+                setTimeout(() => {
+                    try { this.peer.reconnect(); } catch (e) { /* */ }
+                }, 2000);
+            }
+        });
+
+        if (!this.isHost) {
+            this.setupVisibilityHandler();
+        }
     }
 
     handleConnection(conn) {
         this.conn = conn;
 
         conn.on('open', () => {
-            console.log('Connected!');
+            console.log('[P2P] Connected!');
+            this._reconnecting = false;
             this.startHeartbeat();
             if (this.callbacks.onConnectionOpen) this.callbacks.onConnectionOpen();
         });
 
         conn.on('data', (data) => {
-            this.recordHeartbeat(); // Alive!
+            this.recordHeartbeat();
 
-            // Heartbeat check
             if (data.type === 'PING') {
-                // Respond with PONG
                 this.send({ type: 'PONG' });
                 return;
             }
             if (data.type === 'PONG') {
-                // Connection is alive
                 return;
             }
 
-            console.log('Received:', data);
             this.callbacks.onData(data);
         });
 
         conn.on('close', () => {
-            console.log('Connection closed');
+            console.log('[P2P] Connection closed');
             this.stopHeartbeat();
             this.callbacks.onClose();
 
-            // Auto Reconnect implementation for Client (not host)
+            // Auto Reconnect for Client
             if (!this.isHost && !this.intentionalClose) {
-                console.log("Unexpected disconnect. Attempting reconnect...");
-                setTimeout(() => {
-                    this.reconnect();
-                }, 2000);
+                console.log("[P2P] Unexpected disconnect. Reconnecting...");
+                this._scheduleReconnect(2000);
             }
         });
 
         conn.on('error', (err) => {
-            console.error("Connection Error:", err);
+            console.error("[P2P] Connection Error:", err);
             this.stopHeartbeat();
         });
     }
@@ -121,42 +145,45 @@ class PeerManager {
         this.stopHeartbeat();
         this.lastPingTime = Date.now();
 
-        // Check loop
         this.heartbeatInterval = setInterval(() => {
-            if (!this.conn || !this.conn.open) return;
-
-            // 1. Send Ping
-            this.conn.send({ type: 'PING' });
-
-            // 2. Check Timeout (Host & Client)
-            // If we haven't received a message (or PONG) in 8000ms, assume dead
-            if (Date.now() - this.lastPingTime > 8000) {
-                console.warn("Heartbeat lost/timeout!");
-                if (this.callbacks.onHeartbeatLost) this.callbacks.onHeartbeatLost();
-
-                // Force shutdown to trigger clean reconnect
+            if (!this.conn || !this.conn.open) {
                 this.stopHeartbeat();
-                this.conn.close();
+                return;
             }
-        }, 1500); // Ping every 1.5s
+
+            try {
+                this.conn.send({ type: 'PING' });
+            } catch (e) { /* ignore */ }
+
+            // Check Timeout – 10s (more lenient for mobile)
+            if (Date.now() - this.lastPingTime > 10000) {
+                console.warn("[P2P] Heartbeat timeout!");
+                if (this.callbacks.onHeartbeatLost) this.callbacks.onHeartbeatLost();
+                this.stopHeartbeat();
+                try { if (this.conn) this.conn.close(); } catch (e) { /* */ }
+            }
+        }, 2000); // Ping every 2s
     }
 
     setupVisibilityHandler() {
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                console.log("Page visible -> Checking connection...");
+                console.log("[P2P] Page visible -> Checking connection...");
+                // Reset heartbeat timer to avoid false timeout after tab switch
+                this.lastPingTime = Date.now();
+
                 if (!this.conn || !this.conn.open) {
-                    console.log("Connection dead/closed while hidden. Reconnecting...");
-                    this.reconnect();
+                    console.log("[P2P] Connection lost while hidden. Reconnecting...");
+                    this._scheduleReconnect(500);
                 } else {
-                    // Force a ping immediately
-                    this.conn.send({ type: 'PING' });
+                    try { this.conn.send({ type: 'PING' }); } catch (e) {
+                        this._scheduleReconnect(500);
+                    }
                 }
             }
         });
     }
 
-    // Call this whenever ANY data is received
     recordHeartbeat() {
         this.lastPingTime = Date.now();
     }
@@ -168,32 +195,64 @@ class PeerManager {
         }
     }
 
+    _scheduleReconnect(delay) {
+        if (this._reconnecting) return;
+        this._reconnecting = true;
+        setTimeout(() => {
+            this.reconnect();
+        }, delay);
+    }
+
     reconnect() {
-        if (this.lastHostId) {
-            console.log("Reconnecting to " + this.lastHostId);
+        if (!this.lastHostId) {
+            this._reconnecting = false;
+            return;
+        }
+
+        console.log("[P2P] Reconnecting to " + this.lastHostId);
+
+        // Ensure peer is still usable
+        if (!this.peer || this.peer.destroyed) {
+            console.log('[P2P] Peer destroyed, re-initializing...');
+            this.initialized = false;
+            this.init();
+            // Wait for open, then connect
+            const origOnOpen = this.callbacks.onOpen;
+            this.callbacks.onOpen = (id) => {
+                this.callbacks.onOpen = origOnOpen;
+                origOnOpen(id);
+                this.connect(this.lastHostId);
+            };
+        } else if (!this.peer.open) {
+            this.peer.once('open', () => {
+                this.connect(this.lastHostId);
+            });
+            try { this.peer.reconnect(); } catch (e) { /* */ }
+        } else {
             this.connect(this.lastHostId);
         }
     }
 
     send(data) {
         if (this.conn && this.conn.open) {
-            if (data.type !== 'PING' && data.type !== 'PONG') {
-                console.log("Sending:", data.type);
+            try {
+                this.conn.send(data);
+            } catch (e) {
+                if (data.type !== 'PING' && data.type !== 'PONG') {
+                    console.warn(`[P2P] Send failed (${data.type})`);
+                    if (this.callbacks.onError) this.callbacks.onError({ type: 'disconnected' });
+                }
             }
-            this.conn.send(data);
         } else {
-            console.warn(`SEND FAILED (${data.type}): Conn not open`);
-            // Don't alert on heartbeat fail, just warn
             if (data.type !== 'PING' && data.type !== 'PONG') {
-                // Trigger callback so UI can show "Offline"
+                console.warn(`[P2P] SEND FAILED (${data.type}): not connected`);
                 if (this.callbacks.onError) this.callbacks.onError({ type: 'disconnected' });
             }
         }
     }
 
     generateRoomId() {
-        // Generate a simple 4 letter code
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 1, 0 to avoid confusion
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let result = '';
         for (let i = 0; i < 4; i++) {
             result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -212,15 +271,21 @@ class PeerManager {
 
     connect(hostId) {
         if (this.isHost) return;
-        this.lastHostId = hostId; // Save for reconnect
+        this.lastHostId = hostId;
         this.intentionalClose = false;
 
-        console.log('Connecting to ' + hostId);
-        // connection options for reliability
-        this.conn = this.peer.connect(hostId, {
+        console.log('[P2P] Connecting to ' + hostId);
+
+        // Clean up old connection
+        if (this.conn) {
+            try { this.stopHeartbeat(); this.conn.close(); } catch (e) { /* */ }
+            this.conn = null;
+        }
+
+        const conn = this.peer.connect(hostId, {
             reliable: true,
             serialization: 'json'
         });
-        this.handleConnection(this.conn);
+        this.handleConnection(conn);
     }
 }

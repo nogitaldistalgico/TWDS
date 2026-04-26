@@ -166,6 +166,39 @@ class MasterGame {
             }
         });
 
+        // DEBUG: Skip to Finale (URL ?debug=true)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('debug')) {
+            console.log("DEBUG MODE ACTIVE");
+            const btn = document.createElement('button');
+            btn.textContent = "⏩ SKIP TO FINALE";
+            btn.style.position = "fixed";
+            btn.style.bottom = "10px";
+            btn.style.left = "10px";
+            btn.style.zIndex = "9999";
+            btn.style.padding = "10px";
+            btn.style.background = "red";
+            btn.style.color = "white";
+            btn.style.border = "none";
+            btn.style.cursor = "pointer";
+            btn.onclick = () => {
+                // Set Scores
+                this.teams[0].score = 1000;
+                this.teams[1].score = 1000;
+
+                // Mark all played (visual only, logic handled by state switch)
+                document.querySelectorAll('.category-card').forEach(c => c.classList.add('played'));
+
+                // Start Finale
+                this.startFinale();
+
+                // Update Score UI manually (usually handled by animation or load)
+                if (this.teams[0].el) this.teams[0].el.querySelector('.player-score').textContent = "1000 €";
+                if (this.teams[1].el) this.teams[1].el.querySelector('.player-score').textContent = "1000 €";
+            };
+            document.body.appendChild(btn);
+        }
+
         // Cleanup on close to free the ID
         window.addEventListener('beforeunload', () => {
             if (this.peerManager.peer) {
@@ -246,7 +279,8 @@ class MasterGame {
                     console.log(`${team.name} disconnected`);
                     team.conn = null;
                     team.el.classList.remove('joined');
-                    team.el.querySelector('.join-status').textContent = "Waiting...";
+                    const joinStatus = team.el.querySelector('.join-status');
+                    if (joinStatus) joinStatus.textContent = "Disconnected";
                 }
             });
         });
@@ -267,12 +301,16 @@ class MasterGame {
 
         // UI Update
         team.el.classList.add('joined');
-        team.el.querySelector('.join-status').textContent = "CONNECTED";
+        const joinStatus = team.el.querySelector('.join-status');
+        if (joinStatus) joinStatus.textContent = "CONNECTED";
 
         // Confirm to player
         conn.send({ type: 'TEAM_CONFIRMED', payload: teamId });
 
-        // IMMEDIATE SYNC: Send current state
+        // IMMEDIATE SCORE SYNC
+        conn.send({ type: 'SCORE_UPDATE', payload: team.score });
+
+        // IMMEDIATE STATE SYNC
         conn.send({
             type: 'STATE_CHANGE',
             payload: this.state,
@@ -531,16 +569,7 @@ class MasterGame {
             this.elAnswers[this.lastPlayerAnswer].classList.add('wrong');
         }
 
-        // AUDIO FEEDBACK (Moved from closeQuestion)
-        if (this.sfx) {
-            if (this.lastAnswerCorrect) {
-                this.sfx.correct.currentTime = 0;
-                this.sfx.correct.play().catch(e => console.error("SFX ERROR (Correct):", e));
-            } else {
-                this.sfx.wrong.currentTime = 0;
-                this.sfx.wrong.play().catch(e => console.error("SFX ERROR (Wrong):", e));
-            }
-        }
+        // (Duplicate audio block removed – already played above)
 
         // CONFETTI for Musik & Gesundheit (if correct)
         if (this.lastAnswerCorrect) {
@@ -688,12 +717,18 @@ class MasterGame {
             card.style.boxShadow = `0 0 20px ${color}`;
             card.textContent = '';
 
-            const oldScore = this.teams[this.currentTurn].score;
-            this.teams[this.currentTurn].score += 500;
-            const newScore = this.teams[this.currentTurn].score;
+            const winningTeam = this.teams[this.currentTurn];
+            const oldScore = winningTeam.score;
+            winningTeam.score += 500;
+            const newScore = winningTeam.score;
 
-            const scoreEl = this.teams[this.currentTurn].el.querySelector('.player-score');
+            const scoreEl = winningTeam.el.querySelector('.player-score');
             this.animateScore(scoreEl, oldScore, newScore);
+
+            // SYNC SCORE TO PLAYER (Bug #3 fix)
+            if (winningTeam.conn && winningTeam.conn.open) {
+                winningTeam.conn.send({ type: 'SCORE_UPDATE', payload: newScore });
+            }
         } else {
             card.classList.add('lost');
         }
@@ -919,7 +954,7 @@ class MasterGame {
         // Prepare Data
         let winnerId = null;
         this.teams.forEach(team => {
-            const bet = this.finaleBets[team.id];
+            const bet = this.finaleBets[team.id] || 0;
             const ans = this.finaleAnswers[team.id];
             const isCorrect = (ans === this.currentQuestion.correct);
             const oldScore = team.score;
@@ -935,14 +970,23 @@ class MasterGame {
             const scoreEl = document.getElementById(`old-score-${team.id}`);
             const changeEl = document.getElementById(`change-${team.id}`);
 
-            scoreEl.textContent = oldScore + ' €';
-            changeEl.textContent = (change >= 0 ? '+' : '') + change;
-            changeEl.className = 'calc-change ' + (isCorrect ? 'win' : 'loss'); // Color code
+            if (scoreEl) scoreEl.textContent = oldScore + ' €';
+            if (changeEl) {
+                changeEl.textContent = (change >= 0 ? '+' : '') + change;
+                changeEl.className = 'calc-change ' + (isCorrect ? 'win' : 'loss');
+            }
 
-            // ANIMATE
-            setTimeout(() => {
-                this.animateScoreGeneric(scoreEl, oldScore, newScore, 2000);
-            }, 1000);
+            // ANIMATE (Bug #4 fix: use animateScore instead of non-existent animateScoreGeneric)
+            if (scoreEl) {
+                setTimeout(() => {
+                    this.animateScore(scoreEl, oldScore, newScore);
+                }, 1000);
+            }
+
+            // Sync final score to player
+            if (team.conn && team.conn.open) {
+                team.conn.send({ type: 'SCORE_UPDATE', payload: newScore });
+            }
         });
 
         // Determine Winner for Next Step
@@ -1295,6 +1339,28 @@ class MasterGame {
                     this.revealAnswer();
                 } else if (this.state === STATE.REVEAL) {
                     this.closeQuestion();
+                } else if (this.state === STATE.FINALE_BETTING) {
+                    // Check Team 0
+                    if (this.finaleBets[0] === null) {
+                        const val = prompt("Einsatz Team Tobi (0):");
+                        if (val) this.processFinaleBet(0, parseInt(val));
+                    }
+                    // Check Team 1
+                    if (this.finaleBets[1] === null) {
+                        const val = prompt("Einsatz Team Lurch (1):");
+                        if (val) this.processFinaleBet(1, parseInt(val));
+                    }
+                } else if (this.state === STATE.FINALE_QUESTION) {
+                    // Check Team 0
+                    if (this.finaleAnswers[0] === null) {
+                        const val = prompt("Antwort Team Tobi (A/B/C):");
+                        if (val) this.processFinaleAnswer(0, val.toUpperCase());
+                    }
+                    // Check Team 1
+                    if (this.finaleAnswers[1] === null) {
+                        const val = prompt("Antwort Team Lurch (A/B/C):");
+                        if (val) this.processFinaleAnswer(1, val.toUpperCase());
+                    }
                 }
             });
         }
@@ -1313,6 +1379,14 @@ class MasterGame {
             this.btnHostAction.style.display = 'block';
             this.btnHostAction.textContent = "WEITER (Space)";
             this.btnHostAction.style.background = "var(--color-secondary)";
+        } else if (this.state === STATE.FINALE_BETTING) {
+            this.btnHostAction.style.display = 'block';
+            this.btnHostAction.textContent = "MANUELLE EINSÄTZE";
+            this.btnHostAction.style.background = "#ff9900";
+        } else if (this.state === STATE.FINALE_QUESTION) {
+            this.btnHostAction.style.display = 'block';
+            this.btnHostAction.textContent = "MANUELLE ANTWORTEN";
+            this.btnHostAction.style.background = "#ff9900";
         }
     }
 
@@ -1322,6 +1396,6 @@ class MasterGame {
 // Start Game
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new MasterGame();
-    game.renderWall();
+    // Bug #14 fix: renderWall() is already called inside loadQuestions(), no need to call again
     game.setupEmergencyControls(); // Init emergency hooks
 });

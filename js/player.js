@@ -26,11 +26,18 @@ class PlayerController {
     constructor() {
         this.peerManager = new PeerManager(false); // Client mode
         this.isConnected = false;
+        this.myScore = 0;
+        this.myTeamId = null;
+        this.lastChoice = null;
+        this.canAnswer = false;
+        this.betEventsBound = false;
+        this._joinStarted = false; // Guard against double startJoinProcess
 
         // DOM Elements
         this.elLogin = document.getElementById('login-screen');
         this.elTeamSelect = document.getElementById('team-select-screen');
         this.statusMsg = document.getElementById('team-status-msg');
+        this.connectionMsg = document.getElementById('connection-status-msg');
 
         // Restore missing elements
         this.elControls = document.getElementById('controls-screen');
@@ -51,10 +58,11 @@ class PlayerController {
 
     initPersistence() {
         const savedTeam = localStorage.getItem('wwds_player_team');
-        if (savedTeam) {
+        if (savedTeam !== null) {
             console.log("Found saved session for team: " + savedTeam);
-            // Auto Connect
-            this.startJoinProcess();
+            this.myTeamId = parseInt(savedTeam);
+            // Don't call startJoinProcess again – initControls already did it
+            // The auto-claim happens in onConnectionOpen when saved team is detected
         }
     }
 
@@ -83,11 +91,12 @@ class PlayerController {
     }
 
     initControls() {
-        // Auto-Join immediately on init (or separate initConnection)
+        // Auto-Join once on init
         this.startJoinProcess();
 
         // Retry button (only visible if auto-join fails)
         this.btnJoin.addEventListener('click', () => {
+            this._joinStarted = false; // Allow re-join
             this.startJoinProcess();
         });
 
@@ -97,11 +106,19 @@ class PlayerController {
     }
 
     startJoinProcess() {
+        // Bug #11 fix: Guard against double invocation
+        if (this._joinStarted) {
+            console.log('[Player] Join already started, skipping duplicate call');
+            return;
+        }
+        this._joinStarted = true;
+
         // Visual feedback immediately
-        this.elLogin.classList.remove('hidden'); // Show loading screen initially
+        this.showScreen('login');
         this.btnJoin.textContent = "VERBINDE...";
         this.btnJoin.disabled = true;
         this.btnJoin.style.opacity = "0.7";
+        if (this.connectionMsg) this.connectionMsg.textContent = "Verbinde zum Studio...";
 
         // Connect
         this.connect('TOBIS-JGA');
@@ -114,8 +131,7 @@ class PlayerController {
     }
 
     connect(roomId) {
-        this.statusText.textContent = "Suche Host...";
-        this.statusText.style.color = "var(--color-text-muted)";
+        if (this.connectionMsg) this.connectionMsg.textContent = "Suche Host...";
 
         // Retry logic
         const maxRetries = 5;
@@ -135,7 +151,7 @@ class PlayerController {
 
         this.peerManager.onOpen((id) => {
             console.log('Player ID:', id);
-            this.statusMsg.innerHTML = `Player ID: ${id}<br>Suche Studio...`;
+            if (this.connectionMsg) this.connectionMsg.textContent = `Suche Studio...`;
             tryConnect();
         });
 
@@ -151,9 +167,8 @@ class PlayerController {
 
             // AUTO-LOGIN Logic
             const savedTeam = localStorage.getItem('wwds_player_team');
-            if (savedTeam) {
+            if (savedTeam !== null) {
                 console.log("Auto-claiming team: " + savedTeam);
-                // Optimistic UI for re-joiners
                 this.selectTeam(parseInt(savedTeam));
             } else {
                 // UI Transition
@@ -168,17 +183,22 @@ class PlayerController {
                 // Host ID not found yet? Retry.
                 if (attempt < maxRetries) {
                     attempt++;
-                    this.statusMsg.textContent = `Suche Studio... (${attempt})`;
+                    if (this.connectionMsg) this.connectionMsg.textContent = `Suche Studio... (${attempt})`;
                     setTimeout(tryConnect, 2000); // Retry after 2s
                 } else {
                     // Only show manual Retry button if auto-fail completely
                     this.showManualConnect("Studio nicht gefunden. Ist der Master an?");
                 }
             } else if (err.type === 'disconnected') {
-                this.statusText.textContent = "Verbindung verloren... Reconnect...";
-                this.statusText.style.color = "red";
+                if (this.statusText) {
+                    this.statusText.textContent = "Verbindung verloren... Reconnect...";
+                    this.statusText.style.color = "red";
+                }
                 // Auto-retry indefinitely for disconnects
                 setTimeout(tryConnect, 2000);
+            } else if (err.type === 'warning-ssl') {
+                // Non-fatal, just log
+                console.warn("SSL Warning (non-fatal):", err.message);
             } else {
                 this.showManualConnect("Verbindungsfehler: " + err.type);
             }
@@ -191,41 +211,79 @@ class PlayerController {
         this.peerManager.onHeartbeatLost(() => {
             console.warn("Lost Heartbeat - Reconnecting...");
             this.updateStatusIndicator('disconnected');
-            this.statusText.textContent = "Verbindung verloren...";
-            this.statusText.style.color = "red";
+            if (this.statusText) {
+                this.statusText.textContent = "Verbindung verloren...";
+                this.statusText.style.color = "red";
+            }
             this.isConnected = false;
-            // Immediate retry
-            tryConnect();
+            // Reconnect is handled by the PeerManager's conn.close -> auto-reconnect
         });
 
+        // Init peer (only once!)
         this.peerManager.init();
     }
 
     showManualConnect(msg) {
-        this.elLogin.classList.remove('hidden');
-        this.elLogin.querySelector('h2').textContent = "Verbindung";
-        this.statusMsg.textContent = msg;
+        this.showScreen('login');
+        if (this.connectionMsg) this.connectionMsg.textContent = msg;
         this.btnJoin.textContent = "NEU VERBINDEN";
         this.btnJoin.disabled = false;
         this.btnJoin.style.opacity = "1";
+        this.btnJoin.style.display = "block";
+    }
+
+    // === Centralized Screen Management (Bug #8 fix) ===
+    showScreen(screen) {
+        // Hide all screens
+        const screens = [this.elLogin, this.elTeamSelect, this.elControls, document.getElementById('betting-screen')];
+        screens.forEach(el => {
+            if (el) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
+        });
+
+        // Show requested screen
+        switch (screen) {
+            case 'login':
+                this.elLogin.classList.remove('hidden');
+                this.elLogin.style.display = 'flex';
+                break;
+            case 'team-select':
+                this.elTeamSelect.classList.remove('hidden');
+                this.elTeamSelect.style.display = 'grid';
+                this.elTeamSelect.classList.add('animate-fade-in');
+                break;
+            case 'controls':
+                this.elControls.classList.remove('hidden');
+                this.elControls.style.display = 'flex';
+                this.elControls.classList.add('animate-fade-in');
+                // Ensure body doesn't scroll in controls mode
+                document.body.classList.remove('betting-active');
+                break;
+            case 'betting':
+                const betScreen = document.getElementById('betting-screen');
+                if (betScreen) {
+                    betScreen.classList.remove('hidden');
+                    betScreen.style.display = 'flex';
+                    // Allow scrolling for betting screen on mobile
+                    document.body.classList.add('betting-active');
+                }
+                break;
+        }
     }
 
     showTeamSelection() {
         console.log("UI: Showing Team Selection");
-        this.elLogin.classList.add('hidden');
-
-        this.elTeamSelect.classList.remove('hidden');
-        this.elTeamSelect.style.display = 'grid'; // FORCE GRID/FLEX
-        this.elTeamSelect.classList.add('animate-fade-in');
+        this.showScreen('team-select');
     }
 
     selectTeam(teamId) {
         console.log(`UI: Selected Team ${teamId}`);
-        // Store locally
         this.myTeamId = teamId;
         localStorage.setItem('wwds_player_team', teamId);
 
-        // Send request to master (fire and forget)
+        // Send request to master
         this.peerManager.send({ type: 'CLAIM_TEAM', payload: teamId });
 
         // Optimistic UI: Go straight to game
@@ -234,19 +292,10 @@ class PlayerController {
     }
 
     showControls() {
-        this.elTeamSelect.classList.add('hidden');
-        this.elTeamSelect.style.display = 'none';
-
-        this.elLogin.classList.add('hidden'); // Also hide Login explicitly
-        this.elLogin.style.display = 'none';
-
-        this.elControls.classList.remove('hidden');
-        this.elControls.style.display = 'flex';
-        this.elControls.classList.add('animate-fade-in');
+        this.showScreen('controls');
     }
 
     updateStatusIndicator(status) {
-        // Simple dot in the header
         let dot = document.getElementById('status-dot');
         if (!dot) {
             const header = document.querySelector('.status-header');
@@ -270,7 +319,7 @@ class PlayerController {
                 dot.style.backgroundColor = '#f00';
                 dot.style.boxShadow = '0 0 10px #f00';
             } else {
-                dot.style.backgroundColor = '#fa0'; // Connecting
+                dot.style.backgroundColor = '#fa0';
             }
         }
     }
@@ -278,7 +327,7 @@ class PlayerController {
     sendAnswer(choice) {
         if (!this.canAnswer) return;
 
-        // Haptic Feedback (Vibrate) - Subtle tick (50ms)
+        // Haptic Feedback
         if (navigator.vibrate) {
             navigator.vibrate(50);
         }
@@ -286,19 +335,18 @@ class PlayerController {
         // Highlight local button
         Object.values(this.btns).forEach(b => {
             b.classList.remove('selected');
-            b.disabled = true; // Disable interaction
+            b.disabled = true;
             b.style.pointerEvents = 'none';
         });
 
         this.btns[choice].classList.add('selected');
 
-        // Lock immediately to prevent spamming
+        // Lock immediately
         this.setInteraction(false);
-        // But keep selected one fully opaque/visible
         this.btns[choice].style.opacity = '1';
         this.btns[choice].style.filter = 'none';
 
-        this.lastChoice = choice; // Store choice for feedback
+        this.lastChoice = choice;
 
         this.peerManager.send({ type: 'ANSWER', payload: choice });
     }
@@ -306,86 +354,89 @@ class PlayerController {
     handleGameData(data) {
         if (data.type === 'STATE_CHANGE') {
             if (data.payload === 'WALL') {
-                this.statusText.textContent = "Warte auf nächste Frage...";
-                // RESET & LOCK
+                if (this.statusText) this.statusText.textContent = "Warte auf nächste Frage...";
                 this.resetVisuals();
                 this.setInteraction(false);
                 this.lastChoice = null;
 
             } else if (data.payload === 'QUESTION') {
-                this.statusText.textContent = "Make your choice!";
-                // UNLOCK ONLY IF IT IS MY TURN
                 this.resetVisuals();
 
                 // Compare loose (string vs int)
                 if (data.turn == this.myTeamId) {
-                    this.statusText.textContent = "DU BIST DRAN!";
-                    this.statusText.style.color = "var(--neon-green, #0f0)";
+                    if (this.statusText) {
+                        this.statusText.textContent = "DU BIST DRAN!";
+                        this.statusText.style.color = "var(--neon-green, #0f0)";
+                    }
                     this.setInteraction(true);
-                    // Vibrate to notify
                     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 } else {
-                    this.statusText.textContent = "Du bist nicht dran...";
-                    this.statusText.style.color = "#aaa";
+                    if (this.statusText) {
+                        this.statusText.textContent = "Du bist nicht dran...";
+                        this.statusText.style.color = "#aaa";
+                    }
                     this.setInteraction(false);
                 }
 
             } else if (data.payload === 'REVEAL') {
-                this.statusText.textContent = "Check the screen!";
-                // LOCK
+                if (this.statusText) this.statusText.textContent = "Check the screen!";
                 this.setInteraction(false);
 
-                // Show feedback (Visuals only, no interaction)
                 const correct = data.correct;
-                // Re-enable opacity for clarity, but keep disabled
                 Object.values(this.btns).forEach(b => b.style.opacity = '1');
 
                 if (this.lastChoice === correct) {
-                    // Correct!
                     this.btns[this.lastChoice].classList.add('correct');
-                    this.btns[this.lastChoice].style.filter = 'none'; // REMOVE GRAYSCALE
-                    this.statusText.textContent = "RICHTIG! 🎉";
+                    this.btns[this.lastChoice].style.filter = 'none';
+                    if (this.statusText) this.statusText.textContent = "RICHTIG! 🎉";
                 } else if (this.lastChoice) {
-                    // Wrong
                     this.btns[this.lastChoice].classList.add('wrong');
-                    this.btns[this.lastChoice].style.filter = 'none'; // REMOVE GRAYSCALE
-                    this.statusText.textContent = "LEIDER FALSCH ❌";
+                    this.btns[this.lastChoice].style.filter = 'none';
+                    if (this.statusText) this.statusText.textContent = "LEIDER FALSCH ❌";
                 }
+
             } else if (data.payload === 'FINALE_BETTING') {
                 // Switch to betting screen
-                this.showBettingScreen(data.maxScore); // Expecting maxScore from server
+                this.showBettingScreen(data.maxScore);
+
             } else if (data.payload === 'FINALE_QUESTION') {
                 // Switch back to controls
-                document.getElementById('betting-screen').classList.add('hidden');
-                document.getElementById('betting-screen').style.display = 'none';
                 this.showControls();
-                this.statusText.textContent = "MASTERFRAGE!";
+                if (this.statusText) this.statusText.textContent = "MASTERFRAGE!";
                 this.setInteraction(true);
                 this.resetVisuals();
             }
+
         } else if (data.type === 'TEAM_CONFIRMED') {
             console.log("Team Confirmed! Switching to Controls.");
-            this.statusMsg.textContent = "Verbunden! Warte auf Start...";
-            // Success! Move to controls
             this.showControls();
-
-            // Force interface update based on potential missed state
             this.setInteraction(false); // Default to locked until SYNC arrives
 
         } else if (data.type === 'TEAM_TAKEN') {
-            this.statusMsg.textContent = "Team already taken! Choose another.";
-            document.getElementById(`select-team-${data.payload}`).classList.add('taken');
+            if (this.statusMsg) this.statusMsg.textContent = "Team already taken! Choose another.";
+            const el = document.getElementById(`select-team-${data.payload}`);
+            if (el) el.classList.add('taken');
             setTimeout(() => {
                 document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
             }, 500);
+
         } else if (data.type === 'ERROR') {
-            alert(data.message);
-            // Assuming resetButtons is a method that exists or should be added
-            // this.resetButtons();
+            // Don't use alert – it blocks the UI on mobile
+            console.warn("Server Error:", data.message);
+            if (this.statusText) {
+                this.statusText.textContent = data.message;
+                this.statusText.style.color = "#ff6b6b";
+                setTimeout(() => {
+                    if (this.statusText) this.statusText.style.color = "";
+                }, 3000);
+            }
+
         } else if (data.type === 'SCORE_UPDATE') {
-            // New message type to sync score
+            // Score sync from master
             this.myScore = data.payload;
-            document.getElementById('my-score-display').textContent = this.myScore + ' €';
+            const scoreDisplay = document.getElementById('my-score-display');
+            if (scoreDisplay) scoreDisplay.textContent = this.myScore + ' €';
+            console.log(`[Score] Updated to ${this.myScore}`);
         }
     }
 
@@ -414,12 +465,10 @@ class PlayerController {
 
     // FINALE HELPERS
     showBettingScreen(maxScore) {
-        this.elControls.classList.add('hidden');
-        this.elControls.style.display = 'none'; // Ensure
+        this.showScreen('betting');
 
         const betScreen = document.getElementById('betting-screen');
-        betScreen.classList.remove('hidden');
-        betScreen.style.display = 'flex';
+        if (!betScreen) return;
 
         // RESET UI STATE (Fix for reconnects)
         const betControls = betScreen.querySelector('.bet-controls');
@@ -427,24 +476,30 @@ class PlayerController {
         const errorMsg = document.getElementById('bet-error-msg');
 
         if (betControls) betControls.style.display = 'flex';
-        if (successMsg) successMsg.classList.add('hidden');
+        if (successMsg) {
+            successMsg.classList.add('hidden');
+            successMsg.style.display = 'none';
+        }
         if (errorMsg) errorMsg.style.display = 'none';
 
-        // Fallback if maxScore is missing/invalid
-        if (maxScore === undefined || maxScore === null) {
-            maxScore = this.myScore || 0;
+        // Use maxScore from server, fallback to local score
+        if (maxScore !== undefined && maxScore !== null) {
+            this.myScore = maxScore;
         }
 
-        this.myScore = maxScore;
         const scoreDisplay = document.getElementById('my-score-display');
-        if (scoreDisplay) scoreDisplay.textContent = maxScore + ' €';
+        if (scoreDisplay) scoreDisplay.textContent = this.myScore + ' €';
 
         const input = document.getElementById('bet-amount');
         if (input) {
-            input.max = maxScore;
-            input.value = ''; // Reset value
-            input.disabled = false; // Ensure enabled
-            input.focus();
+            input.max = this.myScore;
+            input.value = '';
+            input.disabled = false;
+
+            // Delay focus to avoid iOS keyboard issues
+            setTimeout(() => {
+                try { input.focus(); } catch (e) { /* ignore */ }
+            }, 300);
         }
 
         // Bind events if not already
@@ -463,7 +518,7 @@ class PlayerController {
                     if (!input) return;
 
                     let val = parseInt(input.value);
-                    if (input.value === "") val = NaN; // Explicit check for empty string
+                    if (input.value === "") val = NaN;
 
                     if (isNaN(val) || val < 0 || val > this.myScore) {
                         const err = document.getElementById('bet-error-msg');
@@ -473,19 +528,29 @@ class PlayerController {
                             setTimeout(() => err.style.display = 'none', 3000);
                         }
                         // Shake animation
-                        input.classList.add('shake');
-                        setTimeout(() => input.classList.remove('shake'), 500);
+                        if (input) {
+                            input.classList.add('shake');
+                            setTimeout(() => input.classList.remove('shake'), 500);
+                        }
                     } else {
                         // Send Bet
                         this.peerManager.send({ type: 'BET', payload: val });
 
-                        // Show Success State (Toggle Visibility)
+                        // Show Success State
                         if (betControls) betControls.style.display = 'none';
-                        if (successMsg) successMsg.classList.remove('hidden');
-                        if (successMsg) successMsg.style.display = 'flex';
+                        if (successMsg) {
+                            successMsg.classList.remove('hidden');
+                            successMsg.style.display = 'flex';
+                        }
 
-                        // Disable Input to prevent double send
+                        // Disable Input
                         input.disabled = true;
+
+                        // Remove keyboard focus on mobile
+                        input.blur();
+
+                        // Remove betting-active to restore overflow behavior
+                        document.body.classList.remove('betting-active');
                     }
                 });
             }
