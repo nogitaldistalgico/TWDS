@@ -336,6 +336,34 @@ class MasterGame {
         }
     }
 
+    kickAllPlayers() {
+        console.log("Kicking all players manually...");
+        let kicked = 0;
+        this.teams.forEach(team => {
+            if (team.conn) {
+                try {
+                    team.conn.send({ type: 'KICKED', message: 'Der Master hat alle Verbindungen zurückgesetzt.' });
+                    setTimeout(() => {
+                        try { team.conn.close(); } catch(e) {}
+                    }, 500);
+                } catch(e) {}
+                team.conn = null;
+                team.el.classList.remove('joined');
+                const joinStatus = team.el.querySelector('.join-status');
+                if (joinStatus) joinStatus.textContent = "Disconnected";
+                kicked++;
+            }
+        });
+
+        // Show discreet temporary notification
+        const toast = document.createElement('div');
+        toast.textContent = kicked > 0 ? `${kicked} Verbindungen getrennt!` : "Keine Verbindungen zum Trennen.";
+        toast.style.cssText = "position:absolute; top:20px; left:50%; transform:translateX(-50%); background:rgba(255,20,100,0.9); color:white; padding:10px 20px; border-radius:8px; font-weight:bold; font-size:1.2rem; z-index:9999; transition:opacity 0.5s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        setTimeout(() => { toast.remove(); }, 2500);
+    }
+
     handlePlayerInput(data, conn) {
         if (data.type === 'LOGIN') {
             // Handled during connection assignment mainly
@@ -1291,6 +1319,11 @@ class MasterGame {
             if (key === 'm') {
                 document.body.classList.toggle('show-manual-controls');
                 console.log('Manual controls toggled');
+                return;
+            }
+
+            if (key === 'p') {
+                this.kickAllPlayers();
                 return;
             }
 
