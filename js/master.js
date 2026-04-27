@@ -290,14 +290,23 @@ class MasterGame {
         const team = this.teams.find(t => t.id === teamId);
         if (!team) return; // Invalid team ID
 
-        // Always allow claiming/reclaiming (overwrites previous connection)
-        if (team.conn) {
-            console.log(`Overwriting existing connection for ${team.name}`);
+        // If team already has a connection from a DIFFERENT peer, kick the old one
+        if (team.conn && team.conn !== conn && team.conn.open) {
+            console.log(`Kicking old connection (${team.conn.peer}) for ${team.name} — new device: ${conn.peer}`);
+            try {
+                team.conn.send({ type: 'KICKED', message: 'Ein anderes Gerät hat dieses Team übernommen.' });
+                // Don't close immediately – let the message arrive first
+                setTimeout(() => {
+                    try { team.conn.close(); } catch(e) { /* */ }
+                }, 500);
+            } catch(e) { /* old conn already dead */ }
+        } else if (team.conn && team.conn === conn) {
+            console.log(`Same device re-claiming ${team.name} (reconnect)`);
         }
 
         // Assign team
         team.conn = conn;
-        console.log(`Assigned ${conn.peer} to ${team.name}`);
+        console.log(`✅ Assigned ${conn.peer} to ${team.name}`);
 
         // UI Update
         team.el.classList.add('joined');

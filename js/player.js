@@ -61,9 +61,13 @@ class PlayerController {
         if (savedTeam !== null) {
             console.log("Found saved session for team: " + savedTeam);
             this.myTeamId = parseInt(savedTeam);
-            // Don't call startJoinProcess again – initControls already did it
             // The auto-claim happens in onConnectionOpen when saved team is detected
         }
+    }
+
+    clearSession() {
+        localStorage.removeItem('wwds_player_team');
+        this.myTeamId = null;
     }
 
     initUtilities() {
@@ -133,9 +137,9 @@ class PlayerController {
     connect(roomId) {
         if (this.connectionMsg) this.connectionMsg.textContent = "Suche Host...";
 
-        // Retry logic
-        const maxRetries = 5;
+        // Retry logic – UNLIMITED retries for peer-unavailable
         let attempt = 0;
+        let retryTimer = null;
 
         const tryConnect = () => {
             // If peer is not ready, wait
@@ -145,7 +149,8 @@ class PlayerController {
                 return;
             }
 
-            console.log(`Attempting to connect to ${roomId} (Attempt ${attempt + 1})`);
+            attempt++;
+            console.log(`Attempting to connect to ${roomId} (Attempt ${attempt})`);
             this.peerManager.connect(roomId);
         };
 
@@ -156,7 +161,8 @@ class PlayerController {
         });
 
         this.peerManager.onConnectionOpen(() => {
-            attempt = 0; // Reset retries on success
+            attempt = 0;
+            if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
             this.isConnected = true;
             this.updateStatusIndicator('connected');
             console.log('Connection Established!');
@@ -165,13 +171,13 @@ class PlayerController {
             this.peerManager.send({ type: 'REQUEST_STATE' });
             this.peerManager.send({ type: 'LOGIN' });
 
-            // AUTO-LOGIN Logic
+            // AUTO-LOGIN: Only auto-claim if this device had a saved team
             const savedTeam = localStorage.getItem('wwds_player_team');
             if (savedTeam !== null) {
                 console.log("Auto-claiming team: " + savedTeam);
                 this.selectTeam(parseInt(savedTeam));
             } else {
-                // UI Transition
+                // Fresh device: show team selection
                 this.showTeamSelection();
             }
         });
@@ -180,24 +186,26 @@ class PlayerController {
             console.error("Player Error:", err);
 
             if (err.type === 'peer-unavailable') {
-                // Host ID not found yet? Retry.
-                if (attempt < maxRetries) {
-                    attempt++;
-                    if (this.connectionMsg) this.connectionMsg.textContent = `Suche Studio... (${attempt})`;
-                    setTimeout(tryConnect, 2000); // Retry after 2s
-                } else {
-                    // Only show manual Retry button if auto-fail completely
-                    this.showManualConnect("Studio nicht gefunden. Ist der Master an?");
+                // Host not found – keep retrying indefinitely
+                const delay = Math.min(2000 + (attempt * 500), 5000); // Backoff: 2s, 2.5s, 3s... max 5s
+                if (this.connectionMsg) this.connectionMsg.textContent = `Suche Studio... (Versuch ${attempt})`;
+
+                // Show manual button after 3 attempts (but keep retrying)
+                if (attempt >= 3) {
+                    this.btnJoin.textContent = "NEU VERBINDEN";
+                    this.btnJoin.disabled = false;
+                    this.btnJoin.style.opacity = "1";
+                    this.btnJoin.style.display = "block";
                 }
+
+                retryTimer = setTimeout(tryConnect, delay);
             } else if (err.type === 'disconnected') {
                 if (this.statusText) {
                     this.statusText.textContent = "Verbindung verloren... Reconnect...";
                     this.statusText.style.color = "red";
                 }
-                // Auto-retry indefinitely for disconnects
                 setTimeout(tryConnect, 2000);
             } else if (err.type === 'warning-ssl') {
-                // Non-fatal, just log
                 console.warn("SSL Warning (non-fatal):", err.message);
             } else {
                 this.showManualConnect("Verbindungsfehler: " + err.type);
@@ -216,7 +224,6 @@ class PlayerController {
                 this.statusText.style.color = "red";
             }
             this.isConnected = false;
-            // Reconnect is handled by the PeerManager's conn.close -> auto-reconnect
         });
 
         // Init peer (only once!)
@@ -419,6 +426,16 @@ class PlayerController {
             setTimeout(() => {
                 document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
             }, 500);
+
+        } else if (data.type === 'KICKED') {
+            // Another device took over this team
+            console.warn("KICKED:", data.message);
+            this.clearSession();
+            this.showTeamSelection();
+            if (this.statusMsg) {
+                this.statusMsg.style.display = 'block';
+                this.statusMsg.textContent = data.message || "Ein anderes Gerät hat dein Team übernommen.";
+            }
 
         } else if (data.type === 'ERROR') {
             // Don't use alert – it blocks the UI on mobile
