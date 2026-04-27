@@ -1074,3 +1074,70 @@ div.answer-card.correct {
     z-index: 100;
     transform: scale(1.1);
 }
+
+/* MANUAL OVERRIDE CONTROLS (Emergency/Fallback) */
+.manual-controls {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.manual-controls input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    width: 100px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.manual-controls button {
+    background: var(--neon-pink);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.manual-controls button:hover {
+    background: white;
+    color: var(--neon-pink);
+}
+
+.manual-controls.finale-answers-override {
+    margin-top: 30px;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.manual-controls.finale-answers-override .team-override {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.manual-controls.finale-answers-override button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 1.2rem;
+    padding: 8px 20px;
+}
+
+.manual-controls.finale-answers-override button:hover {
+    background: var(--neon-border);
+    color: black;
+}
