@@ -309,10 +309,14 @@ class PeerManager {
 
     connect(hostId) {
         if (this.isHost) return;
+        if (!this.peer || !this.peer.open) {
+            console.error("[P2P] Cannot connect, peer not ready");
+            return;
+        }
+
+        console.log(`[P2P] Initiating connection to host: ${hostId}`);
         this.lastHostId = hostId;
         this.intentionalClose = false;
-
-        console.log('[P2P] Connecting to ' + hostId);
 
         // Clean up old connection
         this._clearConnectTimeout();
@@ -322,7 +326,7 @@ class PeerManager {
         }
 
         const conn = this.peer.connect(hostId, {
-            reliable: true,
+            reliable: false, // Changed to false to avoid Safari SCTP bugs
             serialization: 'json'
         });
         this.handleConnection(conn);
