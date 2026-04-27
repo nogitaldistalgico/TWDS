@@ -257,8 +257,11 @@ class MasterGame {
             console.log(`New connection from ${conn.peer}`);
             conn.send({ type: 'DEBUG', message: 'Welcome to Master' });
 
-            // Do NOT auto-assign. Wait for 'CLAIM_TEAM'
             conn.on('data', (data) => {
+                if (data.type === 'PING') {
+                    try { conn.send({ type: 'PONG' }); } catch(e) {}
+                    return;
+                }
                 console.log('Received data:', data);
                 if (data.type === 'CLAIM_TEAM') {
                     this.handleTeamClaim(conn, data.payload);

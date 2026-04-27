@@ -93,12 +93,19 @@ class PeerManager {
 
         // Auto-reconnect to signaling server if disconnected
         this.peer.on('disconnected', () => {
-            console.warn('[P2P] Disconnected from signaling server');
-            if (this.peer && !this.peer.destroyed) {
-                setTimeout(() => {
-                    try { this.peer.reconnect(); } catch (e) { /* */ }
-                }, 2000);
-            }
+            console.warn('[P2P] Disconnected from signaling server. Attempting reconnect...');
+            const tryReconnect = () => {
+                if (this.peer && !this.peer.destroyed && this.peer.disconnected) {
+                    console.log('[P2P] Reconnecting to signaling server...');
+                    try { 
+                        this.peer.reconnect(); 
+                    } catch (e) { 
+                        console.error('[P2P] Reconnect failed, retrying in 3s...', e);
+                    }
+                    setTimeout(tryReconnect, 3000); // Keep trying until it reconnects
+                }
+            };
+            setTimeout(tryReconnect, 1000);
         });
 
         if (!this.isHost) {
