@@ -1078,7 +1078,7 @@ div.answer-card.correct {
 /* MANUAL OVERRIDE CONTROLS (Emergency/Fallback) */
 .manual-controls {
     margin-top: 15px;
-    display: flex;
+    display: none; /* HIDDEN BY DEFAULT */
     gap: 10px;
     justify-content: center;
     align-items: center;
@@ -1086,6 +1086,10 @@ div.answer-card.correct {
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.show-manual-controls .manual-controls {
+    display: flex;
 }
 
 .manual-controls input {

@@ -912,8 +912,7 @@ class MasterGame {
             if (val) this.processFinaleBet(teamId, parseInt(val));
         }
 
-        window.manualSubmitAns = (teamId) => {
-            const val = document.getElementById(`manual-ans-${teamId}`).value.toUpperCase();
+        window.manualSubmitAns = (teamId, val) => {
             if (['A', 'B', 'C'].includes(val)) this.processFinaleAnswer(teamId, val);
         }
     }
@@ -1289,6 +1288,12 @@ class MasterGame {
             const key = e.key.toLowerCase();
 
             // GAME LOOP CONTROLS
+            if (key === 'm') {
+                document.body.classList.toggle('show-manual-controls');
+                console.log('Manual controls toggled');
+                return;
+            }
+
             if (e.key === ' ' || e.code === 'Space') {
                 if (this.state === STATE.QUESTION) {
                     this.revealAnswer();
