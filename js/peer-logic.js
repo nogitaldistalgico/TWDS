@@ -55,27 +55,7 @@ class PeerManager {
                     // STUN servers (free, for direct connections)
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun3.l.google.com:19302' },
-                    { urls: 'stun:stun4.l.google.com:19302' },
-                    // TURN servers (relay fallback for NAT/firewall)
-                    // ExpressTURN free relay
-                    {
-                        urls: 'turn:relay1.expressturn.com:443',
-                        username: 'efPFPMI1ZXMPKHMFEX',
-                        credential: 'MhSLMVc6oY9JzFLp'
-                    },
-                    // Open Relay TURN (free, community)
-                    {
-                        urls: 'turn:openrelay.metered.ca:443',
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
-                    },
-                    {
-                        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
-                    }
+                    { urls: 'stun:stun2.l.google.com:19302' }
                 ]
             }
         });
