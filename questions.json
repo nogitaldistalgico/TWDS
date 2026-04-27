@@ -23,14 +23,14 @@
   },
   {
     "category": "Technik",
-    "question": "Warum sind die Fenster in Flugzeugen fast immer abgerundet und nicht eckig?",
+    "question": "Was gehschah am 10. Februar 1996?",
     "options": {
-      "A": "Aus rein ästhetischen Gründen (Design)",
-      "B": "Um Material bei der Herstellung zu sparen",
-      "C": "Um Rissbildung durch Druckunterschiede zu vermeiden"
+      "A": "Deep Blue besiegt Kasparov",
+      "B": "Die erste drahtlose Datenübertragung via Bluetooth war erfolgreich",
+      "C": "Das dritter weiß ich nicht mehr"
     },
-    "correct": "C",
-    "explanation": "Eckige Fenster haben Schwachstellen an den Ecken, an denen sich Spannungen konzentrieren (Kerbwirkung). Dies führte bei der 'Comet' in den 50ern zu Abstürzen. Runde Fenster verteilen den Druck gleichmäßig."
+    "correct": "A",
+    "explanation": "Am 10. Februar 1996 besiegte der IBM-Supercomputer Deep Blue den damaligen Schachweltmeister Garri Kasparow in einer Partie, was als Meilenstein im Wettstreit zwischen Mensch und Maschine galt."
   },
   {
     "category": "Kurioses",

@@ -209,7 +209,8 @@ class MasterGame {
 
     async loadQuestions() {
         try {
-            const response = await fetch('questions.json');
+            // Add cache-buster to always load the latest questions
+            const response = await fetch(`questions.json?v=${new Date().getTime()}`);
             this.questions = await response.json();
             this.renderWall();
             this.applyLoadedState(); // Restore wall visuals
