@@ -1,4 +1,4 @@
-/* PeerJS Logic Wrapper – v2 (Bug fixes, minimal changes from original) */
+/* PeerJS Logic Wrapper – v3 (TURN servers + connection timeout) */
 
 class PeerManager {
     constructor(isHost = false) {
@@ -9,6 +9,7 @@ class PeerManager {
         this.lastHostId = null;
         this.intentionalClose = false;
         this._reconnecting = false;
+        this._connectTimeout = null;
 
         this.callbacks = {
             onOpen: () => { },
@@ -51,8 +52,30 @@ class PeerManager {
             secure: true,
             config: {
                 iceServers: [
+                    // STUN servers (free, for direct connections)
                     { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' }
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' },
+                    // TURN servers (relay fallback for NAT/firewall)
+                    // ExpressTURN free relay
+                    {
+                        urls: 'turn:relay1.expressturn.com:443',
+                        username: 'efPFPMI1ZXMPKHMFEX',
+                        credential: 'MhSLMVc6oY9JzFLp'
+                    },
+                    // Open Relay TURN (free, community)
+                    {
+                        urls: 'turn:openrelay.metered.ca:443',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    },
+                    {
+                        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    }
                 ]
             }
         });
@@ -64,6 +87,7 @@ class PeerManager {
         });
 
         this.peer.on('connection', (conn) => {
+            console.log('[P2P] Incoming connection from: ' + conn.peer);
             // Host: pass to game logic (master.js handlePlayerJoin)
             if (this.callbacks.onConnection) {
                 this.callbacks.onConnection(conn);
@@ -78,6 +102,9 @@ class PeerManager {
             console.error("[P2P] PeerJS Error:", err.type);
             if (err.type === 'browser-incompatible') {
                 alert("Browser not compatible with WebRTC");
+            }
+            if (err.type === 'unavailable-id') {
+                console.error("[P2P] Peer ID already taken! Master might already be running.");
             }
             if (this.callbacks.onError) {
                 this.callbacks.onError(err);
@@ -102,8 +129,23 @@ class PeerManager {
     handleConnection(conn) {
         this.conn = conn;
 
+        // CONNECTION TIMEOUT: If 'open' doesn't fire within 8s, retry
+        this._clearConnectTimeout();
+        this._connectTimeout = setTimeout(() => {
+            if (this.conn && !this.conn.open) {
+                console.warn('[P2P] Connection timeout (8s) – no open event. Retrying...');
+                try { this.conn.close(); } catch (e) { /* */ }
+                this.conn = null;
+                // Signal as error so player.js retry logic kicks in
+                if (this.callbacks.onError) {
+                    this.callbacks.onError({ type: 'connection-timeout' });
+                }
+            }
+        }, 8000);
+
         conn.on('open', () => {
             console.log('[P2P] Connected!');
+            this._clearConnectTimeout();
             this._reconnecting = false;
             this.startHeartbeat();
             if (this.callbacks.onConnectionOpen) this.callbacks.onConnectionOpen();
@@ -125,6 +167,7 @@ class PeerManager {
 
         conn.on('close', () => {
             console.log('[P2P] Connection closed');
+            this._clearConnectTimeout();
             this.stopHeartbeat();
             this.callbacks.onClose();
 
@@ -137,8 +180,16 @@ class PeerManager {
 
         conn.on('error', (err) => {
             console.error("[P2P] Connection Error:", err);
+            this._clearConnectTimeout();
             this.stopHeartbeat();
         });
+    }
+
+    _clearConnectTimeout() {
+        if (this._connectTimeout) {
+            clearTimeout(this._connectTimeout);
+            this._connectTimeout = null;
+        }
     }
 
     startHeartbeat() {
@@ -277,6 +328,7 @@ class PeerManager {
         console.log('[P2P] Connecting to ' + hostId);
 
         // Clean up old connection
+        this._clearConnectTimeout();
         if (this.conn) {
             try { this.stopHeartbeat(); this.conn.close(); } catch (e) { /* */ }
             this.conn = null;

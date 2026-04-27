@@ -185,10 +185,11 @@ class PlayerController {
         this.peerManager.onError((err) => {
             console.error("Player Error:", err);
 
-            if (err.type === 'peer-unavailable') {
-                // Host not found – keep retrying indefinitely
-                const delay = Math.min(2000 + (attempt * 500), 5000); // Backoff: 2s, 2.5s, 3s... max 5s
-                if (this.connectionMsg) this.connectionMsg.textContent = `Suche Studio... (Versuch ${attempt})`;
+            if (err.type === 'peer-unavailable' || err.type === 'connection-timeout') {
+                // Host not found or connection hanging – keep retrying
+                const delay = Math.min(2000 + (attempt * 500), 5000);
+                const reason = err.type === 'connection-timeout' ? 'Timeout' : 'Nicht gefunden';
+                if (this.connectionMsg) this.connectionMsg.textContent = `Suche Studio... ${reason} (Versuch ${attempt})`;
 
                 // Show manual button after 3 attempts (but keep retrying)
                 if (attempt >= 3) {
