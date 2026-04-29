@@ -1,134 +1,134 @@
 [
   {
-    "category": "Natur & Umwelt",
-    "question": "Wozu dient der Zitterschlag bei vielen Hummelarten, wenn sie eine Blüte besuchen?",
+    "category": "Maschinenbau",
+    "question": "Am 10. Februar 1996 erblickte nicht nur der kleine Tobias das Licht der Welt, auch eine andere Maschine schrieb Geschichte.",
     "options": {
-      "A": "Um Pollen aus den Staubbeuteln zu schütteln",
-      "B": "Um Konkurrenten durch das Geräusch abzuschrecken",
-      "C": "Um ihre eigene Körpertemperatur zu regulieren"
+      "A": "A) Der IBM-Computer „Deep Blue“ gewann gegen einen Menschen ein Schachspiel",
+      "B": "B) Mit dem Model „Lucky Luke“ kam der erste batteriebetriebene Vibrator auf den Markt",
+      "C": "C) Das Nokia 7650 wurde als das erste Multimedia-Mobiltelefone mit integrierter Digitalkamera vorgestellt"
     },
     "correct": "A",
-    "explanation": "Durch das schnelle Vibrieren der Flugmuskulatur (Zitterschlag) lösen Hummeln den blütenstaub, der sonst schwer zugänglich wäre. Dies nennt man 'Vibrationsbestäubung'."
+    "explanation": ""
   },
   {
-    "category": "Kulinarisches",
-    "question": "Was ist das Besondere an der teuersten Kartoffelsorte der Welt, der 'La Bonnotte'?",
+    "category": "Medizin",
+    "question": "Warum erfand der französische Arzt René Laennec im Jahr 1816 das Stethoskop?",
     "options": {
-      "A": "Sie wächst nur in vulkanischer Asche",
-      "B": "Sie wird mit Algen gedüngt",
-      "C": "Sie muss bei Vollmond geerntet werden"
-    },
-    "correct": "B",
-    "explanation": "Die 'La Bonnotte' wächst auf der französischen Insel Noirmoutier und wird traditionell mit Seetang (Algen) gedüngt, was ihr einen salzigen, erdigen Geschmack verleiht."
-  },
-  {
-    "category": "Technik",
-    "question": "Was gehschah am 10. Februar 1996?",
-    "options": {
-      "A": "Deep Blue besiegt Kasparov",
-      "B": "Die erste drahtlose Datenübertragung via Bluetooth war erfolgreich",
-      "C": "Das dritter weiß ich nicht mehr"
+      "A": "A) er wollte nicht direkt mit seinem Ohr das Herz einer Frau abhören, da er so nah an ihren Brüsten wäre",
+      "B": "B) er besaß aufgrund eines Geburtsfehlers keine Ohrmuschel und sein Bart kitzelte daher immer die Patienten",
+      "C": "C) er war sehr geruchsempfindlich (eigentlich eher klassistisch) und wollte bei Visiten in den Armenvierteln nicht zu nah an den Patienten sein"
     },
     "correct": "A",
-    "explanation": "Am 10. Februar 1996 besiegte der IBM-Supercomputer Deep Blue den damaligen Schachweltmeister Garri Kasparow in einer Partie, was als Meilenstein im Wettstreit zwischen Mensch und Maschine galt."
-  },
-  {
-    "category": "Kurioses",
-    "question": "Was wurde ursprünglich als Tapetenreiniger erfunden?",
-    "options": {
-      "A": "Knete (Play-Doh)",
-      "B": "Kaugummi",
-      "C": "Post-it Kleber"
-    },
-    "correct": "A",
-    "explanation": "Play-Doh wurde in den 1930ern entwickelt, um Ruß von Kohleöfen von Tapeten zu entfernen. Als Gasheizungen beliebter wurden, vermarktete man es als Kinderspielzeug neu."
-  },
-  {
-    "category": "Sprache",
-    "question": "Woher kommt die Redewendung 'Einen Korb bekommen'?",
-    "options": {
-      "A": "Vom Basketball",
-      "B": "Aus dem Mittelalter (Fensterln)",
-      "C": "Vom Pilzesammeln"
-    },
-    "correct": "B",
-    "explanation": "Beim 'Fensterln' zog das Burgfräulein den Verehrer oft in einem Korb hoch. War er unerwünscht, lockerte sie den Boden, sodass er durchfiel – er bekam einen 'Korb'."
-  },
-  {
-    "category": "Tierwelt",
-    "question": "Was machen Delfine, wenn sie 'schlafen'?",
-    "options": {
-      "A": "Sie legen sich auf den Meeresgrund",
-      "B": "Eine Gehirnhälfte bleibt wach",
-      "C": "Sie treiben senkrecht im Wasser"
-    },
-    "correct": "B",
-    "explanation": "Delfine müssen bewusst atmen. Würden sie komplett einschlafen, würden sie ertrinken. Daher schläft immer nur eine Gehirnhälfte, während die andere wach bleibt und die Atmung steuert."
+    "explanation": ""
   },
   {
     "category": "Sport",
-    "question": "Welche Sportart war von 1900 bis 1920 olympisch?",
+    "question": "Warum beträgt die Distanz eines Marathons 42,195 Kilometer?",
     "options": {
-      "A": "Tauziehen",
-      "B": "Sackhüpfen",
-      "C": "Eierlaufen"
+      "A": "A) Die Griechen nutzten das mesopotamische Maß, welches umgerechnet zur „krummen“ Zahl führte",
+      "B": "B) bei den Olympischen Spielen 1908 forderte die britische Krone, dass das Rennen vor einem Fenster im Windsor Castle begann und die Ziellinie vor der Loge im Stadion sein sollte",
+      "C": "C) die zusätzlichen 195 Meter wurden versehentlich eingeführt, da sich die Veranstalter bei den ersten modernen Olympischen Spielen vertan haben und zur Vertuschung dauerhaft eingeführt wurden"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "category": "Film",
+    "question": "Die Idee einer Herr-der-Ringe-Verfilmung durch Stanley Kubrick ist eines der bekanntesten „Was wäre wenn“-Szenarien der Filmgeschichte. Kubrick lehnte das Projekt ab, da er die Bücher für nicht verfilmbar hielt. Wessen Idee war diese Projektidee?",
+    "options": {
+      "A": "A) Die Idee kam von den Beatles, die ebenso die Hauptrollen spielen wollten.",
+      "B": "B) Die Idee kam von Queen, die bereits ein Konzeptsoundtrack geschrieben hatten.",
+      "C": "C) Die Idee kam von AC/DC, die kurz nach ihrer Gründung und kurz vor seinem Tod JRR Tolkien trafen und dies als „Schicksal“ bezeichneten."
     },
     "correct": "A",
-    "explanation": "Tauziehen war tatsächlich Teil der Olympischen Spiele und galt als Leichtathletik-Disziplin. Es wurde 1920 aus dem Programm gestrichen."
+    "explanation": ""
   },
   {
-    "category": "Chemie",
-    "question": "Welches Element ist bei Raumtemperatur flüssig?",
+    "category": "Zur See",
+    "question": "Wie bezeichnet man in der deutschen Marine die besonders unbeliebte Wache von 00:00 bis 04:00 Uhr?",
     "options": {
-      "A": "Magnesium",
-      "B": "Quecksilber",
-      "C": "Blei"
-    },
-    "correct": "B",
-    "explanation": "Quecksilber ist neben Brom das einzige Element, das bei Standardbedingungen flüssig ist. Es wird deshalb oft in Thermometern verwendet."
-  },
-  {
-    "category": "Geografie",
-    "question": "Welches Land hat die meisten Inseln der Welt?",
-    "options": {
-      "A": "Indonesien",
-      "B": "Schweden",
-      "C": "Philippinen"
-    },
-    "correct": "B",
-    "explanation": "Überraschenderweise hat Schweden mit über 267.000 Inseln die meisten weltweit, gefolgt von Norwegen und Finnland. Viele davon sind unbewohnt."
-  },
-  {
-    "category": "Musik",
-    "question": "Was war die erste Musik, die jemals im Weltraum gespielt wurde?",
-    "options": {
-      "A": "Jingle Bells",
-      "B": "Fly Me to the Moon",
-      "C": "Space Oddity"
+      "A": "A) Hundewache",
+      "B": "B) Hamsterwache",
+      "C": "C) Kükenwache"
     },
     "correct": "A",
-    "explanation": "Am 16. Dezember 1965 spielten die Astronauten von Gemini 6 'Jingle Bells' auf einer Mundharmonika und Glöckchen, als Scherz für die Bodenkontrolle."
+    "explanation": ""
   },
   {
-    "category": "Gesundheit",
-    "question": "Was passiert, wenn man zu viele Möhren isst?",
+    "category": "Schwiegermutters Heimat",
+    "question": "In Warstein findet jährlich die Internationale Montgolfiade statt. Es ist die zweitgrößte Veranstaltung dieser Art weltweit. Worum handelt es sich?",
     "options": {
-      "A": "Man kann besser im Dunkeln sehen",
-      "B": "Die Haut verfärbt sich orange",
-      "C": "Die Haare wachsen schneller"
+      "A": "A) Um die deutsche Meisterschaft der Hobbybrauer",
+      "B": "B) Um ein Heißluftballon-Wettbewerb",
+      "C": "C) Um die Weltmeisterschaft im Gummistiefelweitwurf"
     },
     "correct": "B",
-    "explanation": "Die 'Carotinämie' ist eine harmlose Verfärbung der Haut ins Orange-Gelbliche, verursacht durch einen Überschuss an Beta-Carotin."
+    "explanation": ""
   },
   {
-    "category": "Mode",
-    "question": "Warum hatten Jeans ursprünglich Nieten an den Taschen?",
+    "category": "Kopfrechnen",
+    "question": "Zum Wintersemester 2024/25 begrüßte die RWTH Aachen insgesamt 44.892 Studierende, davon waren knapp 34% Ausländer. Die meisten internationalen Studierenden kommen aus China und Indien. Wie viele Studierende beider Länder haben addiert in Aachen studiert?",
     "options": {
-      "A": "Als modisches Accessoire",
-      "B": "Zur Verstärkung der Nähte",
-      "C": "Um Werkzeug daran zu befestigen"
+      "A": "A) Knapp 2000 Menschen",
+      "B": "B) Knapp 4000 Menschen",
+      "C": "C) Knapp 6000 Menschen"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "category": "Leibspeisen",
+    "question": "Welche Aussage über den italienischen Nussnougataufstrich „Nutella“ ist wahr?",
+    "options": {
+      "A": "A) Nutella hat einen höheren Brennwert als Holzkohle",
+      "B": "B) Nutella hat mehr Vitamine als eine Banane",
+      "C": "C) Nutella hat einen höheren Lichtschutzfaktor als Kokosöl"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "category": "Hup Holland hup",
+    "question": "Zu Ehren der niederländischen Krone…",
+    "options": {
+      "A": "A) … wurden Karotten so wie heute gängig orange gezüchtet",
+      "B": "B) … werden Tulpen am Koningsdag von Priestern geweiht",
+      "C": "C) … ist es verboten, Haustiere nach Mitgliedern der königlichen Familie zu benennen"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "category": "Ein Blick in die Zukunft",
+    "question": "Goldene Hochzeit, Silberne Hochzeit, alles bekannt! Ist ein Brautpaar neun Monate verheiratet, feiert man die…",
+    "options": {
+      "A": "A) Strapsenhochzeit",
+      "B": "B) Bierhochzeit",
+      "C": "C) Windelhochzeit"
     },
     "correct": "B",
-    "explanation": "Levi Strauss und Jacob Davis fügten die Nieten hinzu, um die Taschenecken zu verstärken, da diese bei Goldgräbern und Arbeitern oft aufrissen."
+    "explanation": ""
+  },
+  {
+    "category": "Echte Liebe",
+    "question": "RB Leipzig wird als der Inbegriff der Kommerzialisierung im deutschen Profifußball gesehen. Doch auch der BVB ließ sich im Jahr 1977 auf eine besondere Form des Marketings ein. Welche?",
+    "options": {
+      "A": "A) Die Trikots wurden für den Autozubehörfirma Prestolith mit rot-weißen Streifen versehen  ",
+      "B": "B) Der Löwenkopf der Tabakmarke „Samson“ wurde ins Logo integriert",
+      "C": "C) Das Maskottchen wurde durch einen UHU für den Klebespezialisten ausgetauscht "
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "category": "Urängste",
+    "question": "Cenosillicaphobie ist die Angst vor…",
+    "options": {
+      "A": "A) … einem leeren Bierglas",
+      "B": "B) … der Ehe",
+      "C": "C) … Menschen mit Glatze"
+    },
+    "correct": "A",
+    "explanation": ""
   }
 ]
