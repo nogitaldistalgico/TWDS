@@ -3,9 +3,9 @@
     "category": "Maschinenbau",
     "question": "Am 10. Februar 1996 erblickte nicht nur der kleine Tobias das Licht der Welt, auch eine andere Maschine schrieb Geschichte.",
     "options": {
-      "A": "A) Der IBM-Computer „Deep Blue“ gewann gegen einen Menschen ein Schachspiel",
-      "B": "B) Mit dem Model „Lucky Luke“ kam der erste batteriebetriebene Vibrator auf den Markt",
-      "C": "C) Das Nokia 7650 wurde als das erste Multimedia-Mobiltelefone mit integrierter Digitalkamera vorgestellt"
+      "A": "Der IBM-Computer „Deep Blue“ gewann gegen einen Menschen ein Schachspiel",
+      "B": "Mit dem Model „Lucky Luke“ kam der erste batteriebetriebene Vibrator auf den Markt",
+      "C": "Das Nokia 7650 wurde als das erste Multimedia-Mobiltelefone mit integrierter Digitalkamera vorgestellt"
     },
     "correct": "A",
     "explanation": ""
@@ -14,9 +14,9 @@
     "category": "Medizin",
     "question": "Warum erfand der französische Arzt René Laennec im Jahr 1816 das Stethoskop?",
     "options": {
-      "A": "A) er wollte nicht direkt mit seinem Ohr das Herz einer Frau abhören, da er so nah an ihren Brüsten wäre",
-      "B": "B) er besaß aufgrund eines Geburtsfehlers keine Ohrmuschel und sein Bart kitzelte daher immer die Patienten",
-      "C": "C) er war sehr geruchsempfindlich (eigentlich eher klassistisch) und wollte bei Visiten in den Armenvierteln nicht zu nah an den Patienten sein"
+      "A": "er wollte nicht direkt mit seinem Ohr das Herz einer Frau abhören, da er so nah an ihren Brüsten wäre",
+      "B": "er besaß aufgrund eines Geburtsfehlers keine Ohrmuschel und sein Bart kitzelte daher immer die Patienten",
+      "C": "er war sehr geruchsempfindlich (eigentlich eher klassistisch) und wollte bei Visiten in den Armenvierteln nicht zu nah an den Patienten sein"
     },
     "correct": "A",
     "explanation": ""
@@ -25,20 +25,20 @@
     "category": "Sport",
     "question": "Warum beträgt die Distanz eines Marathons 42,195 Kilometer?",
     "options": {
-      "A": "A) Die Griechen nutzten das mesopotamische Maß, welches umgerechnet zur „krummen“ Zahl führte",
-      "B": "B) bei den Olympischen Spielen 1908 forderte die britische Krone, dass das Rennen vor einem Fenster im Windsor Castle begann und die Ziellinie vor der Loge im Stadion sein sollte",
-      "C": "C) die zusätzlichen 195 Meter wurden versehentlich eingeführt, da sich die Veranstalter bei den ersten modernen Olympischen Spielen vertan haben und zur Vertuschung dauerhaft eingeführt wurden"
+      "A": "Die Griechen nutzten das mesopotamische Maß, welches umgerechnet zur „krummen“ Zahl führte",
+      "B": "bei den Olympischen Spielen 1908 forderte die britische Krone, dass das Rennen vor einem Fenster im Windsor Castle begann und die Ziellinie vor der Loge im Stadion sein sollte",
+      "C": "die zusätzlichen 195 Meter wurden versehentlich eingeführt, da sich die Veranstalter bei den ersten modernen Olympischen Spielen vertan haben und zur Vertuschung dauerhaft eingeführt wurden"
     },
     "correct": "B",
     "explanation": ""
   },
   {
     "category": "Film",
-    "question": "Die Idee einer Herr-der-Ringe-Verfilmung durch Stanley Kubrick ist eines der bekanntesten „Was wäre wenn“-Szenarien der Filmgeschichte. Kubrick lehnte das Projekt ab, da er die Bücher für nicht verfilmbar hielt. Wessen Idee war diese Projektidee?",
+    "question": "Die Idee einer Herr-der-Ringe-Verfilmung durch Stanley Kubrick lehnte er ab, da er die Bücher für nicht verfilmbar hielt. Wessen Idee war diese Projektidee?",
     "options": {
-      "A": "A) Die Idee kam von den Beatles, die ebenso die Hauptrollen spielen wollten.",
-      "B": "B) Die Idee kam von Queen, die bereits ein Konzeptsoundtrack geschrieben hatten.",
-      "C": "C) Die Idee kam von AC/DC, die kurz nach ihrer Gründung und kurz vor seinem Tod JRR Tolkien trafen und dies als „Schicksal“ bezeichneten."
+      "A": "Die Idee kam von den Beatles, die ebenso die Hauptrollen spielen wollten.",
+      "B": "Die Idee kam von Queen, die bereits ein Konzeptsoundtrack geschrieben hatten.",
+      "C": "Die Idee kam von AC/DC, die kurz nach ihrer Gründung und kurz vor seinem Tod JRR Tolkien trafen und dies als „Schicksal“ bezeichneten."
     },
     "correct": "A",
     "explanation": ""
@@ -47,31 +47,31 @@
     "category": "Zur See",
     "question": "Wie bezeichnet man in der deutschen Marine die besonders unbeliebte Wache von 00:00 bis 04:00 Uhr?",
     "options": {
-      "A": "A) Hundewache",
-      "B": "B) Hamsterwache",
-      "C": "C) Kükenwache"
+      "A": "Hundewache",
+      "B": "Hamsterwache",
+      "C": "Kükenwache"
     },
     "correct": "A",
     "explanation": ""
   },
   {
     "category": "Schwiegermutters Heimat",
-    "question": "In Warstein findet jährlich die Internationale Montgolfiade statt. Es ist die zweitgrößte Veranstaltung dieser Art weltweit. Worum handelt es sich?",
+    "question": "In Warstein findet jährlich die Internationale Montgolfiade als zweitgrößte Veranstaltung dieser Art weltweit statt. Worum handelt es sich?",
     "options": {
-      "A": "A) Um die deutsche Meisterschaft der Hobbybrauer",
-      "B": "B) Um ein Heißluftballon-Wettbewerb",
-      "C": "C) Um die Weltmeisterschaft im Gummistiefelweitwurf"
+      "A": "Um die deutsche Meisterschaft der Hobbybrauer",
+      "B": "Um ein Heißluftballon-Wettbewerb",
+      "C": "Um die Weltmeisterschaft im Gummistiefelweitwurf"
     },
     "correct": "B",
     "explanation": ""
   },
   {
     "category": "Kopfrechnen",
-    "question": "Zum Wintersemester 2024/25 begrüßte die RWTH Aachen insgesamt 44.892 Studierende, davon waren knapp 34% Ausländer. Die meisten internationalen Studierenden kommen aus China und Indien. Wie viele Studierende beider Länder haben addiert in Aachen studiert?",
+    "question": "Zum WS 24/25 begrüßte die RWTH Aachen insgesamt 44.892 Studierende, davon waren knapp 34% Ausländer, die meisten davon kommen aus China und Indien. Wie viele Studierende beider Länder haben addiert in Aachen studiert?",
     "options": {
-      "A": "A) Knapp 2000 Menschen",
-      "B": "B) Knapp 4000 Menschen",
-      "C": "C) Knapp 6000 Menschen"
+      "A": "Knapp 2000 Menschen",
+      "B": "Knapp 4000 Menschen",
+      "C": "Knapp 6000 Menschen"
     },
     "correct": "C",
     "explanation": ""
@@ -80,9 +80,9 @@
     "category": "Leibspeisen",
     "question": "Welche Aussage über den italienischen Nussnougataufstrich „Nutella“ ist wahr?",
     "options": {
-      "A": "A) Nutella hat einen höheren Brennwert als Holzkohle",
-      "B": "B) Nutella hat mehr Vitamine als eine Banane",
-      "C": "C) Nutella hat einen höheren Lichtschutzfaktor als Kokosöl"
+      "A": "Nutella hat einen höheren Brennwert als Holzkohle",
+      "B": "Nutella hat mehr Vitamine als eine Banane",
+      "C": "Nutella hat einen höheren Lichtschutzfaktor als Kokosöl"
     },
     "correct": "C",
     "explanation": ""
@@ -91,9 +91,9 @@
     "category": "Hup Holland hup",
     "question": "Zu Ehren der niederländischen Krone…",
     "options": {
-      "A": "A) … wurden Karotten so wie heute gängig orange gezüchtet",
-      "B": "B) … werden Tulpen am Koningsdag von Priestern geweiht",
-      "C": "C) … ist es verboten, Haustiere nach Mitgliedern der königlichen Familie zu benennen"
+      "A": "… wurden Karotten so wie heute gängig orange gezüchtet",
+      "B": "… werden Tulpen am Koningsdag von Priestern geweiht",
+      "C": "… ist es verboten, Haustiere nach Mitgliedern der königlichen Familie zu benennen"
     },
     "correct": "A",
     "explanation": ""
@@ -102,20 +102,20 @@
     "category": "Ein Blick in die Zukunft",
     "question": "Goldene Hochzeit, Silberne Hochzeit, alles bekannt! Ist ein Brautpaar neun Monate verheiratet, feiert man die…",
     "options": {
-      "A": "A) Strapsenhochzeit",
-      "B": "B) Bierhochzeit",
-      "C": "C) Windelhochzeit"
+      "A": "Strapsenhochzeit",
+      "B": "Bierhochzeit",
+      "C": "Windelhochzeit"
     },
     "correct": "B",
     "explanation": ""
   },
   {
     "category": "Echte Liebe",
-    "question": "RB Leipzig wird als der Inbegriff der Kommerzialisierung im deutschen Profifußball gesehen. Doch auch der BVB ließ sich im Jahr 1977 auf eine besondere Form des Marketings ein. Welche?",
+    "question": "RB Leipzig gilt als Inbegriff der Kommerzialisierung im Profifußball. Doch auch der BVB ließ sich 1977 auf eine besondere Form des Marketings ein. Welche?",
     "options": {
-      "A": "A) Die Trikots wurden für den Autozubehörfirma Prestolith mit rot-weißen Streifen versehen  ",
-      "B": "B) Der Löwenkopf der Tabakmarke „Samson“ wurde ins Logo integriert",
-      "C": "C) Das Maskottchen wurde durch einen UHU für den Klebespezialisten ausgetauscht "
+      "A": "Die Trikots wurden für den Autozubehörfirma Prestolith mit rot-weißen Streifen versehen  ",
+      "B": "Der Löwenkopf der Tabakmarke „Samson“ wurde ins Logo integriert",
+      "C": "Das Maskottchen wurde durch einen UHU für den Klebespezialisten ausgetauscht "
     },
     "correct": "B",
     "explanation": ""
@@ -124,9 +124,9 @@
     "category": "Urängste",
     "question": "Cenosillicaphobie ist die Angst vor…",
     "options": {
-      "A": "A) … einem leeren Bierglas",
-      "B": "B) … der Ehe",
-      "C": "C) … Menschen mit Glatze"
+      "A": "… einem leeren Bierglas",
+      "B": "… der Ehe",
+      "C": "… Menschen mit Glatze"
     },
     "correct": "A",
     "explanation": ""
