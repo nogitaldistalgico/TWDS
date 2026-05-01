@@ -892,10 +892,14 @@ class MasterGame {
         // Hardcoded Master Question (Could be moved to JSON later)
         this.currentQuestion = {
             category: "MASTERFRAGE",
-            question: "Welches dieser Tiere hat als einziges 3 Herzen?",
-            options: { A: "Der Krake (Oktopus)", B: "Der Blauwal", C: "Die Giraffe" },
-            correct: "A",
-            explanation: "Kraken haben ein Hauptherz und zwei Kiemenherzen, die das Blut durch die Kiemen pumpen."
+            question: "Wer oder was verbirgt sich hinter dem Trio „Maple“, „Zayu“ und „Clutch“?",
+            options: { 
+                A: "Die drei offiziellen Spielbälle für die Vorrunde, K.O.-Phase und das Finale der Fußball-WM 2026.", 
+                B: "Die offiziellen Maskottchen der Fußball-WM 2026 (Elch, Jaguar und Weißkopfseeadler).", 
+                C: "Drei neue, extrem widerstandsfähige Rasensorten für die unterschiedlichen Klimazonen der WM-Stadien 2026." 
+            },
+            correct: "B",
+            explanation: ""
         };
 
         // Render Question
